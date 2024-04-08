@@ -158,7 +158,7 @@ OuterLoop:
 			fmt.Printf("接受者信息:%v \n", string(paramVisitorMarshal))
 		}
 		// 7. 定义所有request
-		dbs := ParseRequestInfo(decl, ipInfo)
+		dbs := RequestInfoParse(decl, ipInfo)
 		dbsMarshal, err := json.Marshal(&dbs)
 		if err != nil {
 			continue
@@ -251,10 +251,10 @@ func containsMethod(methodList []string, methodName string) bool {
 	return false
 }
 
-// ParseRequestInfo RequestName:  "ctx",
+// RequestInfoParse RequestName:  "ctx",
 // RequestType:  "context.Context",
 // RequestValue: "context.Background()",
-func ParseRequestInfo(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetail {
+func RequestInfoParse(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetail {
 	dbs := make([]generate.RequestDetail, 0, 10)
 	for i, requestParam := range decl.Type.Params.List {
 		// "_" 这种不处理了
@@ -266,288 +266,17 @@ func ParseRequestInfo(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetai
 		} else {
 			db.RequestName = name
 		}
-		importPaths := make([]string, 0, 10)
 
-		switch dbType := requestParam.Type.(type) {
-		case *ast.SelectorExpr:
-			expr := GetRelationFromSelectorExpr(dbType)
-			db.RequestType = expr
-			if strings.Contains(expr, ".") {
-				parts := strings.Split(expr, ".")
-				firstField := parts[0]
-				importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-			}
-			if expr == "context.Context" {
-				db.RequestValue = "context.Background()"
-				importPaths = append(importPaths, "\"context\"")
-			} else if expr == "time.Time" {
-				db.RequestValue = "time.Now()"
-				importPaths = append(importPaths, "\"time\"")
-			} else {
-				db.RequestValue = "utils.Empty[" + expr + "]()"
-				importPaths = append(importPaths, "\"slp/reconcile/core/common/utils\"")
-			}
-		case *ast.Ident:
-			db.RequestType = dbType.Name
-			if db.RequestType == "string" {
-				db.RequestValue = "\"\""
-			} else if db.RequestType == "int" {
-				db.RequestValue = "0"
-			} else if db.RequestType == "int64" {
-				db.RequestValue = "0"
-			} else if db.RequestType == "any" {
-				db.RequestValue = "\"\""
-			} else if db.RequestType == "bool" {
-				db.RequestValue = "true"
-			} else {
-				db.RequestValue = "utils.Empty[" + dbType.Name + "]()"
-				importPaths = append(importPaths, "\"slp/reconcile/core/common/utils\"")
-			}
-			// 指针类型
-		case *ast.StarExpr:
-			switch starXType := dbType.X.(type) {
-			case *ast.SelectorExpr:
-				expr := GetRelationFromSelectorExpr(starXType)
-				db.RequestType = "*" + expr
-				if strings.Contains(expr, ".") {
-					parts := strings.Split(expr, ".")
-					firstField := parts[0]
-					importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-				}
-				if expr == "context.Context" {
-					db.RequestValue = "context.Background()"
-					importPaths = append(importPaths, "\"context\"")
-				} else {
-					db.RequestValue = "lo.ToPtr(" + expr + "{})"
-					importPaths = append(importPaths, "\"github.com/samber/lo\"")
-				}
-			case *ast.Ident:
-				db.RequestType = "*" + starXType.Name
-				if starXType.Name == "string" {
-					db.RequestValue = "lo.ToPtr(\"\")"
-				} else {
-					db.RequestValue = "lo.ToPtr(" + starXType.Name + "{})"
-				}
-				importPaths = append(importPaths, "\"github.com/samber/lo\"")
-			case *ast.ArrayType:
-				requestType, importList := parseArrayType(starXType, ipInfo)
-				for _, v := range importList {
-					importPaths = append(importPaths, v)
-				}
-				db.RequestType = "*" + requestType
-				// todo: 怎么初始化 *[]string呢
-				db.RequestValue = "&" + requestType + "{}"
-				importPaths = append(importPaths, "\"github.com/samber/lo\"")
-
-			default:
-				log.Fatalf("未知类型...")
-			}
-		case *ast.FuncType:
-			db.RequestType = "func()"
-			db.RequestValue = "nil"
-		case *ast.InterfaceType:
-			// 啥也不做
-			db.RequestType = "interface{}"
-			db.RequestValue = "nil"
-		case *ast.ArrayType:
-			requestType, importList := parseArrayType(dbType, ipInfo)
-			for _, v := range importList {
-				importPaths = append(importPaths, v)
-			}
-			db.RequestType = requestType
-			db.RequestValue = "make(" + requestType + ", 0, 10)"
-		case *ast.MapType:
-			requestType, portList := parseMapType(dbType, ipInfo)
-			for _, v := range portList {
-				importPaths = append(importPaths, v)
-			}
-			db.RequestType = requestType
-			db.RequestValue = "make(" + db.RequestType + ", 10)"
-		case *ast.Ellipsis:
-			continue
-		case *ast.ChanType:
-			var chanInfo string
-			// 处理value
-			switch eltType := dbType.Value.(type) {
-			case *ast.SelectorExpr:
-				expr := GetRelationFromSelectorExpr(eltType)
-				chanInfo = expr
-				if strings.Contains(expr, ".") {
-					parts := strings.Split(expr, ".")
-					firstField := parts[0]
-					importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-				}
-			case *ast.Ident:
-				chanInfo = eltType.Name
-			case *ast.StarExpr:
-				switch starXType := eltType.X.(type) {
-				case *ast.SelectorExpr:
-					expr := GetRelationFromSelectorExpr(starXType)
-					chanInfo = "*" + expr
-					if strings.Contains(expr, ".") {
-						parts := strings.Split(expr, ".")
-						firstField := parts[0]
-						importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-					}
-				case *ast.Ident:
-					chanInfo = "*" + starXType.Name
-				default:
-					log.Fatalf("未知类型...")
-				}
-			case *ast.InterfaceType:
-				chanInfo = "any"
-			default:
-				log.Fatalf("未知类型...")
-			}
-			if dbType.Dir == ast.RECV {
-				db.RequestType = "<-chan " + chanInfo
-			} else {
-				db.RequestType = "chan<- " + chanInfo
-			}
-			db.RequestValue = "make(" + db.RequestType + ")"
-		case *ast.IndexExpr:
-			// 下标类型，一般是泛型，处理不了
-			continue
-		default:
-			log.Fatalf("未知类型...")
+		result := parseParam(requestParam.Type, name, ipInfo)
+		if result == nil {
+			fmt.Println(result)
 		}
-		db.ImportPkgPath = importPaths
+		db.RequestType = result.ParamType
+		db.RequestValue = result.ParamInitValue
+		db.ImportPkgPath = result.ImportPkgPath
 		dbs = append(dbs, db)
 	}
 	return dbs
-}
-
-func parseMapType(mpType *ast.MapType, ipInfo Import) (string, []string) {
-	var keyInfo, valueInfo string
-	importPaths := make([]string, 0, 10)
-	// 处理key
-	switch eltType := mpType.Key.(type) {
-	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(eltType)
-		keyInfo = expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-		}
-	case *ast.Ident:
-		keyInfo = eltType.Name
-	case *ast.StarExpr:
-		switch starXType := eltType.X.(type) {
-		case *ast.SelectorExpr:
-			expr := GetRelationFromSelectorExpr(starXType)
-			keyInfo = "*" + expr
-			if strings.Contains(expr, ".") {
-				parts := strings.Split(expr, ".")
-				firstField := parts[0]
-				importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-			}
-		case *ast.Ident:
-			keyInfo = "*" + starXType.Name
-		default:
-			log.Fatalf("未知类型...")
-		}
-	case *ast.InterfaceType:
-		keyInfo = "any"
-	default:
-		log.Fatalf("未知类型...")
-	}
-
-	// 处理value
-	switch eltType := mpType.Value.(type) {
-	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(eltType)
-		valueInfo = expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-		}
-	case *ast.Ident:
-		valueInfo = eltType.Name
-	case *ast.StarExpr:
-		switch starXType := eltType.X.(type) {
-		case *ast.SelectorExpr:
-			expr := GetRelationFromSelectorExpr(starXType)
-			valueInfo = "*" + expr
-			if strings.Contains(expr, ".") {
-				parts := strings.Split(expr, ".")
-				firstField := parts[0]
-				importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-			}
-		case *ast.Ident:
-			valueInfo = "*" + starXType.Name
-		default:
-			log.Fatalf("未知类型...")
-		}
-	case *ast.InterfaceType:
-		valueInfo = "any"
-	case *ast.MapType:
-		var portList []string
-		valueInfo, portList = parseMapType(eltType, ipInfo)
-		for _, v := range portList {
-			importPaths = append(importPaths, v)
-		}
-	case *ast.ArrayType:
-		var portList []string
-		valueInfo, portList = parseArrayType(eltType, ipInfo)
-		for _, v := range portList {
-			importPaths = append(importPaths, v)
-		}
-	default:
-		log.Fatalf("未知类型...")
-	}
-	return "map[" + keyInfo + "]" + valueInfo, importPaths
-}
-
-func parseArrayType(dbType *ast.ArrayType, ipInfo Import) (string, []string) {
-	var requestType string
-	importPaths := make([]string, 0, 10)
-	switch eltType := dbType.Elt.(type) {
-	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(eltType)
-		requestType = "[]" + expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-		}
-	case *ast.Ident:
-		requestType = "[]" + eltType.Name
-	case *ast.StarExpr:
-		switch starXType := eltType.X.(type) {
-		case *ast.SelectorExpr:
-			expr := GetRelationFromSelectorExpr(starXType)
-			requestType = "[]*" + expr
-			if strings.Contains(expr, ".") {
-				parts := strings.Split(expr, ".")
-				firstField := parts[0]
-				importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-			}
-		case *ast.Ident:
-			requestType = "[]*" + starXType.Name
-		default:
-			log.Fatalf("未知类型...")
-		}
-	case *ast.InterfaceType:
-		requestType = "[]any"
-	case *ast.ArrayType:
-		var portList []string
-
-		requestType, portList = parseArrayType(eltType, ipInfo)
-		for _, v := range portList {
-			importPaths = append(importPaths, v)
-		}
-	case *ast.MapType:
-		var portList []string
-		requestType, portList = parseMapType(eltType, ipInfo)
-		for _, v := range portList {
-			importPaths = append(importPaths, v)
-		}
-	default:
-		log.Fatalf("未知类型...")
-	}
-	return requestType, importPaths
 }
 
 type ParamParseResult struct {
@@ -561,26 +290,6 @@ type ParamParseResult struct {
 	ParamCheckValue string
 	// 参数引入的依赖包
 	ImportPkgPath []string
-}
-
-// ParseParamList RequestName:  "ctx",
-// RequestType:  "context.Context",
-// RequestValue: "context.Background()",
-func ParseParamList(fieldList []*ast.Field, ipInfo Import) []ParamParseResult {
-	dbs := make([]ParamParseResult, 0, 10)
-	for i, requestParam := range fieldList {
-		// "_" 这种不处理了
-		name := requestParam.Names[0].Name
-		if name == "_" {
-			name = "param" + strconv.Itoa(i)
-		}
-		db := parseParam(requestParam.Type, name, ipInfo)
-		if db == nil {
-			continue
-		}
-		dbs = append(dbs, *db)
-	}
-	return dbs
 }
 
 // parseParam 处理参数
@@ -612,20 +321,8 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 		}
 	case *ast.Ident:
 		db.ParamType = dbType.Name
-		if db.ParamType == "string" {
-			db.ParamInitValue = "\"\""
-		} else if db.ParamType == "int" {
-			db.ParamInitValue = "0"
-		} else if db.ParamType == "int64" {
-			db.ParamInitValue = "0"
-		} else if db.ParamType == "any" {
-			db.ParamInitValue = "\"\""
-		} else if db.ParamType == "bool" {
-			db.ParamInitValue = "true"
-		} else {
-			db.ParamInitValue = "utils.Empty[" + dbType.Name + "]()"
-			importPaths = append(importPaths, "\"slp/reconcile/core/common/utils\"")
-		}
+		db.ParamInitValue = "utils.Empty[" + dbType.Name + "]()"
+		importPaths = append(importPaths, "\"slp/reconcile/core/common/utils\"")
 		// 指针类型
 	case *ast.StarExpr:
 		param := parseParam(dbType.X, name, ipInfo)

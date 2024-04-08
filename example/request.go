@@ -31,8 +31,9 @@ func RequestArray(req1 []string, req2 []int, req3 []bool, req4 []Example, req5 [
 
 }
 
-// RequestVariable 可变长度参数，一定是最后一位
-func RequestVariable(req2 string, req1 ...string) {
+// RequestEllipsis 可变长度参数，一定是最后一位。省略号表达式
+// todo 会报错
+func RequestEllipsis(req2 string, req1 ...string) {
 
 }
 
@@ -56,7 +57,7 @@ func RequestChan(req1 <-chan string, req2 chan<- string, req3 <-chan Example, re
 
 }
 
-// RequestEllipsis 泛型
-func RequestEllipsis[T, R any](list []T, process func([]T) []R, batchSize int) {
+// RequestGeneric 泛型
+func RequestGeneric[T, R any](list []T, process func([]T) []R, batchSize int) {
 
 }
