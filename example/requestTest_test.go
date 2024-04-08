@@ -5,15 +5,13 @@
 package example
 
 import (
-	"caseGenerator/utils"
 	"testing"
 )
 
-func Test_requestRequestStruct(t *testing.T) {
+func Test_requestTest(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 Example
 	}
 	tests := []struct {
 		args    args
@@ -22,11 +20,8 @@ func Test_requestRequestStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "132a2dcc-f5a1-11ee-bb29-7af6acbff8ed",
-			args: args{
-
-				req1: utils.Empty[Example](),
-			},
+			name:    "d5edd04a-f59f-11ee-a1b1-7af6acbff8ed",
+			args:    args{},
 			wantErr: false,
 		},
 	}
@@ -39,7 +34,7 @@ func Test_requestRequestStruct(t *testing.T) {
 				}
 			}()
 
-			RequestStruct(tt.args.req1)
+			Test()
 
 		})
 	}

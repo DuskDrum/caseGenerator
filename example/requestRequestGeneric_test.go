@@ -9,11 +9,15 @@ import (
 	"testing"
 )
 
-func Test_requestRequestStruct(t *testing.T) {
+func Test_requestRequestGeneric(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 Example
+		list []T
+
+		process func()
+
+		batchSize int
 	}
 	tests := []struct {
 		args    args
@@ -22,10 +26,14 @@ func Test_requestRequestStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "132a2dcc-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "171d6ea8-f5a1-11ee-bb29-7af6acbff8ed",
 			args: args{
 
-				req1: utils.Empty[Example](),
+				list: make([]T, 0, 10),
+
+				process: nil,
+
+				batchSize: utils.Empty[int](),
 			},
 			wantErr: false,
 		},
@@ -39,7 +47,7 @@ func Test_requestRequestStruct(t *testing.T) {
 				}
 			}()
 
-			RequestStruct(tt.args.req1)
+			RequestGeneric(tt.args.list, tt.args.process, tt.args.batchSize)
 
 		})
 	}

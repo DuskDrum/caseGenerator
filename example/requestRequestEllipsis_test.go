@@ -9,11 +9,13 @@ import (
 	"testing"
 )
 
-func Test_requestRequestStruct(t *testing.T) {
+func Test_requestRequestEllipsis(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 Example
+		req2 string
+
+		req1 []string
 	}
 	tests := []struct {
 		args    args
@@ -22,10 +24,12 @@ func Test_requestRequestStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "132a2dcc-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "15902aee-f5a1-11ee-bb29-7af6acbff8ed",
 			args: args{
 
-				req1: utils.Empty[Example](),
+				req2: utils.Empty[string](),
+
+				req1: []string{utils.Empty[string]()},
 			},
 			wantErr: false,
 		},
@@ -39,7 +43,7 @@ func Test_requestRequestStruct(t *testing.T) {
 				}
 			}()
 
-			RequestStruct(tt.args.req1)
+			RequestEllipsis(tt.args.req2, tt.args.req1...)
 
 		})
 	}

@@ -188,7 +188,7 @@ OuterLoop:
 		}
 		if decl.Recv != nil {
 			cd.ReceiverType = "utils.Empty[" + rec.ReceiverValue.InvocationName + "]()"
-			importPackageList = append(importPackageList, "\"slp/reconcile/core/common/utils\"")
+			importPackageList = append(importPackageList, "\"caseGenerator/utils\"")
 		}
 		// 11. 开始处理mock
 
@@ -274,6 +274,7 @@ func RequestInfoParse(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetai
 		db.RequestType = result.ParamType
 		db.RequestValue = result.ParamInitValue
 		db.ImportPkgPath = result.ImportPkgPath
+		db.IsEllipsis = result.IsEllipsis
 		dbs = append(dbs, db)
 	}
 	return dbs
@@ -290,6 +291,8 @@ type ParamParseResult struct {
 	ParamCheckValue string
 	// 参数引入的依赖包
 	ImportPkgPath []string
+	// 是否是省略号语法
+	IsEllipsis bool
 }
 
 // parseParam 处理参数
@@ -317,12 +320,12 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 			importPaths = append(importPaths, "\"time\"")
 		} else {
 			db.ParamInitValue = "utils.Empty[" + expr + "]()"
-			importPaths = append(importPaths, "\"slp/reconcile/core/common/utils\"")
+			importPaths = append(importPaths, "\"caseGenerator/utils\"")
 		}
 	case *ast.Ident:
 		db.ParamType = dbType.Name
 		db.ParamInitValue = "utils.Empty[" + dbType.Name + "]()"
-		importPaths = append(importPaths, "\"slp/reconcile/core/common/utils\"")
+		importPaths = append(importPaths, "\"caseGenerator/utils\"")
 		// 指针类型
 	case *ast.StarExpr:
 		param := parseParam(dbType.X, name, ipInfo)
@@ -363,8 +366,19 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 		}
 		db.ParamType = requestType
 		db.ParamInitValue = "make(" + db.ParamType + ", 10)"
+	// 可变长度，省略号表达式
 	case *ast.Ellipsis:
-		return nil
+		// 处理Elt
+		param := parseParam(dbType.Elt, name, ipInfo)
+		if len(db.ImportPkgPath) > 0 {
+			for _, v := range db.ImportPkgPath {
+				importPaths = append(importPaths, v)
+			}
+		}
+		db.ParamType = "[]" + param.ParamType
+		db.ParamInitValue = "[]" + param.ParamType + "{utils.Empty[" + param.ParamType + "]()}"
+		importPaths = append(importPaths, "\"caseGenerator/utils\"")
+		db.IsEllipsis = true
 	case *ast.ChanType:
 		// 处理value
 		param := parseParam(dbType.Value, name, ipInfo)

@@ -9,25 +9,11 @@ import (
 	"testing"
 )
 
-func Test_requestRequestSimple(t *testing.T) {
+func Test_requestRequestVariableParam(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
 		req1 string
-
-		req2 int
-
-		req3 int32
-
-		req4 float32
-
-		req5 float64
-
-		req6 bool
-
-		req7 any
-
-		req8 error
 	}
 	tests := []struct {
 		args    args
@@ -36,24 +22,10 @@ func Test_requestRequestSimple(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "fa9d6af8-f5a0-11ee-bb29-7af6acbff8ed",
+			name: "171cc9d0-f5a1-11ee-bb29-7af6acbff8ed",
 			args: args{
 
 				req1: utils.Empty[string](),
-
-				req2: utils.Empty[int](),
-
-				req3: utils.Empty[int32](),
-
-				req4: utils.Empty[float32](),
-
-				req5: utils.Empty[float64](),
-
-				req6: utils.Empty[bool](),
-
-				req7: utils.Empty[any](),
-
-				req8: utils.Empty[error](),
 			},
 			wantErr: false,
 		},
@@ -67,7 +39,7 @@ func Test_requestRequestSimple(t *testing.T) {
 				}
 			}()
 
-			RequestSimple(tt.args.req1, tt.args.req2, tt.args.req3, tt.args.req4, tt.args.req5, tt.args.req6, tt.args.req7, tt.args.req8)
+			RequestVariableParam(tt.args.req1)
 
 		})
 	}

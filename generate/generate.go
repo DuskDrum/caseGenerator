@@ -77,6 +77,8 @@ type RequestDetail struct {
 	RequestType   string
 	RequestValue  string
 	ImportPkgPath []string
+	// 是否是省略号语法
+	IsEllipsis bool
 }
 
 func GenFile(data GenMeta) {
@@ -101,7 +103,11 @@ func GenFile(data GenMeta) {
 		if len(cd.RequestList) > 0 {
 			var requestNameString string
 			for _, r := range cd.RequestList {
-				requestNameString += "tt.args." + r.RequestName + ", "
+				if r.IsEllipsis {
+					requestNameString += "tt.args." + r.RequestName + "... , "
+				} else {
+					requestNameString += "tt.args." + r.RequestName + ", "
+				}
 				if len(r.ImportPkgPath) > 0 {
 					for _, v := range r.ImportPkgPath {
 						importList = append(importList, v)

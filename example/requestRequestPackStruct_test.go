@@ -6,8 +6,8 @@ package example
 
 import (
 	"caseGenerator/example/dict"
+	"caseGenerator/utils"
 	"context"
-	"slp/reconcile/core/common/utils"
 	"testing"
 	"time"
 )
@@ -29,7 +29,7 @@ func Test_requestRequestPackStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "1542480a-f59d-11ee-af52-7af6acbff8ed",
+			name: "132a5270-f5a1-11ee-bb29-7af6acbff8ed",
 			args: args{
 
 				req1: utils.Empty[dict.ExampleDict](),
