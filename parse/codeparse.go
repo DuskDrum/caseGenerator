@@ -260,22 +260,23 @@ func RequestInfoParse(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetai
 		// "_" 这种不处理了
 		var db generate.RequestDetail
 
-		name := requestParam.Names[0].Name
-		if name == "_" {
-			db.RequestName = "param" + strconv.Itoa(i)
-		} else {
-			db.RequestName = name
+		names := requestParam.Names
+		for j, name := range names {
+			if name.Name == "_" {
+				db.RequestName = "param" + strconv.Itoa(i) + strconv.Itoa(j)
+			} else {
+				db.RequestName = name.Name
+			}
+			result := parseParam(requestParam.Type, name.Name, ipInfo, decl.Type.TypeParams)
+			if result == nil {
+				fmt.Println(result)
+			}
+			db.RequestType = result.ParamType
+			db.RequestValue = result.ParamInitValue
+			db.ImportPkgPath = result.ImportPkgPath
+			db.IsEllipsis = result.IsEllipsis
+			dbs = append(dbs, db)
 		}
-
-		result := parseParam(requestParam.Type, name, ipInfo)
-		if result == nil {
-			fmt.Println(result)
-		}
-		db.RequestType = result.ParamType
-		db.RequestValue = result.ParamInitValue
-		db.ImportPkgPath = result.ImportPkgPath
-		db.IsEllipsis = result.IsEllipsis
-		dbs = append(dbs, db)
 	}
 	return dbs
 }
@@ -295,9 +296,21 @@ type ParamParseResult struct {
 	IsEllipsis bool
 }
 
-// parseParam 处理参数
-func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
-	// "_" 这种不处理了
+// parseParam 处理参数：expr待处理的节点， name：节点名， ipInfo依赖关系， typeParams 泛型关系
+func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.FieldList) *ParamParseResult {
+	// 1. 处理泛型关系
+	_ = make(map[string]*ParamParseResult, 10)
+
+	if typeParams != nil && len(typeParams.List) > 0 {
+		// 1. 一般只有一个
+		_ = typeParams.List[0]
+
+		//for i, v := range field.Names {
+		//	//v.Obj.Decl
+		//}
+
+	}
+
 	var db ParamParseResult
 
 	db.ParamName = name
@@ -328,7 +341,7 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 		importPaths = append(importPaths, "\"caseGenerator/utils\"")
 		// 指针类型
 	case *ast.StarExpr:
-		param := parseParam(dbType.X, name, ipInfo)
+		param := parseParamWithoutInit(dbType.X, name, ipInfo)
 		if param.ParamType == "context.Context" {
 			db.ParamInitValue = "context.Background()"
 			importPaths = append(importPaths, "\"context\"")
@@ -340,13 +353,51 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 			importPaths = append(importPaths, "\"github.com/samber/lo\"")
 		}
 		db.ParamType = "*" + param.ParamType
-		if len(db.ImportPkgPath) > 0 {
-			for _, v := range db.ImportPkgPath {
+		if len(param.ImportPkgPath) > 0 {
+			for _, v := range param.ImportPkgPath {
 				importPaths = append(importPaths, v)
 			}
 		}
 	case *ast.FuncType:
-		db.ParamType = "func()"
+		var paramType = "func("
+		// 解析func的入参
+		list := dbType.Params.List
+		for _, v := range list {
+			param := parseParamWithoutInit(v.Type, name, ipInfo)
+			if len(param.ImportPkgPath) > 0 {
+				for _, v := range param.ImportPkgPath {
+					importPaths = append(importPaths, v)
+				}
+			}
+
+			paramType = paramType + param.ParamType + ", "
+		}
+		// 去掉最后一个逗号
+		lastCommaIndex := strings.LastIndex(paramType, ",")
+		if lastCommaIndex != -1 {
+			paramType = paramType[:lastCommaIndex]
+		}
+		paramType = paramType + ")"
+		// 解析func的出参
+		if dbType.Results != nil && len(dbType.Results.List) > 0 {
+			paramType = paramType + " ("
+			for _, v := range dbType.Results.List {
+				param := parseParamWithoutInit(v.Type, name, ipInfo)
+				if len(param.ImportPkgPath) > 0 {
+					for _, v := range param.ImportPkgPath {
+						importPaths = append(importPaths, v)
+					}
+				}
+				paramType = paramType + param.ParamType + ", "
+			}
+			// 去掉最后一个逗号
+			lastCommaIndex := strings.LastIndex(paramType, ",")
+			if lastCommaIndex != -1 {
+				paramType = paramType[:lastCommaIndex]
+			}
+			paramType = paramType + ")"
+		}
+		db.ParamType = paramType
 		db.ParamInitValue = "nil"
 	case *ast.InterfaceType:
 		// 啥也不做
@@ -369,7 +420,7 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 	// 可变长度，省略号表达式
 	case *ast.Ellipsis:
 		// 处理Elt
-		param := parseParam(dbType.Elt, name, ipInfo)
+		param := parseParam(dbType.Elt, name, ipInfo, nil)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -381,7 +432,7 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 		db.IsEllipsis = true
 	case *ast.ChanType:
 		// 处理value
-		param := parseParam(dbType.Value, name, ipInfo)
+		param := parseParam(dbType.Value, name, ipInfo, nil)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -392,7 +443,7 @@ func parseParam(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
 		} else {
 			db.ParamType = "chan<- " + param.ParamType
 		}
-		db.ParamInitValue = "make(" + param.ParamType + ")"
+		db.ParamInitValue = "make(" + db.ParamType + ")"
 	case *ast.IndexExpr:
 		// 下标类型，一般是泛型，处理不了
 		return nil
@@ -521,12 +572,14 @@ func parseParamArrayType(dbType *ast.ArrayType, ipInfo Import) (string, []string
 		var portList []string
 
 		requestType, portList = parseParamArrayType(eltType, ipInfo)
+		requestType = "[]" + requestType
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
 	case *ast.MapType:
 		var portList []string
 		requestType, portList = parseParamMapType(eltType, ipInfo)
+		requestType = "[]" + requestType
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
@@ -535,4 +588,121 @@ func parseParamArrayType(dbType *ast.ArrayType, ipInfo Import) (string, []string
 		log.Fatalf("未知类型...")
 	}
 	return requestType, importPaths
+}
+
+// parseParamWithoutInit 不设置初始化的值，也就没有相应的依赖
+func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
+	// "_" 这种不处理了
+	var db ParamParseResult
+
+	db.ParamName = name
+	importPaths := make([]string, 0, 10)
+
+	switch dbType := expr.(type) {
+	case *ast.SelectorExpr:
+		expr := GetRelationFromSelectorExpr(dbType)
+		db.ParamType = expr
+		if strings.Contains(expr, ".") {
+			parts := strings.Split(expr, ".")
+			firstField := parts[0]
+			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
+		}
+	case *ast.Ident:
+		db.ParamType = dbType.Name
+		// 指针类型
+	case *ast.StarExpr:
+		param := parseParam(dbType.X, name, ipInfo, nil)
+		db.ParamType = "*" + param.ParamType
+		if len(db.ImportPkgPath) > 0 {
+			for _, v := range db.ImportPkgPath {
+				importPaths = append(importPaths, v)
+			}
+		}
+	case *ast.FuncType:
+		var paramType = "func("
+		// 解析func的入参
+		list := dbType.Params.List
+		for _, v := range list {
+			param := parseParam(v.Type, name, ipInfo, nil)
+			if len(param.ImportPkgPath) > 0 {
+				for _, v := range param.ImportPkgPath {
+					importPaths = append(importPaths, v)
+				}
+			}
+			paramType = paramType + param.ParamType + ", "
+		}
+		// 去掉最后一个逗号
+		lastCommaIndex := strings.LastIndex(paramType, ",")
+		if lastCommaIndex != -1 {
+			paramType = paramType[:lastCommaIndex]
+		}
+		paramType = paramType + ")"
+		// 解析func的出参
+		fields := dbType.Results.List
+		if len(fields) > 0 {
+			paramType = paramType + " ("
+			for _, v := range fields {
+				param := parseParam(v.Type, name, ipInfo, nil)
+				if len(param.ImportPkgPath) > 0 {
+					for _, v := range param.ImportPkgPath {
+						importPaths = append(importPaths, v)
+					}
+				}
+				paramType = paramType + param.ParamType + ", "
+			}
+			// 去掉最后一个逗号
+			lastCommaIndex := strings.LastIndex(paramType, ",")
+			if lastCommaIndex != -1 {
+				paramType = paramType[:lastCommaIndex]
+			}
+			paramType = paramType + ")"
+		}
+		db.ParamType = paramType
+	case *ast.InterfaceType:
+		// 啥也不做
+		db.ParamType = "interface{}"
+	case *ast.ArrayType:
+		requestType, importList := parseParamArrayType(dbType, ipInfo)
+		for _, v := range importList {
+			importPaths = append(importPaths, v)
+		}
+		db.ParamType = requestType
+	case *ast.MapType:
+		requestType, portList := parseParamMapType(dbType, ipInfo)
+		for _, v := range portList {
+			importPaths = append(importPaths, v)
+		}
+		db.ParamType = requestType
+	// 可变长度，省略号表达式
+	case *ast.Ellipsis:
+		// 处理Elt
+		param := parseParam(dbType.Elt, name, ipInfo, nil)
+		if len(db.ImportPkgPath) > 0 {
+			for _, v := range db.ImportPkgPath {
+				importPaths = append(importPaths, v)
+			}
+		}
+		db.ParamType = "[]" + param.ParamType
+		db.IsEllipsis = true
+	case *ast.ChanType:
+		// 处理value
+		param := parseParam(dbType.Value, name, ipInfo, nil)
+		if len(db.ImportPkgPath) > 0 {
+			for _, v := range db.ImportPkgPath {
+				importPaths = append(importPaths, v)
+			}
+		}
+		if dbType.Dir == ast.RECV {
+			db.ParamType = "<-chan " + param.ParamType
+		} else {
+			db.ParamType = "chan<- " + param.ParamType
+		}
+	case *ast.IndexExpr:
+		// 下标类型，一般是泛型，处理不了
+		return nil
+	default:
+		log.Fatalf("未知类型...")
+	}
+	db.ImportPkgPath = importPaths
+	return &db
 }

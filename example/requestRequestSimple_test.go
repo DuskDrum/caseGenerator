@@ -36,7 +36,7 @@ func Test_requestRequestSimple(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "fa9d6af8-f5a0-11ee-bb29-7af6acbff8ed",
+			name: "9c092616-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
 				req1: utils.Empty[string](),

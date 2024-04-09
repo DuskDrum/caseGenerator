@@ -15,7 +15,7 @@ func Test_requestRequestGeneric(t *testing.T) {
 	type args struct {
 		list []T
 
-		process func()
+		process func([]T) []R
 
 		batchSize int
 	}
@@ -26,7 +26,7 @@ func Test_requestRequestGeneric(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "171d6ea8-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "9c09cc56-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
 				list: make([]T, 0, 10),

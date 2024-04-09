@@ -22,7 +22,7 @@ func Test_requestRequestVariableParam(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "171cc9d0-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "9c099268-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
 				req1: utils.Empty[string](),

@@ -21,11 +21,11 @@ func Test_requestRequestStar(t *testing.T) {
 
 		req4 *[]Example
 
-		req5 *[]*Example
+		req5 *[][][][]*Example
 
 		req6 *map[string]string
 
-		req7 *map[*Example]map[*dict.ExampleDict][]*Example
+		req7 *map[*Example]map[*dict.ExampleDict][][][][]*Example
 	}
 	tests := []struct {
 		args    args
@@ -34,7 +34,7 @@ func Test_requestRequestStar(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "171d24b6-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "9c09af5a-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
 				req1: lo.ToPtr(Example{}),
@@ -45,11 +45,11 @@ func Test_requestRequestStar(t *testing.T) {
 
 				req4: lo.ToPtr([]Example{}),
 
-				req5: lo.ToPtr([]*Example{}),
+				req5: lo.ToPtr([][][][]*Example{}),
 
 				req6: lo.ToPtr(map[string]string{}),
 
-				req7: lo.ToPtr(map[*Example]map[*dict.ExampleDict][]*Example{}),
+				req7: lo.ToPtr(map[*Example]map[*dict.ExampleDict][][][][]*Example{}),
 			},
 			wantErr: false,
 		},

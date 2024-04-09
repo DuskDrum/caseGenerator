@@ -5,6 +5,7 @@
 package example
 
 import (
+	"caseGenerator/example/dict"
 	"testing"
 )
 
@@ -22,9 +23,9 @@ func Test_requestRequestChan(t *testing.T) {
 
 		req5 chan<- *dict.ExampleDict
 
-		req6 chan<- []*Example
+		req6 chan<- [][][][][][][]*Example
 
-		req7 chan<- map[Example][]*dict.ExampleDict
+		req7 chan<- [][][]map[Example][][][][]*dict.ExampleDict
 	}
 	tests := []struct {
 		args    args
@@ -33,22 +34,22 @@ func Test_requestRequestChan(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "171d4ca2-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "9c09be78-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
-				req1: make(string),
+				req1: make(<-chan string),
 
-				req2: make(string),
+				req2: make(chan<- string),
 
-				req3: make(Example),
+				req3: make(<-chan Example),
 
-				req4: make(dict.ExampleDict),
+				req4: make(<-chan dict.ExampleDict),
 
-				req5: make(*dict.ExampleDict),
+				req5: make(chan<- *dict.ExampleDict),
 
-				req6: make([]*Example),
+				req6: make(chan<- [][][][][][][]*Example),
 
-				req7: make(map[Example][]*dict.ExampleDict),
+				req7: make(chan<- [][][]map[Example][][][][]*dict.ExampleDict),
 			},
 			wantErr: false,
 		},

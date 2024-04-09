@@ -5,6 +5,8 @@
 package example
 
 import (
+	"caseGenerator/example/dict"
+	"context"
 	"testing"
 )
 
@@ -12,7 +14,7 @@ func Test_requestRequestFunc(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 func()
+		req1 func(string, Example, context.Context) (dict.ExampleDict, error)
 	}
 	tests := []struct {
 		args    args
@@ -21,7 +23,7 @@ func Test_requestRequestFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "132a70d4-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "9c095aaa-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
 				req1: nil,

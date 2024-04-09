@@ -26,6 +26,11 @@ func RequestFunc(req1 func(string, Example, context.Context) (dict.ExampleDict, 
 
 }
 
+// RequestBlankFunc 方法的请求
+func RequestBlankFunc(req1 func()) {
+
+}
+
 // RequestArray 切片的请求
 func RequestArray(req1 []string, req2 []int, req3 []bool, req4 []Example, req5 []dict.ExampleDict, req6 [][]string, req7 [][][][]Example, req8 [][]*dict.ExampleDict, req9 [][][]map[string]string, req10 [][][][][][]map[*Example][][][][]*dict.ExampleDict) {
 
@@ -60,4 +65,36 @@ func RequestChan(req1 <-chan string, req2 chan<- string, req3 <-chan Example, re
 // RequestGeneric 泛型
 func RequestGeneric[T, R any](list []T, process func([]T) []R, batchSize int) {
 
+}
+
+func RequestGenericValue[T int | uint | int8 | int16 | int32 | int64 | float32 | float64 | string | bool](p *T) T {
+	if p == nil {
+		//基础类型初始化0值
+		var t T
+		return t
+	}
+	return *p
+}
+
+func RequestGenericEquals[T comparable](s1, s2 *T) bool {
+	if s1 == nil || s2 == nil {
+		return s1 == s2
+	} else {
+		return *s1 == *s2
+	}
+}
+
+func RequestGenericNoEquals[T comparable](s1, s2 *T) bool {
+	return !RequestGenericEquals(s1, s2)
+}
+
+func RequestGenericPointerToStruct[T any](pointer *T) T {
+	if pointer == nil {
+		return *new(T)
+	}
+	return *pointer
+}
+
+func ToPoint[T any](source T) *T {
+	return &source
 }

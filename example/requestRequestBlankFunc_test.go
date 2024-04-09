@@ -8,10 +8,11 @@ import (
 	"testing"
 )
 
-func Test_requestTest(t *testing.T) {
+func Test_requestRequestBlankFunc(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
+		req1 func()
 	}
 	tests := []struct {
 		args    args
@@ -20,8 +21,11 @@ func Test_requestTest(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "d5edd04a-f59f-11ee-a1b1-7af6acbff8ed",
-			args:    args{},
+			name: "9c09691e-f67d-11ee-bd7e-7af6acbff8ec",
+			args: args{
+
+				req1: nil,
+			},
 			wantErr: false,
 		},
 	}
@@ -34,7 +38,7 @@ func Test_requestTest(t *testing.T) {
 				}
 			}()
 
-			Test()
+			RequestBlankFunc(tt.args.req1)
 
 		})
 	}

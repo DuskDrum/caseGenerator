@@ -22,7 +22,7 @@ func Test_requestRequestStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "132a2dcc-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "9c093db8-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
 				req1: utils.Empty[Example](),

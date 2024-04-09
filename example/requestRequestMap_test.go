@@ -23,7 +23,7 @@ func Test_requestRequestMap(t *testing.T) {
 
 		req4 map[context.Context][]string
 
-		req5 map[string][]*Example
+		req5 map[string][][][][][]*Example
 
 		req6 map[string]map[*Example]map[context.Context]map[time.Time]bool
 	}
@@ -34,7 +34,7 @@ func Test_requestRequestMap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "171cfb26-f5a1-11ee-bb29-7af6acbff8ed",
+			name: "9c09a078-f67d-11ee-bd7e-7af6acbff8ec",
 			args: args{
 
 				req1: make(map[string]string, 10),
@@ -45,7 +45,7 @@ func Test_requestRequestMap(t *testing.T) {
 
 				req4: make(map[context.Context][]string, 10),
 
-				req5: make(map[string][]*Example, 10),
+				req5: make(map[string][][][][][]*Example, 10),
 
 				req6: make(map[string]map[*Example]map[context.Context]map[time.Time]bool, 10),
 			},
