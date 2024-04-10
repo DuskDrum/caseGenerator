@@ -53,7 +53,7 @@ quickly generate test cases
 
 ### 4. 开发任务
 
-- [ ] 解析request
+- [x] 解析request
 - [ ] 解析receiver
 - [ ] 解析response
 - [ ] 解析类型断言
