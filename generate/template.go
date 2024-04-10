@@ -19,7 +19,7 @@ func Test_{{.FileName}}{{.MethodName}}(t *testing.T) {
 	}
 	type args struct {
 		{{range .RequestList}}
-		{{.RequestName}}  {{.RequestType}} ` + "\n" + `
+		{{.RequestName}}  {{.RequestType}} ` + `
 		{{end}}
 	}
 	tests := []struct {

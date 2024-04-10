@@ -19,8 +19,6 @@ type GenMeta struct {
 	FileName string
 	// 生成的文件路径
 	FilePath string
-	// 方法名
-	MethodName string
 	// 需要依赖的import
 	ImportPkgPaths []string
 	// case列表
@@ -82,15 +80,6 @@ type RequestDetail struct {
 }
 
 func GenFile(data GenMeta) {
-	// 如果是内部方法，那么跳过处理
-	// 将字符串转换为rune类型
-	firstChar := []rune(data.MethodName)[0]
-	// 判断首字母是否是小写字母
-	isLower := unicode.IsLower(firstChar)
-	if isLower {
-		return
-	}
-
 	var buf bytes.Buffer
 
 	caseDetails := data.CaseDetailList
@@ -99,6 +88,15 @@ func GenFile(data GenMeta) {
 	importList := make([]string, 0, 10)
 	importList = append(importList, "\"testing\"")
 	for _, cd := range caseDetails {
+		// 如果是内部方法，那么跳过处理
+		// 将字符串转换为rune类型
+		firstChar := []rune(cd.MethodName)[0]
+		// 判断首字母是否是小写字母
+		isLower := unicode.IsLower(firstChar)
+		if isLower {
+			continue
+		}
+
 		cd.FileName = strings.ReplaceAll(data.FileName, ".", "")
 		if len(cd.RequestList) > 0 {
 			var requestNameString string
@@ -142,10 +140,13 @@ func GenFile(data GenMeta) {
 	uniqImportList := lo.Uniq(importList)
 	data.ImportPkgPaths = uniqImportList
 
-	render(NotHaveReceiveModel, &buf, data)
-	modelFile := data.FilePath + data.FileName + data.MethodName + "_test" + ".go"
+	err := render(NotHaveReceiveModel, &buf, data)
+	if err != nil {
+		_ = fmt.Errorf("cannot format file: %w", err)
+	}
+	modelFile := data.FilePath + data.FileName + "_test" + ".go"
 	content := buf.Bytes()
-	err := os.WriteFile(modelFile, content, os.ModePerm)
+	err = os.WriteFile(modelFile, content, os.ModePerm)
 	if err != nil {
 		_ = fmt.Errorf("cannot format file: %w", err)
 	}

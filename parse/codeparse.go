@@ -4,6 +4,7 @@ import (
 	"caseGenerator/generate"
 	"encoding/json"
 	"fmt"
+	"github.com/samber/lo"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -76,6 +77,8 @@ func extractFile(filename string) (err error) {
 	fmt.Printf("import信息:%v", string(marshal))
 	// 组装所有方法
 	methods := make([]string, 0, 10)
+	caseDetailList := make([]generate.CaseDetail, 0, 10)
+	importPackageList := make([]string, 0, 10)
 	// Loop in comment groups
 OuterLoop:
 	for _, cg := range f.Decls {
@@ -178,7 +181,6 @@ OuterLoop:
 				rdList = append(rdList, db)
 			}
 		}
-		importPackageList := make([]string, 0, 10)
 		// 10. 开始处理receiver
 		uu, _ := uuid.NewUUID()
 		cd := generate.CaseDetail{
@@ -193,31 +195,33 @@ OuterLoop:
 		// 11. 开始处理mock
 
 		// 12. 处理import
+		caseDetailList = append(caseDetailList, cd)
 
-		packageName := f.Name.Name
-		// ./core/service/complex_conditon_service.go，去掉前缀和后缀
-		newFilename := strings.Replace(filename, "./", "", 1)
-		newFilename = strings.TrimSuffix(newFilename, ".go")
-		// 获取最后一个斜杠的位置
-		lastIndex := strings.LastIndex(newFilename, "/")
-		// 如果找到了斜杠
-		if lastIndex == -1 {
-			log.Fatalf("路径存在问题")
-		}
-		// 分割字符串
-		filePath := newFilename[:lastIndex+1]
-		fileName := newFilename[lastIndex+1:]
-
-		gm := generate.GenMeta{
-			Package:        packageName,
-			FileName:       fileName,
-			FilePath:       filePath,
-			ImportPkgPaths: importPackageList,
-			CaseDetailList: []generate.CaseDetail{cd},
-			MethodName:     methodInfo.MethodName,
-		}
-		generate.GenFile(gm)
 	}
+
+	packageName := f.Name.Name
+	// ./core/service/complex_conditon_service.go，去掉前缀和后缀
+	newFilename := strings.Replace(filename, "./", "", 1)
+	newFilename = strings.TrimSuffix(newFilename, ".go")
+	// 获取最后一个斜杠的位置
+	lastIndex := strings.LastIndex(newFilename, "/")
+	// 如果找到了斜杠
+	if lastIndex == -1 {
+		log.Fatalf("路径存在问题")
+	}
+	// 分割字符串
+	filePath := newFilename[:lastIndex+1]
+	fileName := newFilename[lastIndex+1:]
+
+	gm := generate.GenMeta{
+		Package:        packageName,
+		FileName:       fileName,
+		FilePath:       filePath,
+		ImportPkgPaths: importPackageList,
+		CaseDetailList: caseDetailList,
+	}
+
+	generate.GenFile(gm)
 
 	return
 }
@@ -299,16 +303,25 @@ type ParamParseResult struct {
 // parseParam 处理参数：expr待处理的节点， name：节点名， ipInfo依赖关系， typeParams 泛型关系
 func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.FieldList) *ParamParseResult {
 	// 1. 处理泛型关系
-	_ = make(map[string]*ParamParseResult, 10)
+	typeParamsMap := make(map[string]*ParamParseResult, 10)
 
 	if typeParams != nil && len(typeParams.List) > 0 {
 		// 1. 一般只有一个
-		_ = typeParams.List[0]
-
-		//for i, v := range field.Names {
-		//	//v.Obj.Decl
-		//}
-
+		field := typeParams.List[0]
+		for _, v := range field.Names {
+			ident, ok := field.Type.(*ast.Ident)
+			if ok && ident.Name == "comparable" {
+				typeParamsMap[v.Name] = lo.ToPtr(ParamParseResult{
+					ParamName:      ident.Name,
+					ParamType:      "string",
+					ParamInitValue: "\"\"",
+				})
+				continue
+			}
+			//v.Obj.Decl
+			init := parseParamWithoutInit(field.Type, v.Name, ipInfo, typeParamsMap)
+			typeParamsMap[v.Name] = init
+		}
 	}
 
 	var db ParamParseResult
@@ -336,66 +349,32 @@ func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.Field
 			importPaths = append(importPaths, "\"caseGenerator/utils\"")
 		}
 	case *ast.Ident:
-		db.ParamType = dbType.Name
-		db.ParamInitValue = "utils.Empty[" + dbType.Name + "]()"
+		result, ok := typeParamsMap[dbType.Name]
+		if ok {
+			db.ParamType = result.ParamType
+		} else {
+			db.ParamType = dbType.Name
+		}
+		db.ParamInitValue = "utils.Empty[" + db.ParamType + "]()"
 		importPaths = append(importPaths, "\"caseGenerator/utils\"")
 		// 指针类型
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(dbType.X, name, ipInfo)
-		if param.ParamType == "context.Context" {
-			db.ParamInitValue = "context.Background()"
-			importPaths = append(importPaths, "\"context\"")
-		} else if param.ParamType == "string" {
-			db.ParamInitValue = "lo.ToPtr(\"\")"
-			importPaths = append(importPaths, "\"github.com/samber/lo\"")
-		} else {
-			db.ParamInitValue = "lo.ToPtr(" + param.ParamType + "{})"
-			importPaths = append(importPaths, "\"github.com/samber/lo\"")
-		}
+		param := parseParam(dbType.X, name, ipInfo, typeParams)
+		db.ParamInitValue = "lo.ToPtr(" + param.ParamInitValue + ")"
 		db.ParamType = "*" + param.ParamType
+		importPaths = append(importPaths, "\"github.com/samber/lo\"")
+
 		if len(param.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
 				importPaths = append(importPaths, v)
 			}
 		}
 	case *ast.FuncType:
-		var paramType = "func("
-		// 解析func的入参
-		list := dbType.Params.List
-		for _, v := range list {
-			param := parseParamWithoutInit(v.Type, name, ipInfo)
-			if len(param.ImportPkgPath) > 0 {
-				for _, v := range param.ImportPkgPath {
-					importPaths = append(importPaths, v)
-				}
+		paramType, importList := parseFuncType(dbType, ipInfo, typeParamsMap)
+		if len(importList) > 0 {
+			for _, v := range importList {
+				importPaths = append(importPaths, v)
 			}
-
-			paramType = paramType + param.ParamType + ", "
-		}
-		// 去掉最后一个逗号
-		lastCommaIndex := strings.LastIndex(paramType, ",")
-		if lastCommaIndex != -1 {
-			paramType = paramType[:lastCommaIndex]
-		}
-		paramType = paramType + ")"
-		// 解析func的出参
-		if dbType.Results != nil && len(dbType.Results.List) > 0 {
-			paramType = paramType + " ("
-			for _, v := range dbType.Results.List {
-				param := parseParamWithoutInit(v.Type, name, ipInfo)
-				if len(param.ImportPkgPath) > 0 {
-					for _, v := range param.ImportPkgPath {
-						importPaths = append(importPaths, v)
-					}
-				}
-				paramType = paramType + param.ParamType + ", "
-			}
-			// 去掉最后一个逗号
-			lastCommaIndex := strings.LastIndex(paramType, ",")
-			if lastCommaIndex != -1 {
-				paramType = paramType[:lastCommaIndex]
-			}
-			paramType = paramType + ")"
 		}
 		db.ParamType = paramType
 		db.ParamInitValue = "nil"
@@ -404,14 +383,14 @@ func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.Field
 		db.ParamType = "interface{}"
 		db.ParamInitValue = "nil"
 	case *ast.ArrayType:
-		requestType, importList := parseParamArrayType(dbType, ipInfo)
+		requestType, importList := parseParamArrayType(dbType, ipInfo, typeParamsMap)
 		for _, v := range importList {
 			importPaths = append(importPaths, v)
 		}
 		db.ParamType = requestType
 		db.ParamInitValue = "make(" + requestType + ", 0, 10)"
 	case *ast.MapType:
-		requestType, portList := parseParamMapType(dbType, ipInfo)
+		requestType, portList := parseParamMapType(dbType, ipInfo, typeParamsMap)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
@@ -454,7 +433,7 @@ func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.Field
 	return &db
 }
 
-func parseParamMapType(mpType *ast.MapType, ipInfo Import) (string, []string) {
+func parseParamMapType(mpType *ast.MapType, ipInfo Import, typeParamsMap map[string]*ParamParseResult) (string, []string) {
 	var keyInfo, valueInfo string
 	importPaths := make([]string, 0, 10)
 	// 处理key
@@ -468,21 +447,19 @@ func parseParamMapType(mpType *ast.MapType, ipInfo Import) (string, []string) {
 			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
 		}
 	case *ast.Ident:
-		keyInfo = eltType.Name
+		result, ok := typeParamsMap[eltType.Name]
+		if ok {
+			keyInfo = result.ParamType
+		} else {
+			keyInfo = eltType.Name
+		}
 	case *ast.StarExpr:
-		switch starXType := eltType.X.(type) {
-		case *ast.SelectorExpr:
-			expr := GetRelationFromSelectorExpr(starXType)
-			keyInfo = "*" + expr
-			if strings.Contains(expr, ".") {
-				parts := strings.Split(expr, ".")
-				firstField := parts[0]
-				importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
+		param := parseParamWithoutInit(eltType.X, "", ipInfo, nil)
+		keyInfo = "*" + param.ParamType
+		if len(param.ImportPkgPath) > 0 {
+			for _, v := range param.ImportPkgPath {
+				importPaths = append(importPaths, v)
 			}
-		case *ast.Ident:
-			keyInfo = "*" + starXType.Name
-		default:
-			log.Fatalf("未知类型...")
 		}
 	case *ast.InterfaceType:
 		keyInfo = "any"
@@ -501,33 +478,31 @@ func parseParamMapType(mpType *ast.MapType, ipInfo Import) (string, []string) {
 			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
 		}
 	case *ast.Ident:
-		valueInfo = eltType.Name
+		result, ok := typeParamsMap[eltType.Name]
+		if ok {
+			valueInfo = result.ParamType
+		} else {
+			valueInfo = eltType.Name
+		}
 	case *ast.StarExpr:
-		switch starXType := eltType.X.(type) {
-		case *ast.SelectorExpr:
-			expr := GetRelationFromSelectorExpr(starXType)
-			valueInfo = "*" + expr
-			if strings.Contains(expr, ".") {
-				parts := strings.Split(expr, ".")
-				firstField := parts[0]
-				importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
+		param := parseParamWithoutInit(eltType.X, "", ipInfo, nil)
+		valueInfo = "*" + param.ParamType
+		if len(param.ImportPkgPath) > 0 {
+			for _, v := range param.ImportPkgPath {
+				importPaths = append(importPaths, v)
 			}
-		case *ast.Ident:
-			valueInfo = "*" + starXType.Name
-		default:
-			log.Fatalf("未知类型...")
 		}
 	case *ast.InterfaceType:
 		valueInfo = "any"
 	case *ast.MapType:
 		var portList []string
-		valueInfo, portList = parseParamMapType(eltType, ipInfo)
+		valueInfo, portList = parseParamMapType(eltType, ipInfo, typeParamsMap)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
 	case *ast.ArrayType:
 		var portList []string
-		valueInfo, portList = parseParamArrayType(eltType, ipInfo)
+		valueInfo, portList = parseParamArrayType(eltType, ipInfo, typeParamsMap)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
@@ -537,7 +512,7 @@ func parseParamMapType(mpType *ast.MapType, ipInfo Import) (string, []string) {
 	return "map[" + keyInfo + "]" + valueInfo, importPaths
 }
 
-func parseParamArrayType(dbType *ast.ArrayType, ipInfo Import) (string, []string) {
+func parseParamArrayType(dbType *ast.ArrayType, ipInfo Import, paramTypeMap map[string]*ParamParseResult) (string, []string) {
 	var requestType string
 	importPaths := make([]string, 0, 10)
 	switch eltType := dbType.Elt.(type) {
@@ -550,40 +525,38 @@ func parseParamArrayType(dbType *ast.ArrayType, ipInfo Import) (string, []string
 			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
 		}
 	case *ast.Ident:
-		requestType = "[]" + eltType.Name
-	case *ast.StarExpr:
-		switch starXType := eltType.X.(type) {
-		case *ast.SelectorExpr:
-			expr := GetRelationFromSelectorExpr(starXType)
-			requestType = "[]*" + expr
-			if strings.Contains(expr, ".") {
-				parts := strings.Split(expr, ".")
-				firstField := parts[0]
-				importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
-			}
-		case *ast.Ident:
-			requestType = "[]*" + starXType.Name
-		default:
-			log.Fatalf("未知类型...")
+		result, ok := paramTypeMap[eltType.Name]
+		if ok {
+			requestType = "[]" + result.ParamType
+		} else {
+			requestType = "[]" + eltType.Name
 		}
+	case *ast.StarExpr:
+		param := parseParamWithoutInit(eltType.X, "", ipInfo, nil)
+		return "[]*" + param.ParamType, param.ImportPkgPath
 	case *ast.InterfaceType:
 		requestType = "[]any"
 	case *ast.ArrayType:
 		var portList []string
 
-		requestType, portList = parseParamArrayType(eltType, ipInfo)
+		requestType, portList = parseParamArrayType(eltType, ipInfo, paramTypeMap)
 		requestType = "[]" + requestType
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
 	case *ast.MapType:
 		var portList []string
-		requestType, portList = parseParamMapType(eltType, ipInfo)
+		requestType, portList = parseParamMapType(eltType, ipInfo, paramTypeMap)
 		requestType = "[]" + requestType
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
-
+	case *ast.FuncType:
+		paramType, imports := parseFuncType(eltType, ipInfo, paramTypeMap)
+		requestType = "[]" + paramType
+		for _, v := range imports {
+			importPaths = append(importPaths, v)
+		}
 	default:
 		log.Fatalf("未知类型...")
 	}
@@ -591,7 +564,7 @@ func parseParamArrayType(dbType *ast.ArrayType, ipInfo Import) (string, []string
 }
 
 // parseParamWithoutInit 不设置初始化的值，也就没有相应的依赖
-func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import) *ParamParseResult {
+func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import, paramTypeMap map[string]*ParamParseResult) *ParamParseResult {
 	// "_" 这种不处理了
 	var db ParamParseResult
 
@@ -608,67 +581,38 @@ func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import) *ParamPars
 			importPaths = append(importPaths, ipInfo.GetImportPath(firstField))
 		}
 	case *ast.Ident:
-		db.ParamType = dbType.Name
+		result, ok := paramTypeMap[dbType.Name]
+		if ok {
+			db.ParamType = result.ParamType
+		} else {
+			db.ParamType = dbType.Name
+		}
 		// 指针类型
 	case *ast.StarExpr:
 		param := parseParam(dbType.X, name, ipInfo, nil)
 		db.ParamType = "*" + param.ParamType
 		if len(db.ImportPkgPath) > 0 {
-			for _, v := range db.ImportPkgPath {
+			for _, v := range param.ImportPkgPath {
 				importPaths = append(importPaths, v)
 			}
 		}
 	case *ast.FuncType:
-		var paramType = "func("
-		// 解析func的入参
-		list := dbType.Params.List
-		for _, v := range list {
-			param := parseParam(v.Type, name, ipInfo, nil)
-			if len(param.ImportPkgPath) > 0 {
-				for _, v := range param.ImportPkgPath {
-					importPaths = append(importPaths, v)
-				}
-			}
-			paramType = paramType + param.ParamType + ", "
-		}
-		// 去掉最后一个逗号
-		lastCommaIndex := strings.LastIndex(paramType, ",")
-		if lastCommaIndex != -1 {
-			paramType = paramType[:lastCommaIndex]
-		}
-		paramType = paramType + ")"
-		// 解析func的出参
-		fields := dbType.Results.List
-		if len(fields) > 0 {
-			paramType = paramType + " ("
-			for _, v := range fields {
-				param := parseParam(v.Type, name, ipInfo, nil)
-				if len(param.ImportPkgPath) > 0 {
-					for _, v := range param.ImportPkgPath {
-						importPaths = append(importPaths, v)
-					}
-				}
-				paramType = paramType + param.ParamType + ", "
-			}
-			// 去掉最后一个逗号
-			lastCommaIndex := strings.LastIndex(paramType, ",")
-			if lastCommaIndex != -1 {
-				paramType = paramType[:lastCommaIndex]
-			}
-			paramType = paramType + ")"
-		}
+		paramType, imports := parseFuncType(dbType, ipInfo, paramTypeMap)
 		db.ParamType = paramType
+		for _, v := range imports {
+			db.ImportPkgPath = append(db.ImportPkgPath, v)
+		}
 	case *ast.InterfaceType:
 		// 啥也不做
 		db.ParamType = "interface{}"
 	case *ast.ArrayType:
-		requestType, importList := parseParamArrayType(dbType, ipInfo)
+		requestType, importList := parseParamArrayType(dbType, ipInfo, paramTypeMap)
 		for _, v := range importList {
 			importPaths = append(importPaths, v)
 		}
 		db.ParamType = requestType
 	case *ast.MapType:
-		requestType, portList := parseParamMapType(dbType, ipInfo)
+		requestType, portList := parseParamMapType(dbType, ipInfo, paramTypeMap)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
@@ -700,9 +644,59 @@ func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import) *ParamPars
 	case *ast.IndexExpr:
 		// 下标类型，一般是泛型，处理不了
 		return nil
+	case *ast.BinaryExpr:
+		// 先直接取Y
+		param := parseParam(dbType.Y, name, ipInfo, nil)
+		db.ParamType = param.ParamType
 	default:
 		log.Fatalf("未知类型...")
 	}
 	db.ImportPkgPath = importPaths
 	return &db
+}
+
+func parseFuncType(dbType *ast.FuncType, ipInfo Import, paramTypeMap map[string]*ParamParseResult) (string, []string) {
+	importPaths := make([]string, 0, 10)
+	var paramType = "func("
+	// 解析func的入参
+	list := dbType.Params.List
+	for _, v := range list {
+		param := parseParamWithoutInit(v.Type, "", ipInfo, paramTypeMap)
+		if len(param.ImportPkgPath) > 0 {
+			for _, v := range param.ImportPkgPath {
+				importPaths = append(importPaths, v)
+			}
+		}
+		paramType = paramType + param.ParamType + ", "
+	}
+	// 去掉最后一个逗号
+	lastCommaIndex := strings.LastIndex(paramType, ",")
+	if lastCommaIndex != -1 {
+		paramType = paramType[:lastCommaIndex]
+	}
+	paramType = paramType + ")"
+	// 解析func的出参
+	if dbType.Results == nil || dbType.Results.List == nil {
+		return paramType, importPaths
+	}
+	fields := dbType.Results.List
+	if len(fields) > 0 {
+		paramType = paramType + " ("
+		for _, v := range fields {
+			param := parseParamWithoutInit(v.Type, "", ipInfo, paramTypeMap)
+			if len(param.ImportPkgPath) > 0 {
+				for _, v := range param.ImportPkgPath {
+					importPaths = append(importPaths, v)
+				}
+			}
+			paramType = paramType + param.ParamType + ", "
+		}
+		// 去掉最后一个逗号
+		lastCommaIndex := strings.LastIndex(paramType, ",")
+		if lastCommaIndex != -1 {
+			paramType = paramType[:lastCommaIndex]
+		}
+		paramType = paramType + ")"
+	}
+	return paramType, importPaths
 }
