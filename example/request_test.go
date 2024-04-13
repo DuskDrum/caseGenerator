@@ -40,7 +40,7 @@ func Test_requestRequestSimple(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741d57e-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d13b2-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: utils.Empty[string](),
@@ -90,7 +90,7 @@ func Test_requestRequestStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741d880-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d1682-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: utils.Empty[Example](),
@@ -130,7 +130,7 @@ func Test_requestRequestPackStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741d8f8-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d19ca-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: utils.Empty[dict.ExampleDict](),
@@ -152,78 +152,6 @@ func Test_requestRequestPackStruct(t *testing.T) {
 			}()
 
 			RequestPackStruct(tt.args.req1, tt.args.ctx, tt.args.orderTime)
-
-		})
-	}
-}
-
-func Test_requestRequestFunc(t *testing.T) {
-	type fields struct {
-	}
-	type args struct {
-		req1 func(string, Example, context.Context) (dict.ExampleDict, error)
-	}
-	tests := []struct {
-		args    args
-		name    string
-		fields  fields
-		wantErr bool
-	}{
-		{
-			name: "5741d952-f70d-11ee-95f9-7af6acbff8ec",
-			args: args{
-
-				req1: nil,
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			defer func() {
-				//统一处理
-				if err := recover(); err != nil {
-					t.Log("recover了")
-				}
-			}()
-
-			RequestFunc(tt.args.req1)
-
-		})
-	}
-}
-
-func Test_requestRequestBlankFunc(t *testing.T) {
-	type fields struct {
-	}
-	type args struct {
-		req1 func()
-	}
-	tests := []struct {
-		args    args
-		name    string
-		fields  fields
-		wantErr bool
-	}{
-		{
-			name: "5741db8c-f70d-11ee-95f9-7af6acbff8ec",
-			args: args{
-
-				req1: nil,
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			defer func() {
-				//统一处理
-				if err := recover(); err != nil {
-					t.Log("recover了")
-				}
-			}()
-
-			RequestBlankFunc(tt.args.req1)
 
 		})
 	}
@@ -260,7 +188,7 @@ func Test_requestRequestArray(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741e096-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d1e0c-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: make([]string, 0, 10),
@@ -316,7 +244,7 @@ func Test_requestRequestEllipsis(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741e41a-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d1ec0-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req2: utils.Empty[string](),
@@ -360,7 +288,7 @@ func Test_requestRequestVariableParam(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741e49c-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d2168-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: utils.Empty[string](),
@@ -412,7 +340,7 @@ func Test_requestRequestMap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741e88e-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d2438-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: make(map[string]string, 10),
@@ -470,7 +398,7 @@ func Test_requestRequestStar(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741eb04-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d278a-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: lo.ToPtr(utils.Empty[Example]()),
@@ -530,7 +458,7 @@ func Test_requestRequestChan(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741ed7a-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d2ac8-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				req1: make(<-chan string),
@@ -582,7 +510,7 @@ func Test_requestRequestGeneric(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741eed8-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d2b9a-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				list: make([]any, 0, 10),
@@ -622,7 +550,7 @@ func Test_requestRequestGenericValue(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741f0b8-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d2f1e-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				p: lo.ToPtr(utils.Empty[bool]()),
@@ -660,7 +588,7 @@ func Test_requestRequestGenericEquals(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741fcca-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d30e0-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				s1: lo.ToPtr(utils.Empty[string]()),
@@ -700,7 +628,7 @@ func Test_requestRequestGenericNoEquals(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741fd10-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d31a8-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				s1: lo.ToPtr(utils.Empty[string]()),
@@ -738,7 +666,7 @@ func Test_requestRequestGenericPointerToStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741ff5e-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d323e-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				pointer: lo.ToPtr(utils.Empty[any]()),
@@ -774,7 +702,7 @@ func Test_requestToPoint(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "5741ff9a-f70d-11ee-95f9-7af6acbff8ec",
+			name: "b24d32ca-f9a5-11ee-a174-7af6acbff8ec",
 			args: args{
 
 				source: utils.Empty[any](),
@@ -792,6 +720,462 @@ func Test_requestToPoint(t *testing.T) {
 			}()
 
 			ToPoint(tt.args.source)
+
+		})
+	}
+}
+
+func Test_requestRequestFunc(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+		req1 func(string, Example, context.Context) (dict.ExampleDict, error)
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "b24d3478-f9a5-11ee-a174-7af6acbff8ec",
+			args: args{
+
+				req1: nil,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestFunc(tt.args.req1)
+
+		})
+	}
+}
+
+func Test_requestRequestBlankFunc(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+		req1 func()
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "b24d34e6-f9a5-11ee-a174-7af6acbff8ec",
+			args: args{
+
+				req1: nil,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestBlankFunc(tt.args.req1)
+
+		})
+	}
+}
+
+func Test_requestRequestResponseSimpleFunc(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d3554-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseSimpleFunc()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseStruct(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d35b8-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseStruct()
+
+		})
+	}
+}
+
+func Test_requestRequestResponsePackStruct(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d3626-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponsePackStruct()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseFunc(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d36c6-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseFunc()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseBlankFunc(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d3720-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseBlankFunc()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseArray(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d37e8-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseArray()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseVariableParam(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d3842-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseVariableParam()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseMap(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d38ce-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseMap()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseStar(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d3946-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseStar()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseChan(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d39c8-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseChan()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseGeneric(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d3a36-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseGeneric()
+
+		})
+	}
+}
+
+func Test_requestRequestResponseGenericValue(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "b24d3afe-f9a5-11ee-a174-7af6acbff8ec",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestResponseGenericValue()
 
 		})
 	}
