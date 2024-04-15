@@ -104,13 +104,13 @@ OuterLoop:
 		fmt.Print("\n开始处理:" + decl.Name.Name)
 
 		// 4. 组装响应的信息,使用walk，walk特定的类型
-		var resultVisit ResultVisitor
-		ast.Walk(&resultVisit, cg)
-		marshal, err := json.Marshal(&resultVisit)
-		if err != nil {
-			continue
-		}
-		fmt.Printf("结果信息:%v \n", string(marshal))
+		//var resultVisit ResultVisitor
+		//ast.Walk(&resultVisit, cg)
+		//marshal, err := json.Marshal(&resultVisit)
+		//if err != nil {
+		//	continue
+		//}
+		//fmt.Printf("结果信息:%v \n", string(marshal))
 		// 5. 判断所有要改动到的condition
 		//var conditionVisitor ConditionVisitor
 		//ast.Walk(&conditionVisitor, cg)
@@ -263,6 +263,19 @@ func RequestInfoParse(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetai
 	for i, requestParam := range decl.Type.Params.List {
 		// "_" 这种不处理了
 		var db generate.RequestDetail
+		if requestParam.Names == nil && requestParam.Type != nil {
+			db.RequestName = "param" + strconv.Itoa(i)
+			result := parseParam(requestParam.Type, db.RequestName, ipInfo, decl.Type.TypeParams)
+			if result == nil {
+				fmt.Println(result)
+			}
+			db.RequestType = result.ParamType
+			db.RequestValue = result.ParamInitValue
+			db.ImportPkgPath = result.ImportPkgPath
+			db.IsEllipsis = result.IsEllipsis
+			dbs = append(dbs, db)
+			continue
+		}
 
 		names := requestParam.Names
 		for j, name := range names {
@@ -376,6 +389,9 @@ func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.Field
 				importPaths = append(importPaths, v)
 			}
 		}
+		var resultVisit ResultVisitor
+		ast.Walk(&resultVisit, dbType)
+
 		db.ParamType = paramType
 		db.ParamInitValue = "nil"
 	case *ast.InterfaceType:
@@ -699,4 +715,54 @@ func parseFuncType(dbType *ast.FuncType, ipInfo Import, paramTypeMap map[string]
 		paramType = paramType + ")"
 	}
 	return paramType, importPaths
+}
+
+// ResponseInfoParse 解析response
+func ResponseInfoParse(funcType *ast.FuncType, ipInfo Import) []generate.RequestDetail {
+	dbs := make([]generate.RequestDetail, 0, 10)
+	list := funcType.Results.List
+	for i, result := range list {
+		names := result.Names
+		if names != nil && result.Type != nil {
+			parseParam(result.Type, uuid.NewUUID(), ipInfo)
+
+		}
+	}
+
+	for i, requestParam := range decl.Type.Params.List {
+		// "_" 这种不处理了
+		var db generate.RequestDetail
+		if requestParam.Names == nil && requestParam.Type != nil {
+			db.RequestName = "param" + strconv.Itoa(i)
+			result := parseParam(requestParam.Type, db.RequestName, ipInfo, decl.Type.TypeParams)
+			if result == nil {
+				fmt.Println(result)
+			}
+			db.RequestType = result.ParamType
+			db.RequestValue = result.ParamInitValue
+			db.ImportPkgPath = result.ImportPkgPath
+			db.IsEllipsis = result.IsEllipsis
+			dbs = append(dbs, db)
+			continue
+		}
+
+		names := requestParam.Names
+		for j, name := range names {
+			if name.Name == "_" {
+				db.RequestName = "param" + strconv.Itoa(i) + strconv.Itoa(j)
+			} else {
+				db.RequestName = name.Name
+			}
+			result := parseParam(requestParam.Type, name.Name, ipInfo, decl.Type.TypeParams)
+			if result == nil {
+				fmt.Println(result)
+			}
+			db.RequestType = result.ParamType
+			db.RequestValue = result.ParamInitValue
+			db.ImportPkgPath = result.ImportPkgPath
+			db.IsEllipsis = result.IsEllipsis
+			dbs = append(dbs, db)
+		}
+	}
+	return dbs
 }

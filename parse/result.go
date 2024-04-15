@@ -120,54 +120,68 @@ func (v *ResultVisitor) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return v
 	}
-	if fn, ok := n.(*ast.ReturnStmt); ok {
-		v.mu.Lock()
-		for i, res := range fn.Results {
-			var detail ResultVisitorDetail
-			detail.PointSite = fn.Return
-			detail.Index = i
-			// 返回某个参数
-			if ident, ok := res.(*ast.Ident); ok {
-				// 返回nil就不需要处理了
-				if ident.Obj == nil {
-					continue
-				}
-				pr := ParamResult{
-					PointSite: ident.NamePos,
-					// 某个变量的名字
-					ResultMark: ident.Name,
-				}
-				detail.Result = &pr
-			}
-			// 返回某个方法：Package.Func
-			if callExpr, ok := res.(*ast.CallExpr); ok {
-				if se, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
-					fr := FuncResult{
-						FuncPackageName: GetRelationFromSelectorExpr(se),
-						FuncName:        se.Sel.Name,
-					}
-					detail.Result = &fr
-				}
-			}
-			// 直接返回类的构造函数，比如说返回 XXX{A:"1",B:"2"}， 那么可以拿到关联，比如XXX.A="1"；XXX.B=C.D
-			if unaryExpr, ok := res.(*ast.UnaryExpr); ok {
-				if se, ok := unaryExpr.X.(*ast.CompositeLit); ok {
-					cr := CompositeLitParse(se)
-					detail.Result = &cr
-				}
-				if ident, ok := unaryExpr.X.(*ast.Ident); ok {
-					pr := ParamResult{
-						PointSite: ident.NamePos,
-						// 某个变量的名字
-						ResultMark: ident.Name,
-					}
-					detail.Result = &pr
-				}
-			}
-			v.AddDetail(detail)
-		}
-		v.mu.Unlock()
-	}
+	// 暂时只支持传入funcType
+	//funcType, ok := n.(*ast.FuncType)
+	//if !ok {
+	//	return v
+	//}
+	//list := funcType.Results.List
+	//for i, result := range list {
+	//	names := result.Names
+	//	if names != nil && result.Type != nil {
+	//		parseParam(result.Type, uuid.NewUUID(), )
+	//
+	//	}
+	//}
+
+	//if fn, ok := n.(*ast.ReturnStmt); ok {
+	//	v.mu.Lock()
+	//	for i, res := range fn.Results {
+	//		var detail ResultVisitorDetail
+	//		detail.PointSite = fn.Return
+	//		detail.Index = i
+	//		// 返回某个参数
+	//		if ident, ok := res.(*ast.Ident); ok {
+	//			// 返回nil就不需要处理了
+	//			if ident.Obj == nil {
+	//				continue
+	//			}
+	//			pr := ParamResult{
+	//				PointSite: ident.NamePos,
+	//				// 某个变量的名字
+	//				ResultMark: ident.Name,
+	//			}
+	//			detail.Result = &pr
+	//		}
+	//		// 返回某个方法：Package.Func
+	//		if callExpr, ok := res.(*ast.CallExpr); ok {
+	//			if se, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
+	//				fr := FuncResult{
+	//					FuncPackageName: GetRelationFromSelectorExpr(se),
+	//					FuncName:        se.Sel.Name,
+	//				}
+	//				detail.Result = &fr
+	//			}
+	//		}
+	//		// 直接返回类的构造函数，比如说返回 XXX{A:"1",B:"2"}， 那么可以拿到关联，比如XXX.A="1"；XXX.B=C.D
+	//		if unaryExpr, ok := res.(*ast.UnaryExpr); ok {
+	//			if se, ok := unaryExpr.X.(*ast.CompositeLit); ok {
+	//				cr := CompositeLitParse(se)
+	//				detail.Result = &cr
+	//			}
+	//			if ident, ok := unaryExpr.X.(*ast.Ident); ok {
+	//				pr := ParamResult{
+	//					PointSite: ident.NamePos,
+	//					// 某个变量的名字
+	//					ResultMark: ident.Name,
+	//				}
+	//				detail.Result = &pr
+	//			}
+	//		}
+	//		v.AddDetail(detail)
+	//	}
+	//	v.mu.Unlock()
+	//}
 	return v
 }
 
