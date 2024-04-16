@@ -721,48 +721,48 @@ func parseFuncType(dbType *ast.FuncType, ipInfo Import, paramTypeMap map[string]
 func ResponseInfoParse(funcType *ast.FuncType, ipInfo Import) []generate.RequestDetail {
 	dbs := make([]generate.RequestDetail, 0, 10)
 	list := funcType.Results.List
-	for i, result := range list {
+	for _, result := range list {
 		names := result.Names
 		if names != nil && result.Type != nil {
-			parseParam(result.Type, uuid.NewUUID(), ipInfo)
+			parseParam(result.Type, uuid.NewString(), ipInfo, funcType.TypeParams)
 
 		}
 	}
 
-	for i, requestParam := range decl.Type.Params.List {
-		// "_" 这种不处理了
-		var db generate.RequestDetail
-		if requestParam.Names == nil && requestParam.Type != nil {
-			db.RequestName = "param" + strconv.Itoa(i)
-			result := parseParam(requestParam.Type, db.RequestName, ipInfo, decl.Type.TypeParams)
-			if result == nil {
-				fmt.Println(result)
-			}
-			db.RequestType = result.ParamType
-			db.RequestValue = result.ParamInitValue
-			db.ImportPkgPath = result.ImportPkgPath
-			db.IsEllipsis = result.IsEllipsis
-			dbs = append(dbs, db)
-			continue
-		}
-
-		names := requestParam.Names
-		for j, name := range names {
-			if name.Name == "_" {
-				db.RequestName = "param" + strconv.Itoa(i) + strconv.Itoa(j)
-			} else {
-				db.RequestName = name.Name
-			}
-			result := parseParam(requestParam.Type, name.Name, ipInfo, decl.Type.TypeParams)
-			if result == nil {
-				fmt.Println(result)
-			}
-			db.RequestType = result.ParamType
-			db.RequestValue = result.ParamInitValue
-			db.ImportPkgPath = result.ImportPkgPath
-			db.IsEllipsis = result.IsEllipsis
-			dbs = append(dbs, db)
-		}
-	}
+	//for i, requestParam := range decl.Type.Params.List {
+	//	// "_" 这种不处理了
+	//	var db generate.RequestDetail
+	//	if requestParam.Names == nil && requestParam.Type != nil {
+	//		db.RequestName = "param" + strconv.Itoa(i)
+	//		result := parseParam(requestParam.Type, db.RequestName, ipInfo, decl.Type.TypeParams)
+	//		if result == nil {
+	//			fmt.Println(result)
+	//		}
+	//		db.RequestType = result.ParamType
+	//		db.RequestValue = result.ParamInitValue
+	//		db.ImportPkgPath = result.ImportPkgPath
+	//		db.IsEllipsis = result.IsEllipsis
+	//		dbs = append(dbs, db)
+	//		continue
+	//	}
+	//
+	//	names := requestParam.Names
+	//	for j, name := range names {
+	//		if name.Name == "_" {
+	//			db.RequestName = "param" + strconv.Itoa(i) + strconv.Itoa(j)
+	//		} else {
+	//			db.RequestName = name.Name
+	//		}
+	//		result := parseParam(requestParam.Type, name.Name, ipInfo, decl.Type.TypeParams)
+	//		if result == nil {
+	//			fmt.Println(result)
+	//		}
+	//		db.RequestType = result.ParamType
+	//		db.RequestValue = result.ParamInitValue
+	//		db.ImportPkgPath = result.ImportPkgPath
+	//		db.IsEllipsis = result.IsEllipsis
+	//		dbs = append(dbs, db)
+	//	}
+	//}
 	return dbs
 }
