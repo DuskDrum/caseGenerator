@@ -24,7 +24,7 @@ func Test_request_problemRequestResponseSimpleFuncProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018d846-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed30d2a-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -60,7 +60,7 @@ func Test_request_problemRequestResponseStructProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018dae4-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed3102c-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -96,7 +96,7 @@ func Test_request_problemRequestResponsePackStructProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018db48-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed3109a-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -132,7 +132,7 @@ func Test_request_problemRequestResponseFuncProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018db98-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed316bc-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -168,7 +168,7 @@ func Test_request_problemRequestResponseBlankFuncProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018dbc0-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed3177a-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -204,7 +204,7 @@ func Test_request_problemRequestResponseArrayProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018e700-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed319a0-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -240,7 +240,7 @@ func Test_request_problemRequestResponseVariableParamProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018e76e-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed31c70-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -276,7 +276,7 @@ func Test_request_problemRequestResponseMapProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018eb56-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed31f86-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -312,7 +312,7 @@ func Test_request_problemRequestResponseStarProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018ecb4-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed32030-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -348,7 +348,7 @@ func Test_request_problemRequestResponseChanProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018edc2-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed320bc-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -384,7 +384,7 @@ func Test_request_problemRequestResponseGenericProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018f178-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed32666-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
@@ -420,7 +420,7 @@ func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "7018f1f0-fcc5-11ee-a2dd-7af6acbff8ec",
+			name: "fed32f12-fe5c-11ee-bcc4-7af6acbff8ec",
 			args: args{
 
 				param0: nil,
