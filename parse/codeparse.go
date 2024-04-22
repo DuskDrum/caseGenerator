@@ -699,13 +699,18 @@ func parseFuncType(dbType *ast.FuncType, ipInfo Import, paramTypeMap map[string]
 	if len(fields) > 0 {
 		paramType = paramType + " ("
 		for _, v := range fields {
-			param := parseParamWithoutInit(v.Type, "", ipInfo, paramTypeMap)
-			if len(param.ImportPkgPath) > 0 {
-				for _, v := range param.ImportPkgPath {
-					importPaths = append(importPaths, v)
+			if len(v.Names) > 0 {
+				for _, name := range v.Names {
+					param := parseParamWithoutInit(v.Type, name.Name, ipInfo, paramTypeMap)
+					if len(param.ImportPkgPath) > 0 {
+						for _, v := range param.ImportPkgPath {
+							importPaths = append(importPaths, v)
+						}
+					}
+					paramType = paramType + param.ParamType + ", "
 				}
 			}
-			paramType = paramType + param.ParamType + ", "
+
 		}
 		// 去掉最后一个逗号
 		lastCommaIndex := strings.LastIndex(paramType, ",")
