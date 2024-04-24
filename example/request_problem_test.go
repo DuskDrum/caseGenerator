@@ -8,42 +8,6 @@ import (
 	"testing"
 )
 
-func Test_request_problemRequestResponseVariableParamProblem(t *testing.T) {
-	type fields struct {
-	}
-	type args struct {
-		param0 func() (string, string, string, string)
-	}
-	tests := []struct {
-		args    args
-		name    string
-		fields  fields
-		wantErr bool
-	}{
-		{
-			name: "323fc6c4-00b2-11ef-b5d5-7af6acbff8ed",
-			args: args{
-
-				param0: nil,
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			defer func() {
-				//统一处理
-				if err := recover(); err != nil {
-					t.Log("recover了")
-				}
-			}()
-
-			RequestResponseVariableParamProblem(tt.args.param0)
-
-		})
-	}
-}
-
 func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 	type fields struct {
 	}
@@ -57,7 +21,7 @@ func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "349f6eec-00b2-11ef-b5d5-7af6acbff8ed",
+			name: "9a2ec526-0244-11ef-9c8d-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
