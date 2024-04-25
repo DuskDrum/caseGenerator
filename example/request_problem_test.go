@@ -21,7 +21,7 @@ func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "9a2ec526-0244-11ef-9c8d-7af6acbff8ed",
+			name: "b887efa4-0319-11ef-94f9-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
