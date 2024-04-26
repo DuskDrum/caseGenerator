@@ -605,7 +605,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import, paramTypeM
 		}
 		// 指针类型
 	case *ast.StarExpr:
-		param := parseParam(dbType.X, name, ipInfo, nil)
+		param := parseParamWithoutInit(dbType.X, name, ipInfo, paramTypeMap)
 		db.ParamType = "*" + param.ParamType
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {

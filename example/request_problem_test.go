@@ -12,7 +12,7 @@ func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		param0 func() (*T, bool)
+		param0 func() (*bool, bool)
 	}
 	tests := []struct {
 		args    args
@@ -21,7 +21,7 @@ func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "b887efa4-0319-11ef-94f9-7af6acbff8ed",
+			name: "a67f8524-03b9-11ef-a8b4-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
