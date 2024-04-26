@@ -55,7 +55,7 @@ quickly generate test cases
 
 - [x] 解析request
 - [x] 解析receiver
-- [ ] 解析response
+- [x] 解析response
 - [ ] 解析类型断言
 - [ ] 解析赋值
 - [ ] 解析condition
