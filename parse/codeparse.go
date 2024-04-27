@@ -160,6 +160,9 @@ OuterLoop:
 			}
 			fmt.Printf("接受者信息:%v \n", string(paramVisitorMarshal))
 		}
+		// 7. 判断是否有类型断言
+		TypeAssertionParse(decl, ipInfo)
+
 		// 7. 定义所有request
 		dbs := RequestInfoParse(decl, ipInfo)
 		dbsMarshal, err := json.Marshal(&dbs)
@@ -722,52 +725,113 @@ func parseFuncType(dbType *ast.FuncType, ipInfo Import, paramTypeMap map[string]
 	return paramType, importPaths
 }
 
-// ResponseInfoParse 解析response
-func ResponseInfoParse(funcType *ast.FuncType, ipInfo Import) []generate.RequestDetail {
-	dbs := make([]generate.RequestDetail, 0, 10)
-	list := funcType.Results.List
-	for _, result := range list {
-		names := result.Names
-		if names != nil && result.Type != nil {
-			parseParam(result.Type, uuid.NewString(), ipInfo, funcType.TypeParams)
+func TypeAssertionParse(n ast.Node) ast.Visitor {
+	if n == nil {
+		return v
+	}
+	switch node := n.(type) {
+	case *ast.AssignStmt:
+		for _, nodeLhs := range node.Lhs {
+			// 左边：变量，层级调用
+			// 右边：类型断言，赋值，方法
+			var ab AssignmentBinary
+			switch nLhsType := nodeLhs.(type) {
+			case *ast.Ident:
+				name := nLhsType.Name
+				if name == "_" {
+					continue
+				}
+				ab.X = ParamUnary{nLhsType.Name}
+			case *ast.SelectorExpr:
+				ab.X = ParamUnary{GetRelationFromSelectorExpr(nLhsType)}
+			}
 
+			switch nRhsType := node.Rhs[0].(type) {
+			case *ast.CallExpr:
+				switch callFunType := nRhsType.Fun.(type) {
+				case *ast.Ident:
+					ab.Y = &ParamUnary{callFunType.Name}
+				case *ast.SelectorExpr:
+					ab.Y = &ParamUnary{GetRelationFromSelectorExpr(callFunType)}
+				default:
+					log.Fatalf("不支持此类型")
+				}
+				// 类型断言可以是 a.(type) 也可以是A.B.C.(type)
+			case *ast.TypeAssertExpr:
+				var tau TypeAssertUnary
+				switch tae := nRhsType.X.(type) {
+				case *ast.Ident:
+					tau.ParamValue = tae.Name
+				case *ast.SelectorExpr:
+					tau.ParamValue = GetRelationFromSelectorExpr(tae)
+				default:
+					log.Fatalf("不支持此类型")
+				}
+				switch nr := nRhsType.Type.(type) {
+				case *ast.Ident:
+					tau.AssertType = nr.Name
+				case *ast.SelectorExpr:
+					tau.AssertType = GetRelationFromSelectorExpr(nr)
+				default:
+					log.Fatalf("不支持此类型")
+				}
+				ab.Y = &tau
+			case *ast.UnaryExpr:
+				if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
+					ab.Y = CompositeLitParse(se)
+				}
+				if ident, ok := nRhsType.X.(*ast.Ident); ok {
+					ab.Y = &ParamUnary{ident.Name}
+				}
+			case *ast.CompositeLit:
+				ab.Y = CompositeLitParse(nRhsType)
+			default:
+				log.Fatalf("不支持此类型")
+			}
+			v.AddDetail(ab.X.ParamValue, &BinaryParam{
+				ParamName:   ab.X.ParamValue,
+				BinaryParam: &ab,
+			})
+		}
+	case *ast.DeclStmt:
+		switch nd := node.Decl.(type) {
+		case *ast.GenDecl:
+			for _, ndSpec := range nd.Specs {
+				switch npVa := ndSpec.(type) {
+				case *ast.ValueSpec:
+					for _, npVaName := range npVa.Names {
+						if npVaName.Name == "_" {
+							continue
+						}
+						var ab AssignmentBinary
+						ab.X = ParamUnary{npVaName.Name}
+						if npVa.Type == nil {
+							continue
+						}
+						switch vaType := npVa.Type.(type) {
+						case *ast.Ident:
+							ab.Y = &ParamUnary{vaType.Name}
+						case *ast.FuncType:
+							// 空的
+							ab.Y = &FuncUnary{}
+						case *ast.SelectorExpr:
+							ab.Y = &ParamUnary{GetRelationFromSelectorExpr(vaType)}
+						default:
+							log.Fatalf("类型不支持")
+						}
+						v.AddDetail(ab.X.ParamValue, &BinaryParam{
+							ParamName:   ab.X.ParamValue,
+							BinaryParam: &ab,
+						})
+					}
+				case *ast.TypeSpec:
+					fmt.Println("进来了")
+				}
+			}
+		default:
+			log.Fatalf("不支持此类型")
 		}
 	}
 
-	//for i, requestParam := range decl.Type.Params.List {
-	//	// "_" 这种不处理了
-	//	var db generate.RequestDetail
-	//	if requestParam.Names == nil && requestParam.Type != nil {
-	//		db.RequestName = "param" + strconv.Itoa(i)
-	//		result := parseParam(requestParam.Type, db.RequestName, ipInfo, decl.Type.TypeParams)
-	//		if result == nil {
-	//			fmt.Println(result)
-	//		}
-	//		db.RequestType = result.ParamType
-	//		db.RequestValue = result.ParamInitValue
-	//		db.ImportPkgPath = result.ImportPkgPath
-	//		db.IsEllipsis = result.IsEllipsis
-	//		dbs = append(dbs, db)
-	//		continue
-	//	}
-	//
-	//	names := requestParam.Names
-	//	for j, name := range names {
-	//		if name.Name == "_" {
-	//			db.RequestName = "param" + strconv.Itoa(i) + strconv.Itoa(j)
-	//		} else {
-	//			db.RequestName = name.Name
-	//		}
-	//		result := parseParam(requestParam.Type, name.Name, ipInfo, decl.Type.TypeParams)
-	//		if result == nil {
-	//			fmt.Println(result)
-	//		}
-	//		db.RequestType = result.ParamType
-	//		db.RequestValue = result.ParamInitValue
-	//		db.ImportPkgPath = result.ImportPkgPath
-	//		db.IsEllipsis = result.IsEllipsis
-	//		dbs = append(dbs, db)
-	//	}
-	//}
-	return dbs
+	return v
 }
