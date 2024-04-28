@@ -129,7 +129,7 @@ func (v *ResultVisitor) Visit(n ast.Node) ast.Visitor {
 	//for i, result := range list {
 	//	names := result.Names
 	//	if names != nil && result.Type != nil {
-	//		parseParam(result.Type, uuid.NewUUID(), )
+	//		ParamParse(result.Type, uuid.NewUUID(), )
 	//
 	//	}
 	//}

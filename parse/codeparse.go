@@ -69,12 +69,8 @@ func extractFile(filename string) (err error) {
 	// 1. 组装package、method信息
 	_ = Package{PackagePath: "", PackageName: f.Name.Name}
 	// 2. 组装import信息
-	ipInfo := importParse(f)
-	marshal, err := json.Marshal(&ipInfo)
-	if err != nil {
-		return
-	}
-	fmt.Printf("import信息:%v", string(marshal))
+	InitImport()
+	importParse(f)
 	// 组装所有方法
 	methods := make([]string, 0, 10)
 	caseDetailList := make([]generate.CaseDetail, 0, 10)
@@ -103,23 +99,7 @@ OuterLoop:
 		methodInfo := Method{MethodName: decl.Name.Name}
 		fmt.Print("\n开始处理:" + decl.Name.Name)
 
-		// 4. 组装响应的信息,使用walk，walk特定的类型
-		//var resultVisit ResultVisitor
-		//ast.Walk(&resultVisit, cg)
-		//marshal, err := json.Marshal(&resultVisit)
-		//if err != nil {
-		//	continue
-		//}
-		//fmt.Printf("结果信息:%v \n", string(marshal))
-		// 5. 判断所有要改动到的condition
-		//var conditionVisitor ConditionVisitor
-		//ast.Walk(&conditionVisitor, cg)
-		//conMarshal, err := json.Marshal(&conditionVisitor)
-		//if err != nil {
-		//	continue
-		//}
-		//fmt.Printf("条件信息:%v \n", string(conMarshal))
-		// 6. 定义所有receiver.
+		// 4. 定义所有receiver.
 		var paramVisitor ParamVisitor
 		var rec Receiver
 		if decl.Recv != nil {
@@ -160,8 +140,13 @@ OuterLoop:
 			}
 			fmt.Printf("接受者信息:%v \n", string(paramVisitorMarshal))
 		}
-		// 7. 判断是否有类型断言
-		TypeAssertionParse(decl, ipInfo)
+		// 5. 获取typeParam
+		typeParamMap := TypeParamParse(decl, ipInfo)
+		SetTypeParamMap(typeParamMap)
+		// 6. 判断是否有类型断言
+		var typeAssertVisitor TypeAssertionVisitor
+
+		ast.Walk(&typeAssertVisitor, cg)
 
 		// 7. 定义所有request
 		dbs := RequestInfoParse(decl, ipInfo)
@@ -229,19 +214,13 @@ OuterLoop:
 	return
 }
 
-func importParse(af *ast.File) Import {
-	importList := make([]string, 0, 10)
-	importMap := make(map[string]string, 10)
+func importParse(af *ast.File) {
 	for _, importSpec := range af.Imports {
 		if importSpec.Name == nil {
-			importList = append(importList, importSpec.Path.Value)
+			AppendImportList(importSpec.Path.Value)
 		} else {
-			importMap[importSpec.Name.Name] = importSpec.Path.Value
+			AppendAliasImport(importSpec.Name.Name, importSpec.Path.Value)
 		}
-	}
-	return Import{
-		ImportList:     importList,
-		AliasImportMap: importMap,
 	}
 }
 
@@ -258,6 +237,34 @@ func containsMethod(methodList []string, methodName string) bool {
 	return false
 }
 
+// TypeParamParse 解析typeParam
+func TypeParamParse(decl *ast.FuncDecl, ipInfo Import) map[string]*ParamParseResult {
+	// 1. 处理typeParam
+	typeParams := decl.Type.TypeParams
+	typeParamsMap := make(map[string]*ParamParseResult, 10)
+
+	if typeParams != nil && len(typeParams.List) > 0 {
+		// 1. 一般只有一个
+		field := typeParams.List[0]
+		for _, v := range field.Names {
+			ident, ok := field.Type.(*ast.Ident)
+			if ok && ident.Name == "comparable" {
+				typeParamsMap[v.Name] = lo.ToPtr(ParamParseResult{
+					ParamName:      ident.Name,
+					ParamType:      "string",
+					ParamInitValue: "\"\"",
+				})
+				continue
+			}
+			//v.Obj.Decl
+			init := parseParamWithoutInit(field.Type, v.Name, ipInfo, typeParamsMap)
+			typeParamsMap[v.Name] = init
+		}
+	}
+
+	return typeParamsMap
+}
+
 // RequestInfoParse RequestName:  "ctx",
 // RequestType:  "context.Context",
 // RequestValue: "context.Background()",
@@ -268,7 +275,8 @@ func RequestInfoParse(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetai
 		var db generate.RequestDetail
 		if requestParam.Names == nil && requestParam.Type != nil {
 			db.RequestName = "param" + strconv.Itoa(i)
-			result := parseParam(requestParam.Type, db.RequestName, ipInfo, decl.Type.TypeParams)
+			// todo typeParam
+			result := ParamParse(requestParam.Type, db.RequestName, ipInfo, GetTypeParamMap())
 			if result == nil {
 				fmt.Println(result)
 			}
@@ -287,7 +295,8 @@ func RequestInfoParse(decl *ast.FuncDecl, ipInfo Import) []generate.RequestDetai
 			} else {
 				db.RequestName = name.Name
 			}
-			result := parseParam(requestParam.Type, name.Name, ipInfo, decl.Type.TypeParams)
+			// todo typeParamMap
+			result := ParamParse(requestParam.Type, name.Name, ipInfo, GetTypeParamMap())
 			if result == nil {
 				fmt.Println(result)
 			}
@@ -316,30 +325,8 @@ type ParamParseResult struct {
 	IsEllipsis bool
 }
 
-// parseParam 处理参数：expr待处理的节点， name：节点名， ipInfo依赖关系， typeParams 泛型关系
-func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.FieldList) *ParamParseResult {
-	// 1. 处理泛型关系
-	typeParamsMap := make(map[string]*ParamParseResult, 10)
-
-	if typeParams != nil && len(typeParams.List) > 0 {
-		// 1. 一般只有一个
-		field := typeParams.List[0]
-		for _, v := range field.Names {
-			ident, ok := field.Type.(*ast.Ident)
-			if ok && ident.Name == "comparable" {
-				typeParamsMap[v.Name] = lo.ToPtr(ParamParseResult{
-					ParamName:      ident.Name,
-					ParamType:      "string",
-					ParamInitValue: "\"\"",
-				})
-				continue
-			}
-			//v.Obj.Decl
-			init := parseParamWithoutInit(field.Type, v.Name, ipInfo, typeParamsMap)
-			typeParamsMap[v.Name] = init
-		}
-	}
-
+// ParamParse 处理参数：expr待处理的节点， name：节点名， ipInfo依赖关系， typeParams 泛型关系
+func ParamParse(expr ast.Expr, name string, ipInfo Import, typeParamsMap map[string]*ParamParseResult) *ParamParseResult {
 	var db ParamParseResult
 
 	db.ParamName = name
@@ -375,7 +362,8 @@ func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.Field
 		importPaths = append(importPaths, "\"caseGenerator/utils\"")
 		// 指针类型
 	case *ast.StarExpr:
-		param := parseParam(dbType.X, name, ipInfo, typeParams)
+		// todo typeParamMap
+		param := ParamParse(dbType.X, name, ipInfo, GetTypeParamMap())
 		db.ParamInitValue = "lo.ToPtr(" + param.ParamInitValue + ")"
 		db.ParamType = "*" + param.ParamType
 		importPaths = append(importPaths, "\"github.com/samber/lo\"")
@@ -418,7 +406,7 @@ func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.Field
 	// 可变长度，省略号表达式
 	case *ast.Ellipsis:
 		// 处理Elt
-		param := parseParam(dbType.Elt, name, ipInfo, nil)
+		param := ParamParse(dbType.Elt, name, ipInfo, nil)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -430,7 +418,7 @@ func parseParam(expr ast.Expr, name string, ipInfo Import, typeParams *ast.Field
 		db.IsEllipsis = true
 	case *ast.ChanType:
 		// 处理value
-		param := parseParam(dbType.Value, name, ipInfo, nil)
+		param := ParamParse(dbType.Value, name, ipInfo, nil)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -583,7 +571,7 @@ func parseParamArrayType(dbType *ast.ArrayType, ipInfo Import, paramTypeMap map[
 }
 
 // parseParamWithoutInit 不设置初始化的值，也就没有相应的依赖
-func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import, paramTypeMap map[string]*ParamParseResult) *ParamParseResult {
+func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*ParamParseResult) *ParamParseResult {
 	// "_" 这种不处理了
 	var db ParamParseResult
 
@@ -639,7 +627,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import, paramTypeM
 	// 可变长度，省略号表达式
 	case *ast.Ellipsis:
 		// 处理Elt
-		param := parseParam(dbType.Elt, name, ipInfo, nil)
+		param := ParamParse(dbType.Elt, name, ipInfo, nil)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -649,7 +637,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import, paramTypeM
 		db.IsEllipsis = true
 	case *ast.ChanType:
 		// 处理value
-		param := parseParam(dbType.Value, name, ipInfo, nil)
+		param := ParamParse(dbType.Value, name, ipInfo, nil)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -665,7 +653,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, ipInfo Import, paramTypeM
 		return nil
 	case *ast.BinaryExpr:
 		// 先直接取Y
-		param := parseParam(dbType.Y, name, ipInfo, nil)
+		param := ParamParse(dbType.Y, name, ipInfo, nil)
 		db.ParamType = param.ParamType
 	default:
 		log.Fatalf("未知类型...")
@@ -723,115 +711,4 @@ func parseFuncType(dbType *ast.FuncType, ipInfo Import, paramTypeMap map[string]
 		paramType = paramType + ")"
 	}
 	return paramType, importPaths
-}
-
-func TypeAssertionParse(n ast.Node) ast.Visitor {
-	if n == nil {
-		return v
-	}
-	switch node := n.(type) {
-	case *ast.AssignStmt:
-		for _, nodeLhs := range node.Lhs {
-			// 左边：变量，层级调用
-			// 右边：类型断言，赋值，方法
-			var ab AssignmentBinary
-			switch nLhsType := nodeLhs.(type) {
-			case *ast.Ident:
-				name := nLhsType.Name
-				if name == "_" {
-					continue
-				}
-				ab.X = ParamUnary{nLhsType.Name}
-			case *ast.SelectorExpr:
-				ab.X = ParamUnary{GetRelationFromSelectorExpr(nLhsType)}
-			}
-
-			switch nRhsType := node.Rhs[0].(type) {
-			case *ast.CallExpr:
-				switch callFunType := nRhsType.Fun.(type) {
-				case *ast.Ident:
-					ab.Y = &ParamUnary{callFunType.Name}
-				case *ast.SelectorExpr:
-					ab.Y = &ParamUnary{GetRelationFromSelectorExpr(callFunType)}
-				default:
-					log.Fatalf("不支持此类型")
-				}
-				// 类型断言可以是 a.(type) 也可以是A.B.C.(type)
-			case *ast.TypeAssertExpr:
-				var tau TypeAssertUnary
-				switch tae := nRhsType.X.(type) {
-				case *ast.Ident:
-					tau.ParamValue = tae.Name
-				case *ast.SelectorExpr:
-					tau.ParamValue = GetRelationFromSelectorExpr(tae)
-				default:
-					log.Fatalf("不支持此类型")
-				}
-				switch nr := nRhsType.Type.(type) {
-				case *ast.Ident:
-					tau.AssertType = nr.Name
-				case *ast.SelectorExpr:
-					tau.AssertType = GetRelationFromSelectorExpr(nr)
-				default:
-					log.Fatalf("不支持此类型")
-				}
-				ab.Y = &tau
-			case *ast.UnaryExpr:
-				if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
-					ab.Y = CompositeLitParse(se)
-				}
-				if ident, ok := nRhsType.X.(*ast.Ident); ok {
-					ab.Y = &ParamUnary{ident.Name}
-				}
-			case *ast.CompositeLit:
-				ab.Y = CompositeLitParse(nRhsType)
-			default:
-				log.Fatalf("不支持此类型")
-			}
-			v.AddDetail(ab.X.ParamValue, &BinaryParam{
-				ParamName:   ab.X.ParamValue,
-				BinaryParam: &ab,
-			})
-		}
-	case *ast.DeclStmt:
-		switch nd := node.Decl.(type) {
-		case *ast.GenDecl:
-			for _, ndSpec := range nd.Specs {
-				switch npVa := ndSpec.(type) {
-				case *ast.ValueSpec:
-					for _, npVaName := range npVa.Names {
-						if npVaName.Name == "_" {
-							continue
-						}
-						var ab AssignmentBinary
-						ab.X = ParamUnary{npVaName.Name}
-						if npVa.Type == nil {
-							continue
-						}
-						switch vaType := npVa.Type.(type) {
-						case *ast.Ident:
-							ab.Y = &ParamUnary{vaType.Name}
-						case *ast.FuncType:
-							// 空的
-							ab.Y = &FuncUnary{}
-						case *ast.SelectorExpr:
-							ab.Y = &ParamUnary{GetRelationFromSelectorExpr(vaType)}
-						default:
-							log.Fatalf("类型不支持")
-						}
-						v.AddDetail(ab.X.ParamValue, &BinaryParam{
-							ParamName:   ab.X.ParamValue,
-							BinaryParam: &ab,
-						})
-					}
-				case *ast.TypeSpec:
-					fmt.Println("进来了")
-				}
-			}
-		default:
-			log.Fatalf("不支持此类型")
-		}
-	}
-
-	return v
 }
