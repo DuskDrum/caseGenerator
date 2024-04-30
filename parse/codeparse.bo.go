@@ -26,6 +26,12 @@ func GetTypeParamMap() map[string]*ParamParseResult {
 	return TypeParamMap
 }
 
+func GetImportInfo() Import {
+	mu.RLock()
+	defer mu.RUnlock()
+	return ImportInfo
+}
+
 func InitImport() {
 	mu.Lock()
 	defer mu.Unlock()
