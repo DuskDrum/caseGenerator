@@ -257,7 +257,7 @@ func TypeParamParse(decl *ast.FuncDecl) map[string]*ParamParseResult {
 				continue
 			}
 			//v.Obj.Decl
-			init := parseParamWithoutInit(field.Type, v.Name, typeParamsMap)
+			init := parseParamWithoutInit(field.Type, v.Name)
 			typeParamsMap[v.Name] = init
 		}
 	}
@@ -276,7 +276,7 @@ func RequestInfoParse(decl *ast.FuncDecl) []generate.RequestDetail {
 		if requestParam.Names == nil && requestParam.Type != nil {
 			db.RequestName = "param" + strconv.Itoa(i)
 			// todo typeParam
-			result := ParamParse(requestParam.Type, db.RequestName, GetTypeParamMap())
+			result := ParamParse(requestParam.Type, db.RequestName)
 			if result == nil {
 				fmt.Println(result)
 			}
@@ -296,7 +296,7 @@ func RequestInfoParse(decl *ast.FuncDecl) []generate.RequestDetail {
 				db.RequestName = name.Name
 			}
 			// todo typeParamMap
-			result := ParamParse(requestParam.Type, name.Name, GetTypeParamMap())
+			result := ParamParse(requestParam.Type, name.Name)
 			if result == nil {
 				fmt.Println(result)
 			}
@@ -326,7 +326,8 @@ type ParamParseResult struct {
 }
 
 // ParamParse 处理参数：expr待处理的节点， name：节点名， typeParams 泛型关系
-func ParamParse(expr ast.Expr, name string, typeParamsMap map[string]*ParamParseResult) *ParamParseResult {
+func ParamParse(expr ast.Expr, name string) *ParamParseResult {
+	typeParamsMap := GetTypeParamMap()
 	var db ParamParseResult
 
 	db.ParamName = name
@@ -363,7 +364,7 @@ func ParamParse(expr ast.Expr, name string, typeParamsMap map[string]*ParamParse
 		// 指针类型
 	case *ast.StarExpr:
 		// todo typeParamMap
-		param := ParamParse(dbType.X, name, GetTypeParamMap())
+		param := ParamParse(dbType.X, name)
 		db.ParamInitValue = "lo.ToPtr(" + param.ParamInitValue + ")"
 		db.ParamType = "*" + param.ParamType
 		importPaths = append(importPaths, "\"github.com/samber/lo\"")
@@ -374,7 +375,7 @@ func ParamParse(expr ast.Expr, name string, typeParamsMap map[string]*ParamParse
 			}
 		}
 	case *ast.FuncType:
-		paramType, importList := parseFuncType(dbType, typeParamsMap)
+		paramType, importList := parseFuncType(dbType)
 		if len(importList) > 0 {
 			for _, v := range importList {
 				importPaths = append(importPaths, v)
@@ -390,14 +391,14 @@ func ParamParse(expr ast.Expr, name string, typeParamsMap map[string]*ParamParse
 		db.ParamType = "interface{}"
 		db.ParamInitValue = "nil"
 	case *ast.ArrayType:
-		requestType, importList := parseParamArrayType(dbType, typeParamsMap)
+		requestType, importList := parseParamArrayType(dbType)
 		for _, v := range importList {
 			importPaths = append(importPaths, v)
 		}
 		db.ParamType = requestType
 		db.ParamInitValue = "make(" + requestType + ", 0, 10)"
 	case *ast.MapType:
-		requestType, portList := parseParamMapType(dbType, typeParamsMap)
+		requestType, portList := parseParamMapType(dbType)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
@@ -406,7 +407,7 @@ func ParamParse(expr ast.Expr, name string, typeParamsMap map[string]*ParamParse
 	// 可变长度，省略号表达式
 	case *ast.Ellipsis:
 		// 处理Elt
-		param := ParamParse(dbType.Elt, name, nil)
+		param := ParamParse(dbType.Elt, name)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -418,7 +419,7 @@ func ParamParse(expr ast.Expr, name string, typeParamsMap map[string]*ParamParse
 		db.IsEllipsis = true
 	case *ast.ChanType:
 		// 处理value
-		param := ParamParse(dbType.Value, name, nil)
+		param := ParamParse(dbType.Value, name)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -440,7 +441,8 @@ func ParamParse(expr ast.Expr, name string, typeParamsMap map[string]*ParamParse
 	return &db
 }
 
-func parseParamMapType(mpType *ast.MapType, typeParamsMap map[string]*ParamParseResult) (string, []string) {
+func parseParamMapType(mpType *ast.MapType) (string, []string) {
+	typeParamsMap := GetTypeParamMap()
 	var keyInfo, valueInfo string
 	importPaths := make([]string, 0, 10)
 	// 处理key
@@ -461,7 +463,7 @@ func parseParamMapType(mpType *ast.MapType, typeParamsMap map[string]*ParamParse
 			keyInfo = eltType.Name
 		}
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(eltType.X, "", nil)
+		param := parseParamWithoutInit(eltType.X, "")
 		keyInfo = "*" + param.ParamType
 		if len(param.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
@@ -492,7 +494,7 @@ func parseParamMapType(mpType *ast.MapType, typeParamsMap map[string]*ParamParse
 			valueInfo = eltType.Name
 		}
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(eltType.X, "", nil)
+		param := parseParamWithoutInit(eltType.X, "")
 		valueInfo = "*" + param.ParamType
 		if len(param.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
@@ -503,13 +505,13 @@ func parseParamMapType(mpType *ast.MapType, typeParamsMap map[string]*ParamParse
 		valueInfo = "any"
 	case *ast.MapType:
 		var portList []string
-		valueInfo, portList = parseParamMapType(eltType, typeParamsMap)
+		valueInfo, portList = parseParamMapType(eltType)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
 	case *ast.ArrayType:
 		var portList []string
-		valueInfo, portList = parseParamArrayType(eltType, typeParamsMap)
+		valueInfo, portList = parseParamArrayType(eltType)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
@@ -519,7 +521,8 @@ func parseParamMapType(mpType *ast.MapType, typeParamsMap map[string]*ParamParse
 	return "map[" + keyInfo + "]" + valueInfo, importPaths
 }
 
-func parseParamArrayType(dbType *ast.ArrayType, paramTypeMap map[string]*ParamParseResult) (string, []string) {
+func parseParamArrayType(dbType *ast.ArrayType) (string, []string) {
+	paramTypeMap := GetTypeParamMap()
 	var requestType string
 	importPaths := make([]string, 0, 10)
 	switch eltType := dbType.Elt.(type) {
@@ -539,27 +542,27 @@ func parseParamArrayType(dbType *ast.ArrayType, paramTypeMap map[string]*ParamPa
 			requestType = "[]" + eltType.Name
 		}
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(eltType.X, "", nil)
+		param := parseParamWithoutInit(eltType.X, "")
 		return "[]*" + param.ParamType, param.ImportPkgPath
 	case *ast.InterfaceType:
 		requestType = "[]any"
 	case *ast.ArrayType:
 		var portList []string
 
-		requestType, portList = parseParamArrayType(eltType, paramTypeMap)
+		requestType, portList = parseParamArrayType(eltType)
 		requestType = "[]" + requestType
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
 	case *ast.MapType:
 		var portList []string
-		requestType, portList = parseParamMapType(eltType, paramTypeMap)
+		requestType, portList = parseParamMapType(eltType)
 		requestType = "[]" + requestType
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
 	case *ast.FuncType:
-		paramType, imports := parseFuncType(eltType, paramTypeMap)
+		paramType, imports := parseFuncType(eltType)
 		requestType = "[]" + paramType
 		for _, v := range imports {
 			importPaths = append(importPaths, v)
@@ -571,7 +574,8 @@ func parseParamArrayType(dbType *ast.ArrayType, paramTypeMap map[string]*ParamPa
 }
 
 // parseParamWithoutInit 不设置初始化的值，也就没有相应的依赖
-func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*ParamParseResult) *ParamParseResult {
+func parseParamWithoutInit(expr ast.Expr, name string) *ParamParseResult {
+	paramTypeMap := GetTypeParamMap()
 	// "_" 这种不处理了
 	var db ParamParseResult
 
@@ -596,7 +600,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*
 		}
 		// 指针类型
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(dbType.X, name, GetTypeParamMap())
+		param := parseParamWithoutInit(dbType.X, name)
 		db.ParamType = "*" + param.ParamType
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
@@ -604,7 +608,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*
 			}
 		}
 	case *ast.FuncType:
-		paramType, imports := parseFuncType(dbType, paramTypeMap)
+		paramType, imports := parseFuncType(dbType)
 		db.ParamType = paramType
 		for _, v := range imports {
 			db.ImportPkgPath = append(db.ImportPkgPath, v)
@@ -613,13 +617,13 @@ func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*
 		// 啥也不做
 		db.ParamType = "interface{}"
 	case *ast.ArrayType:
-		requestType, importList := parseParamArrayType(dbType, paramTypeMap)
+		requestType, importList := parseParamArrayType(dbType)
 		for _, v := range importList {
 			importPaths = append(importPaths, v)
 		}
 		db.ParamType = requestType
 	case *ast.MapType:
-		requestType, portList := parseParamMapType(dbType, paramTypeMap)
+		requestType, portList := parseParamMapType(dbType)
 		for _, v := range portList {
 			importPaths = append(importPaths, v)
 		}
@@ -627,7 +631,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*
 	// 可变长度，省略号表达式
 	case *ast.Ellipsis:
 		// 处理Elt
-		param := ParamParse(dbType.Elt, name, nil)
+		param := ParamParse(dbType.Elt, name)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -637,7 +641,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*
 		db.IsEllipsis = true
 	case *ast.ChanType:
 		// 处理value
-		param := ParamParse(dbType.Value, name, nil)
+		param := ParamParse(dbType.Value, name)
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range db.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -653,7 +657,7 @@ func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*
 		return nil
 	case *ast.BinaryExpr:
 		// 先直接取Y
-		param := ParamParse(dbType.Y, name, nil)
+		param := ParamParse(dbType.Y, name)
 		db.ParamType = param.ParamType
 	default:
 		log.Fatalf("未知类型...")
@@ -662,13 +666,13 @@ func parseParamWithoutInit(expr ast.Expr, name string, paramTypeMap map[string]*
 	return &db
 }
 
-func parseFuncType(dbType *ast.FuncType, paramTypeMap map[string]*ParamParseResult) (string, []string) {
+func parseFuncType(dbType *ast.FuncType) (string, []string) {
 	importPaths := make([]string, 0, 10)
 	var paramType = "func("
 	// 解析func的入参
 	list := dbType.Params.List
 	for _, v := range list {
-		param := parseParamWithoutInit(v.Type, "", paramTypeMap)
+		param := parseParamWithoutInit(v.Type, "")
 		if len(param.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -692,7 +696,7 @@ func parseFuncType(dbType *ast.FuncType, paramTypeMap map[string]*ParamParseResu
 		for _, v := range fields {
 			if len(v.Names) > 0 {
 				for _, name := range v.Names {
-					param := parseParamWithoutInit(v.Type, name.Name, paramTypeMap)
+					param := parseParamWithoutInit(v.Type, name.Name)
 					if len(param.ImportPkgPath) > 0 {
 						for _, v := range param.ImportPkgPath {
 							importPaths = append(importPaths, v)

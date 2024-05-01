@@ -23,7 +23,11 @@ func SetTypeParamMap(typeParamMap map[string]*ParamParseResult) {
 func GetTypeParamMap() map[string]*ParamParseResult {
 	mu.RLock()
 	defer mu.RUnlock()
-	return TypeParamMap
+	if TypeParamMap == nil {
+		return make(map[string]*ParamParseResult, 10)
+	} else {
+		return TypeParamMap
+	}
 }
 
 func GetImportInfo() Import {
