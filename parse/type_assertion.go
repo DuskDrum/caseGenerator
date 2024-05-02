@@ -1,6 +1,8 @@
 package parse
 
 import (
+	"fmt"
+	"github.com/samber/lo"
 	"go/ast"
 	"log"
 )
@@ -46,5 +48,12 @@ func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
 
 // CombinationTypeAssertionRequest 排列组合所有类型断言的可能性
 func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest() {
-
+	// 1. 先按照key转为map<key,slice>
+	typeAssertionSliceMap := lo.GroupBy(v.TypeAssertionSlice, func(item TypeAssertionMapBo) string {
+		return item.Key
+	})
+	// 2. 排列组合
+	for i := range typeAssertionSliceMap {
+		fmt.Print(i)
+	}
 }
