@@ -18,7 +18,7 @@ func main() {
 	fmt.Println(slices) // 输出: [[1 2 3] [4 5] [7 8 9 10 11 12 13]]
 	fmt.Println(len(slices))
 	for _, v := range slices {
-
+		fmt.Println(v)
 	}
 
 }
