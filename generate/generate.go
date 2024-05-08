@@ -71,9 +71,13 @@ type ResponseDetail struct {
 }
 
 type RequestDetail struct {
-	RequestName   string
-	RequestType   string
-	RequestValue  string
+	// 请求名称
+	RequestName string
+	// 请求类型
+	RequestType string
+	// 请求值
+	RequestValue string
+	// 依赖的地址
 	ImportPkgPath []string
 	// 是否是省略号语法
 	IsEllipsis bool
