@@ -1,6 +1,7 @@
-package parse
+package vistitor
 
 import (
+	"caseGenerator/parse/bo"
 	"go/ast"
 	"go/token"
 	"log"
@@ -81,7 +82,7 @@ type CompositeResult struct {
 	// 默认是此包中的
 	ResultPackageName string
 	ResultStructName  string
-	Relations         []AssignmentBinary
+	Relations         []bo.AssignmentBinary
 }
 
 func (c CompositeResult) GetUnaryValue() any {
@@ -199,25 +200,25 @@ func CompositeLitParse(se *ast.CompositeLit) CompositeResult {
 	cr := CompositeResult{}
 	cr.ResultPackageName = se.Type.(*ast.SelectorExpr).X.(*ast.Ident).Name
 	cr.ResultStructName = se.Type.(*ast.SelectorExpr).Sel.Name
-	rprs := make([]AssignmentBinary, 0, 10)
+	rprs := make([]bo.AssignmentBinary, 0, 10)
 	for _, el := range se.Elts {
-		var rpr AssignmentBinary
+		var rpr bo.AssignmentBinary
 		if kve, ok := el.(*ast.KeyValueExpr); ok {
-			rpr.X = ParamUnary{ParamValue: kve.Key.(*ast.Ident).Name}
+			rpr.X = bo.ParamUnary{ParamValue: kve.Key.(*ast.Ident).Name}
 
 			switch valueSe := kve.Value.(type) {
 			case *ast.BasicLit:
-				rpr.Y = &BasicLitUnary{BasicLitValue: valueSe.Value}
+				rpr.Y = &bo.BasicLitUnary{BasicLitValue: valueSe.Value}
 			case *ast.Ident:
-				rpr.Y = &InvocationUnary{InvocationName: valueSe.Name}
+				rpr.Y = &bo.InvocationUnary{InvocationName: valueSe.Name}
 			case *ast.SelectorExpr:
-				rpr.Y = &ParamUnary{ParamValue: GetRelationFromSelectorExpr(valueSe)}
+				rpr.Y = &bo.ParamUnary{ParamValue: GetRelationFromSelectorExpr(valueSe)}
 			case *ast.CallExpr:
 				if se, ok := valueSe.Fun.(*ast.SelectorExpr); ok {
-					rpr.Y = &CallUnary{CallValue: GetRelationFromSelectorExpr(se)}
+					rpr.Y = &bo.CallUnary{CallValue: GetRelationFromSelectorExpr(se)}
 				}
 				if id, ok := valueSe.Fun.(*ast.Ident); ok {
-					rpr.Y = &CallUnary{CallValue: id.Name}
+					rpr.Y = &bo.CallUnary{CallValue: id.Name}
 				}
 			default:
 				log.Fatalf("未知类型...")

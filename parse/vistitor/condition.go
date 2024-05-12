@@ -1,7 +1,7 @@
-package parse
+package vistitor
 
 import (
-	"caseGenerator/parse/vistitor"
+	"caseGenerator/parse/bo"
 	"go/ast"
 	"go/token"
 	"log"
@@ -93,9 +93,9 @@ type SwitchCondition struct {
 	// 位置信息
 	PointSite int
 	// 条件字段
-	Factor vistitor.Param
+	Factor Param
 	// Case值
-	CaseValue vistitor.Param
+	CaseValue Param
 }
 
 // SwitchFallThroughCondition switch 的fallthrough
@@ -105,9 +105,9 @@ type SwitchFallThroughCondition struct {
 	// 位置信息
 	PointSite int
 	// 条件字段
-	Factor vistitor.Param
+	Factor Param
 	// Case值
-	CaseValue vistitor.Param
+	CaseValue Param
 }
 
 // CondBody 条件语句下的Body：做了哪些条件相关的处理；返回值了等
@@ -121,16 +121,16 @@ type ReturnCondBody struct {
 
 type ConditionVisitor struct {
 	addMu          sync.Mutex
-	CondBinaryList []CondBinary
+	CondBinaryList []bo.CondBinary
 	// 直接调用方法获取 true或者false的逻辑
-	CallCondList []CallUnary
+	CallCondList []bo.CallUnary
 }
 
-func (v *ConditionVisitor) AddDetail(cb CondBinary) {
+func (v *ConditionVisitor) AddDetail(cb bo.CondBinary) {
 	v.addMu.Lock()
 	defer v.addMu.Unlock()
 	if v.CondBinaryList == nil {
-		v.CondBinaryList = make([]CondBinary, 0, 10)
+		v.CondBinaryList = make([]bo.CondBinary, 0, 10)
 	}
 	v.CondBinaryList = append(v.CondBinaryList, cb)
 }
@@ -142,7 +142,7 @@ func (v *ConditionVisitor) Visit(n ast.Node) ast.Visitor {
 	if fn, ok := n.(*ast.IfStmt); ok {
 		switch expr := fn.Cond.(type) {
 		case *ast.BinaryExpr:
-			var cb CondBinary
+			var cb bo.CondBinary
 			cb.Op = expr.Op
 			cb.PointerSite = expr.OpPos
 			x, y := v.BinaryParse(expr)
@@ -153,21 +153,21 @@ func (v *ConditionVisitor) Visit(n ast.Node) ast.Visitor {
 			cb.Y = y
 			v.AddDetail(cb)
 		case *ast.Ident:
-			var cb CondBinary
-			cb.X = &InvocationUnary{InvocationName: expr.Name}
+			var cb bo.CondBinary
+			cb.X = &bo.InvocationUnary{InvocationName: expr.Name}
 			cb.Op = token.EQL
-			cb.Y = &BasicLitUnary{BasicLitValue: "true"}
+			cb.Y = &bo.BasicLitUnary{BasicLitValue: "true"}
 			v.AddDetail(cb)
 		}
 	}
 	// SwitchStmt 都是有 左右项的，并且是Equals
 	if ss, ok := n.(*ast.SwitchStmt); ok {
-		var ssTagUnary Unary
+		var ssTagUnary bo.Unary
 		// 先确定等号的左边
 		ssTagUnary = v.BinaryUnaryParse(ss.Tag, ss.Switch)
 
 		for _, ssBody := range ss.Body.List {
-			var cb CondBinary
+			var cb bo.CondBinary
 			// default 不处理了
 			if ssBody.(*ast.CaseClause).List == nil {
 				continue
@@ -186,20 +186,20 @@ func (v *ConditionVisitor) Visit(n ast.Node) ast.Visitor {
 	return v
 }
 
-func (v *ConditionVisitor) BinaryParse(expr *ast.BinaryExpr) (X Unary, Y Unary) {
+func (v *ConditionVisitor) BinaryParse(expr *ast.BinaryExpr) (X bo.Unary, Y bo.Unary) {
 	X = v.BinaryUnaryParse(expr.X, expr.OpPos)
 	Y = v.BinaryUnaryParse(expr.Y, expr.OpPos)
 	return
 }
 
-func (v *ConditionVisitor) BinaryUnaryParse(expr ast.Expr, opPos token.Pos) Unary {
+func (v *ConditionVisitor) BinaryUnaryParse(expr ast.Expr, opPos token.Pos) bo.Unary {
 	switch valueSe := expr.(type) {
 	case *ast.ParenExpr:
 		return v.BinaryUnaryParse(valueSe.X, opPos)
 	case *ast.UnaryExpr:
 		return v.BinaryUnaryParse(valueSe.X, opPos)
 	case *ast.BinaryExpr:
-		var cb CondBinary
+		var cb bo.CondBinary
 		X := v.BinaryUnaryParse(valueSe.X, opPos)
 		Y := v.BinaryUnaryParse(valueSe.Y, opPos)
 		cb.X = X
@@ -208,17 +208,17 @@ func (v *ConditionVisitor) BinaryUnaryParse(expr ast.Expr, opPos token.Pos) Unar
 		cb.Op = valueSe.Op
 		v.AddDetail(cb)
 	case *ast.BasicLit:
-		return &BasicLitUnary{BasicLitValue: valueSe.Value}
+		return &bo.BasicLitUnary{BasicLitValue: valueSe.Value}
 	case *ast.Ident:
-		return &InvocationUnary{InvocationName: valueSe.Name}
+		return &bo.InvocationUnary{InvocationName: valueSe.Name}
 	case *ast.SelectorExpr:
-		return &ParamUnary{ParamValue: GetRelationFromSelectorExpr(valueSe)}
+		return &bo.ParamUnary{ParamValue: GetRelationFromSelectorExpr(valueSe)}
 	case *ast.CallExpr:
 		if se, ok := valueSe.Fun.(*ast.SelectorExpr); ok {
-			return &CallUnary{CallValue: GetRelationFromSelectorExpr(se)}
+			return &bo.CallUnary{CallValue: GetRelationFromSelectorExpr(se)}
 		}
 		if id, ok := valueSe.Fun.(*ast.Ident); ok {
-			return &CallUnary{CallValue: id.Name}
+			return &bo.CallUnary{CallValue: id.Name}
 		}
 	default:
 		log.Fatalf("未知类型...")
@@ -229,17 +229,17 @@ func (v *ConditionVisitor) BinaryUnaryParse(expr ast.Expr, opPos token.Pos) Unar
 
 // FilterCondition 过滤直接调用方法获得的true或者false
 func (v *ConditionVisitor) FilterCondition() {
-	cuMap := make(map[string]*CallUnary, 10)
-	cuList := make([]CallUnary, 0, 10)
-	cbList := make([]CondBinary, 0, 10)
+	cuMap := make(map[string]*bo.CallUnary, 10)
+	cuList := make([]bo.CallUnary, 0, 10)
+	cbList := make([]bo.CondBinary, 0, 10)
 	// 不增加mock
 	for _, cb := range v.CondBinaryList {
 		if cb.Op == token.LAND || cb.Op == token.LOR {
 			// 方法调用，去重
-			if xcu, ok := cb.X.(*CallUnary); ok {
+			if xcu, ok := cb.X.(*bo.CallUnary); ok {
 				cuMap[xcu.CallValue] = xcu
 			}
-			if xcu, ok := cb.Y.(*CallUnary); ok {
+			if xcu, ok := cb.Y.(*bo.CallUnary); ok {
 				cuMap[xcu.CallValue] = xcu
 			}
 		} else {

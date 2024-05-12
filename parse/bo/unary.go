@@ -1,4 +1,4 @@
-package parse
+package bo
 
 // Unary 获取一元结构的值，一元表达式
 type Unary interface {

@@ -1,6 +1,8 @@
-package parse
+package bo
 
-import "go/token"
+import (
+	"go/token"
+)
 
 // Binary 二元表达式，赋值或者判断。 左右两边都认为是Unary
 type Binary interface {

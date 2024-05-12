@@ -1,4 +1,4 @@
-package parse
+package bo
 
 // MockInstruct Mock指令
 type MockInstruct struct {

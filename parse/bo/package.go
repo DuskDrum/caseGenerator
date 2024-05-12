@@ -1,4 +1,4 @@
-package parse
+package bo
 
 // Package 包信息
 type Package struct {

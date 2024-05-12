@@ -2,7 +2,7 @@ package vistitor
 
 import (
 	"caseGenerator/generate"
-	"caseGenerator/parse"
+	"caseGenerator/parse/bo"
 	"caseGenerator/utils"
 	"encoding/json"
 	"fmt"
@@ -22,7 +22,7 @@ type Param interface {
 // Receiver 接受者，method独有。 receive有很多特性，所以直接定义为InvocationUnary
 type Receiver struct {
 	ReceiverName  string
-	ReceiverValue parse.InvocationUnary
+	ReceiverValue bo.InvocationUnary
 }
 
 func (r *Receiver) GetParamName() string {
@@ -30,7 +30,7 @@ func (r *Receiver) GetParamName() string {
 }
 
 func (r *Receiver) UnmarshalerInfo(jsonString string) {
-	dat := utils.Empty[parse.InvocationUnary]()
+	dat := utils.Empty[bo.InvocationUnary]()
 	if err := json.Unmarshal([]byte(jsonString), &dat); err == nil {
 		fmt.Println(dat)
 		r.ReceiverValue = dat
@@ -125,7 +125,7 @@ func (f *FuncReturn) UnmarshalerInfo(jsonString string) {
 
 type BinaryParam struct {
 	ParamName   string
-	BinaryParam parse.Binary
+	BinaryParam bo.Binary
 }
 
 func (b *BinaryParam) GetParamName() string {
@@ -150,36 +150,36 @@ func (v *ParamVisitor) Visit(n ast.Node) ast.Visitor {
 		for _, nodeLhs := range node.Lhs {
 			// 左边：变量，层级调用
 			// 右边：类型断言，赋值，方法
-			var ab parse.AssignmentBinary
+			var ab bo.AssignmentBinary
 			switch nLhsType := nodeLhs.(type) {
 			case *ast.Ident:
 				name := nLhsType.Name
 				if name == "_" {
 					continue
 				}
-				ab.X = parse.ParamUnary{nLhsType.Name}
+				ab.X = bo.ParamUnary{nLhsType.Name}
 			case *ast.SelectorExpr:
-				ab.X = parse.ParamUnary{parse.GetRelationFromSelectorExpr(nLhsType)}
+				ab.X = bo.ParamUnary{GetRelationFromSelectorExpr(nLhsType)}
 			}
 
 			switch nRhsType := node.Rhs[0].(type) {
 			case *ast.CallExpr:
 				switch callFunType := nRhsType.Fun.(type) {
 				case *ast.Ident:
-					ab.Y = &parse.ParamUnary{callFunType.Name}
+					ab.Y = &bo.ParamUnary{callFunType.Name}
 				case *ast.SelectorExpr:
-					ab.Y = &parse.ParamUnary{parse.GetRelationFromSelectorExpr(callFunType)}
+					ab.Y = &bo.ParamUnary{GetRelationFromSelectorExpr(callFunType)}
 				default:
 					log.Fatalf("不支持此类型")
 				}
 				// 类型断言可以是 a.(type) 也可以是A.B.C.(type)
 			case *ast.TypeAssertExpr:
-				var tau parse.TypeAssertUnary
+				var tau bo.TypeAssertUnary
 				switch tae := nRhsType.X.(type) {
 				case *ast.Ident:
 					tau.ParamValue = tae.Name
 				case *ast.SelectorExpr:
-					tau.ParamValue = parse.GetRelationFromSelectorExpr(tae)
+					tau.ParamValue = GetRelationFromSelectorExpr(tae)
 				default:
 					log.Fatalf("不支持此类型")
 				}
@@ -187,24 +187,24 @@ func (v *ParamVisitor) Visit(n ast.Node) ast.Visitor {
 				case *ast.Ident:
 					tau.AssertType = nr.Name
 				case *ast.SelectorExpr:
-					tau.AssertType = parse.GetRelationFromSelectorExpr(nr)
+					tau.AssertType = GetRelationFromSelectorExpr(nr)
 				default:
 					log.Fatalf("不支持此类型")
 				}
 				ab.Y = &tau
 			case *ast.UnaryExpr:
 				if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
-					ab.Y = parse.CompositeLitParse(se)
+					ab.Y = CompositeLitParse(se)
 				}
 				if ident, ok := nRhsType.X.(*ast.Ident); ok {
-					ab.Y = &parse.ParamUnary{ident.Name}
+					ab.Y = &bo.ParamUnary{ident.Name}
 				}
 			case *ast.CompositeLit:
-				ab.Y = parse.CompositeLitParse(nRhsType)
+				ab.Y = CompositeLitParse(nRhsType)
 			default:
 				log.Fatalf("不支持此类型")
 			}
-			parse.AddParamNeedToMapDetail(ab.X.ParamValue, &BinaryParam{
+			bo.AddParamNeedToMapDetail(ab.X.ParamValue, &BinaryParam{
 				ParamName:   ab.X.ParamValue,
 				BinaryParam: &ab,
 			})
@@ -219,23 +219,23 @@ func (v *ParamVisitor) Visit(n ast.Node) ast.Visitor {
 						if npVaName.Name == "_" {
 							continue
 						}
-						var ab parse.AssignmentBinary
-						ab.X = parse.ParamUnary{npVaName.Name}
+						var ab bo.AssignmentBinary
+						ab.X = bo.ParamUnary{npVaName.Name}
 						if npVa.Type == nil {
 							continue
 						}
 						switch vaType := npVa.Type.(type) {
 						case *ast.Ident:
-							ab.Y = &parse.ParamUnary{vaType.Name}
+							ab.Y = &bo.ParamUnary{vaType.Name}
 						case *ast.FuncType:
 							// 空的
-							ab.Y = &parse.FuncUnary{}
+							ab.Y = &bo.FuncUnary{}
 						case *ast.SelectorExpr:
-							ab.Y = &parse.ParamUnary{parse.GetRelationFromSelectorExpr(vaType)}
+							ab.Y = &bo.ParamUnary{GetRelationFromSelectorExpr(vaType)}
 						default:
 							log.Fatalf("类型不支持")
 						}
-						parse.AddParamNeedToMapDetail(ab.X.ParamValue, &BinaryParam{
+						bo.AddParamNeedToMapDetail(ab.X.ParamValue, &BinaryParam{
 							ParamName:   ab.X.ParamValue,
 							BinaryParam: &ab,
 						})

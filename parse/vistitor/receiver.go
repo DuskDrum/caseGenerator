@@ -1,7 +1,7 @@
 package vistitor
 
 import (
-	"caseGenerator/parse"
+	"caseGenerator/parse/bo"
 	"go/ast"
 )
 
@@ -42,15 +42,15 @@ func (v *ReceiverVisitor) Visit(n ast.Node) ast.Visitor {
 	case *ast.StarExpr:
 		switch astStartExpr := typeType.X.(type) {
 		case *ast.Ident:
-			rec.ReceiverValue = parse.InvocationUnary{InvocationName: astStartExpr.Name}
+			rec.ReceiverValue = bo.InvocationUnary{InvocationName: astStartExpr.Name}
 		// 下标类型，实际上是泛型。泛型先不处理
 		case *ast.IndexExpr:
 			return v
 		}
 	case *ast.Ident:
-		rec.ReceiverValue = parse.InvocationUnary{InvocationName: typeType.Name}
+		rec.ReceiverValue = bo.InvocationUnary{InvocationName: typeType.Name}
 	}
-	parse.AddParamNeedToMapDetail(recvName, &rec)
-	parse.SetReceiverInfo(&rec)
+	bo.AddParamNeedToMapDetail(recvName, &rec)
+	bo.SetReceiverInfo(&rec)
 	return v
 }

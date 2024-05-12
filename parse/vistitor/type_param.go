@@ -2,6 +2,7 @@ package vistitor
 
 import (
 	"caseGenerator/parse"
+	"caseGenerator/parse/bo"
 	"github.com/samber/lo"
 	"go/ast"
 )
@@ -47,6 +48,6 @@ func (v *TypeParamVisitor) Visit(n ast.Node) ast.Visitor {
 		}
 	}
 	// 3. 设置到typeParam
-	parse.SetTypeParamMap(typeParamsMap)
+	bo.SetTypeParamMap(typeParamsMap)
 	return v
 }

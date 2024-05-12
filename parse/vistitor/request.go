@@ -3,6 +3,7 @@ package vistitor
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse"
+	"caseGenerator/parse/bo"
 	"fmt"
 	"go/ast"
 	"strconv"
@@ -58,7 +59,7 @@ func (v *RequestVisitor) Visit(n ast.Node) ast.Visitor {
 		// 2. 开始处理数据，request信息，名称和类型
 		if len(dbs) > 0 {
 			for _, db := range dbs {
-				parse.AppendRequestDetailToList(db)
+				bo.AppendRequestDetailToList(db)
 			}
 		}
 

@@ -1,7 +1,8 @@
-package parse
+package bo
 
 import (
 	"caseGenerator/generate"
+	"caseGenerator/parse"
 	"caseGenerator/parse/vistitor"
 	"strings"
 	"sync"
@@ -11,7 +12,7 @@ var (
 	// 读写锁
 	mu sync.RWMutex
 	// TypeParamMap 用来存储TypeParam
-	TypeParamMap map[string]*ParamParseResult
+	TypeParamMap map[string]*parse.ParamParseResult
 	// ImportInfo 依赖信息
 	ImportInfo Import
 	// ParamNeedToMap 信息
@@ -37,17 +38,17 @@ func GetRequestDetailList() []generate.RequestDetail {
 	return requestDetailList
 }
 
-func SetTypeParamMap(typeParamMap map[string]*ParamParseResult) {
+func SetTypeParamMap(typeParamMap map[string]*parse.ParamParseResult) {
 	mu.Lock()
 	defer mu.Unlock()
 	TypeParamMap = typeParamMap
 }
 
-func GetTypeParamMap() map[string]*ParamParseResult {
+func GetTypeParamMap() map[string]*parse.ParamParseResult {
 	mu.RLock()
 	defer mu.RUnlock()
 	if TypeParamMap == nil {
-		return make(map[string]*ParamParseResult, 10)
+		return make(map[string]*parse.ParamParseResult, 10)
 	} else {
 		return TypeParamMap
 	}

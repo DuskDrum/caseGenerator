@@ -2,6 +2,7 @@ package parse
 
 import (
 	"caseGenerator/generate"
+	"caseGenerator/parse/bo"
 	"caseGenerator/parse/vistitor"
 	"encoding/json"
 	"fmt"
@@ -66,9 +67,9 @@ func extractFile(filename string) (err error) {
 	}
 
 	// 1. 组装package、method信息
-	_ = Package{PackagePath: "", PackageName: f.Name.Name}
+	_ = bo.Package{PackagePath: "", PackageName: f.Name.Name}
 	// 2. 组装import信息
-	InitImport()
+	bo.InitImport()
 	importParse(f)
 	// 组装所有方法
 	methods := make([]string, 0, 10)
@@ -95,7 +96,7 @@ OuterLoop:
 
 		methods = append(methods, decl.Name.Name)
 		// 3. 组装method方法
-		methodInfo := Method{MethodName: decl.Name.Name}
+		methodInfo := bo.Method{MethodName: decl.Name.Name}
 		fmt.Print("\n开始处理:" + decl.Name.Name)
 		// 4. walk所有receiver.
 		var receiverVisitor vistitor.ReceiverVisitor
@@ -124,10 +125,10 @@ OuterLoop:
 		cd := generate.CaseDetail{
 			CaseName:    uu.String(),
 			MethodName:  methodInfo.MethodName,
-			RequestList: GetRequestDetailList(),
+			RequestList: bo.GetRequestDetailList(),
 		}
-		if GetReceiverInfo() == nil {
-			cd.ReceiverType = "utils.Empty[" + GetReceiverInfo().ReceiverValue.InvocationName + "]()"
+		if bo.GetReceiverInfo() == nil {
+			cd.ReceiverType = "utils.Empty[" + bo.GetReceiverInfo().ReceiverValue.InvocationName + "]()"
 			importPackageList = append(importPackageList, "\"caseGenerator/utils\"")
 		}
 		// 11. 开始处理mock
@@ -167,9 +168,9 @@ OuterLoop:
 func importParse(af *ast.File) {
 	for _, importSpec := range af.Imports {
 		if importSpec.Name == nil {
-			AppendImportList(importSpec.Path.Value)
+			bo.AppendImportList(importSpec.Path.Value)
 		} else {
-			AppendAliasImport(importSpec.Name.Name, importSpec.Path.Value)
+			bo.AppendAliasImport(importSpec.Name.Name, importSpec.Path.Value)
 		}
 	}
 }
@@ -204,7 +205,7 @@ type ParamParseResult struct {
 
 // ParamParse 处理参数：expr待处理的节点， name：节点名， typeParams 泛型关系
 func ParamParse(expr ast.Expr, name string) *ParamParseResult {
-	typeParamsMap := GetTypeParamMap()
+	typeParamsMap := bo.GetTypeParamMap()
 	var db ParamParseResult
 
 	db.ParamName = name
@@ -212,12 +213,12 @@ func ParamParse(expr ast.Expr, name string) *ParamParseResult {
 
 	switch dbType := expr.(type) {
 	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(dbType)
+		expr := vistitor.GetRelationFromSelectorExpr(dbType)
 		db.ParamType = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			importPaths = append(importPaths, GetImportInfo().GetImportPath(firstField))
+			importPaths = append(importPaths, bo.GetImportInfo().GetImportPath(firstField))
 		}
 		if expr == "context.Context" {
 			db.ParamInitValue = "context.Background()"
@@ -258,7 +259,7 @@ func ParamParse(expr ast.Expr, name string) *ParamParseResult {
 				importPaths = append(importPaths, v)
 			}
 		}
-		var resultVisit ResultVisitor
+		var resultVisit vistitor.ResultVisitor
 		ast.Walk(&resultVisit, dbType)
 
 		db.ParamType = paramType
@@ -319,18 +320,18 @@ func ParamParse(expr ast.Expr, name string) *ParamParseResult {
 }
 
 func parseParamMapType(mpType *ast.MapType) (string, []string) {
-	typeParamsMap := GetTypeParamMap()
+	typeParamsMap := bo.GetTypeParamMap()
 	var keyInfo, valueInfo string
 	importPaths := make([]string, 0, 10)
 	// 处理key
 	switch eltType := mpType.Key.(type) {
 	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(eltType)
+		expr := vistitor.GetRelationFromSelectorExpr(eltType)
 		keyInfo = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			importPaths = append(importPaths, GetImportInfo().GetImportPath(firstField))
+			importPaths = append(importPaths, bo.GetImportInfo().GetImportPath(firstField))
 		}
 	case *ast.Ident:
 		result, ok := typeParamsMap[eltType.Name]
@@ -356,12 +357,12 @@ func parseParamMapType(mpType *ast.MapType) (string, []string) {
 	// 处理value
 	switch eltType := mpType.Value.(type) {
 	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(eltType)
+		expr := vistitor.GetRelationFromSelectorExpr(eltType)
 		valueInfo = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			importPaths = append(importPaths, GetImportInfo().GetImportPath(firstField))
+			importPaths = append(importPaths, bo.GetImportInfo().GetImportPath(firstField))
 		}
 	case *ast.Ident:
 		result, ok := typeParamsMap[eltType.Name]
@@ -399,17 +400,17 @@ func parseParamMapType(mpType *ast.MapType) (string, []string) {
 }
 
 func parseParamArrayType(dbType *ast.ArrayType) (string, []string) {
-	paramTypeMap := GetTypeParamMap()
+	paramTypeMap := bo.GetTypeParamMap()
 	var requestType string
 	importPaths := make([]string, 0, 10)
 	switch eltType := dbType.Elt.(type) {
 	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(eltType)
+		expr := vistitor.GetRelationFromSelectorExpr(eltType)
 		requestType = "[]" + expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			importPaths = append(importPaths, GetImportInfo().GetImportPath(firstField))
+			importPaths = append(importPaths, bo.GetImportInfo().GetImportPath(firstField))
 		}
 	case *ast.Ident:
 		result, ok := paramTypeMap[eltType.Name]
@@ -452,7 +453,7 @@ func parseParamArrayType(dbType *ast.ArrayType) (string, []string) {
 
 // ParseParamWithoutInit 不设置初始化的值，也就没有相应的依赖
 func ParseParamWithoutInit(expr ast.Expr, name string) *ParamParseResult {
-	paramTypeMap := GetTypeParamMap()
+	paramTypeMap := bo.GetTypeParamMap()
 	// "_" 这种不处理了
 	var db ParamParseResult
 
@@ -461,12 +462,12 @@ func ParseParamWithoutInit(expr ast.Expr, name string) *ParamParseResult {
 
 	switch dbType := expr.(type) {
 	case *ast.SelectorExpr:
-		expr := GetRelationFromSelectorExpr(dbType)
+		expr := vistitor.GetRelationFromSelectorExpr(dbType)
 		db.ParamType = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			importPaths = append(importPaths, GetImportInfo().GetImportPath(firstField))
+			importPaths = append(importPaths, bo.GetImportInfo().GetImportPath(firstField))
 		}
 	case *ast.Ident:
 		result, ok := paramTypeMap[dbType.Name]
