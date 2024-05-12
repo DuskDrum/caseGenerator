@@ -2,6 +2,7 @@ package vistitor
 
 import (
 	"caseGenerator/parse"
+	"caseGenerator/parse/bo"
 	"fmt"
 	"github.com/samber/lo"
 	"go/ast"
@@ -14,11 +15,11 @@ type TypeAssertionVisitor struct {
 
 type TypeAssertionMapBo struct {
 	Key                  string
-	TypeAssertionContent *parse.ParamParseResult
+	TypeAssertionContent *bo.ParamParseResult
 }
 
 // AddTypeAssertionSlice todo 单例模式
-func (v *TypeAssertionVisitor) AddTypeAssertionSlice(key string, value *parse.ParamParseResult) {
+func (v *TypeAssertionVisitor) AddTypeAssertionSlice(key string, value *bo.ParamParseResult) {
 	if v.TypeAssertionSlice == nil {
 		v.TypeAssertionSlice = make([]TypeAssertionMapBo, 0, 10)
 	}

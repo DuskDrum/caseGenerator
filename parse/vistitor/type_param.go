@@ -27,7 +27,7 @@ func (v *TypeParamVisitor) Visit(n ast.Node) ast.Visitor {
 	}
 	// 1. 处理typeParam
 	typeParams := decl.Type.TypeParams
-	typeParamsMap := make(map[string]*parse.ParamParseResult, 10)
+	typeParamsMap := make(map[string]*bo.ParamParseResult, 10)
 
 	if typeParams != nil && len(typeParams.List) > 0 {
 		// 1. 一般只有一个
@@ -35,7 +35,7 @@ func (v *TypeParamVisitor) Visit(n ast.Node) ast.Visitor {
 		for _, v := range field.Names {
 			ident, ok := field.Type.(*ast.Ident)
 			if ok && ident.Name == "comparable" {
-				typeParamsMap[v.Name] = lo.ToPtr(parse.ParamParseResult{
+				typeParamsMap[v.Name] = lo.ToPtr(bo.ParamParseResult{
 					ParamName:      ident.Name,
 					ParamType:      "string",
 					ParamInitValue: "\"\"",
