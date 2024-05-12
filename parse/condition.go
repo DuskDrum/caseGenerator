@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"caseGenerator/parse/vistitor"
 	"go/ast"
 	"go/token"
 	"log"
@@ -92,9 +93,9 @@ type SwitchCondition struct {
 	// 位置信息
 	PointSite int
 	// 条件字段
-	Factor Param
+	Factor vistitor.Param
 	// Case值
-	CaseValue Param
+	CaseValue vistitor.Param
 }
 
 // SwitchFallThroughCondition switch 的fallthrough
@@ -104,9 +105,9 @@ type SwitchFallThroughCondition struct {
 	// 位置信息
 	PointSite int
 	// 条件字段
-	Factor Param
+	Factor vistitor.Param
 	// Case值
-	CaseValue Param
+	CaseValue vistitor.Param
 }
 
 // CondBody 条件语句下的Body：做了哪些条件相关的处理；返回值了等

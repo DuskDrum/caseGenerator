@@ -2,16 +2,15 @@ package parse
 
 import (
 	"caseGenerator/generate"
+	"caseGenerator/parse/vistitor"
 	"encoding/json"
 	"fmt"
-	"github.com/samber/lo"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -98,86 +97,37 @@ OuterLoop:
 		// 3. 组装method方法
 		methodInfo := Method{MethodName: decl.Name.Name}
 		fmt.Print("\n开始处理:" + decl.Name.Name)
-
-		// 4. 定义所有receiver.
-		var paramVisitor ParamVisitor
-		var rec Receiver
-		if decl.Recv != nil {
-			var recvName string
-			switch recvType := decl.Recv.List[0].Type.(type) {
-			case *ast.StarExpr:
-				switch astStartExpr := recvType.X.(type) {
-				case *ast.Ident:
-					recvName = astStartExpr.Name
-				// 下标类型，实际上是泛型。泛型先不处理
-				case *ast.IndexExpr:
-					continue
-				}
-			case *ast.Ident:
-				recvName = recvType.Name
-			default:
-				recvName = decl.Recv.List[0].Names[0].Name
-			}
-			rec = Receiver{
-				ReceiverName: recvName,
-			}
-			switch typeType := decl.Recv.List[0].Type.(type) {
-			case *ast.StarExpr:
-				switch astStartExpr := typeType.X.(type) {
-				case *ast.Ident:
-					rec.ReceiverValue = InvocationUnary{InvocationName: astStartExpr.Name}
-				// 下标类型，实际上是泛型。泛型先不处理
-				case *ast.IndexExpr:
-					continue
-				}
-			case *ast.Ident:
-				rec.ReceiverValue = InvocationUnary{InvocationName: typeType.Name}
-			}
-			paramVisitor.AddDetail(recvName, &rec)
-			paramVisitorMarshal, err := json.Marshal(&paramVisitor)
-			if err != nil {
-				continue
-			}
-			fmt.Printf("接受者信息:%v \n", string(paramVisitorMarshal))
-		}
+		// 4. walk所有receiver.
+		var receiverVisitor vistitor.ReceiverVisitor
+		ast.Walk(&receiverVisitor, cg)
 		// 5. 获取typeParam
-		typeParamMap := TypeParamParse(decl)
-		SetTypeParamMap(typeParamMap)
+		var typeParamVisitor vistitor.TypeParamVisitor
+		ast.Walk(&typeParamVisitor, cg)
 		// 6. 判断是否有类型断言
-		var typeAssertVisitor TypeAssertionVisitor
-
+		var typeAssertVisitor vistitor.TypeAssertionVisitor
 		ast.Walk(&typeAssertVisitor, cg)
-
 		// 7. 定义所有request
-		dbs := RequestInfoParse(decl)
-		dbsMarshal, err := json.Marshal(&dbs)
-		if err != nil {
-			continue
-		}
-		fmt.Printf("请求参数信息:%v \n", string(dbsMarshal))
+		var requestVisitor vistitor.RequestVisitor
+		ast.Walk(&requestVisitor, decl.Type.Params)
+
 		// 8. 获取所有赋值、变量
+		var paramVisitor vistitor.ParamVisitor
 		ast.Walk(&paramVisitor, cg)
 		paramVMarshal, err := json.Marshal(&paramVisitor)
 		if err != nil {
 			continue
 		}
 		fmt.Printf("参数信息:%v \n", string(paramVMarshal))
-		// 9. 开始处理数据，request信息，名称和类型
-		rdList := make([]generate.RequestDetail, 0, 10)
-		if len(dbs) > 0 {
-			for _, db := range dbs {
-				rdList = append(rdList, db)
-			}
-		}
+
 		// 10. 开始处理receiver
 		uu, _ := uuid.NewUUID()
 		cd := generate.CaseDetail{
 			CaseName:    uu.String(),
 			MethodName:  methodInfo.MethodName,
-			RequestList: rdList,
+			RequestList: GetRequestDetailList(),
 		}
-		if decl.Recv != nil {
-			cd.ReceiverType = "utils.Empty[" + rec.ReceiverValue.InvocationName + "]()"
+		if GetReceiverInfo() == nil {
+			cd.ReceiverType = "utils.Empty[" + GetReceiverInfo().ReceiverValue.InvocationName + "]()"
 			importPackageList = append(importPackageList, "\"caseGenerator/utils\"")
 		}
 		// 11. 开始处理mock
@@ -235,79 +185,6 @@ func containsMethod(methodList []string, methodName string) bool {
 		}
 	}
 	return false
-}
-
-// TypeParamParse 解析typeParam
-func TypeParamParse(decl *ast.FuncDecl) map[string]*ParamParseResult {
-	// 1. 处理typeParam
-	typeParams := decl.Type.TypeParams
-	typeParamsMap := make(map[string]*ParamParseResult, 10)
-
-	if typeParams != nil && len(typeParams.List) > 0 {
-		// 1. 一般只有一个
-		field := typeParams.List[0]
-		for _, v := range field.Names {
-			ident, ok := field.Type.(*ast.Ident)
-			if ok && ident.Name == "comparable" {
-				typeParamsMap[v.Name] = lo.ToPtr(ParamParseResult{
-					ParamName:      ident.Name,
-					ParamType:      "string",
-					ParamInitValue: "\"\"",
-				})
-				continue
-			}
-			//v.Obj.Decl
-			init := parseParamWithoutInit(field.Type, v.Name)
-			typeParamsMap[v.Name] = init
-		}
-	}
-
-	return typeParamsMap
-}
-
-// RequestInfoParse RequestName:  "ctx",
-// RequestType:  "context.Context",
-// RequestValue: "context.Background()",
-func RequestInfoParse(decl *ast.FuncDecl) []generate.RequestDetail {
-	dbs := make([]generate.RequestDetail, 0, 10)
-	for i, requestParam := range decl.Type.Params.List {
-		// "_" 这种不处理了
-		var db generate.RequestDetail
-		if requestParam.Names == nil && requestParam.Type != nil {
-			db.RequestName = "param" + strconv.Itoa(i)
-			// todo typeParam
-			result := ParamParse(requestParam.Type, db.RequestName)
-			if result == nil {
-				fmt.Println(result)
-			}
-			db.RequestType = result.ParamType
-			db.RequestValue = result.ParamInitValue
-			db.ImportPkgPath = result.ImportPkgPath
-			db.IsEllipsis = result.IsEllipsis
-			dbs = append(dbs, db)
-			continue
-		}
-
-		names := requestParam.Names
-		for j, name := range names {
-			if name.Name == "_" {
-				db.RequestName = "param" + strconv.Itoa(i) + strconv.Itoa(j)
-			} else {
-				db.RequestName = name.Name
-			}
-			// todo typeParamMap
-			result := ParamParse(requestParam.Type, name.Name)
-			if result == nil {
-				fmt.Println(result)
-			}
-			db.RequestType = result.ParamType
-			db.RequestValue = result.ParamInitValue
-			db.ImportPkgPath = result.ImportPkgPath
-			db.IsEllipsis = result.IsEllipsis
-			dbs = append(dbs, db)
-		}
-	}
-	return dbs
 }
 
 type ParamParseResult struct {
@@ -463,7 +340,7 @@ func parseParamMapType(mpType *ast.MapType) (string, []string) {
 			keyInfo = eltType.Name
 		}
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(eltType.X, "")
+		param := ParseParamWithoutInit(eltType.X, "")
 		keyInfo = "*" + param.ParamType
 		if len(param.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
@@ -494,7 +371,7 @@ func parseParamMapType(mpType *ast.MapType) (string, []string) {
 			valueInfo = eltType.Name
 		}
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(eltType.X, "")
+		param := ParseParamWithoutInit(eltType.X, "")
 		valueInfo = "*" + param.ParamType
 		if len(param.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
@@ -542,7 +419,7 @@ func parseParamArrayType(dbType *ast.ArrayType) (string, []string) {
 			requestType = "[]" + eltType.Name
 		}
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(eltType.X, "")
+		param := ParseParamWithoutInit(eltType.X, "")
 		return "[]*" + param.ParamType, param.ImportPkgPath
 	case *ast.InterfaceType:
 		requestType = "[]any"
@@ -573,8 +450,8 @@ func parseParamArrayType(dbType *ast.ArrayType) (string, []string) {
 	return requestType, importPaths
 }
 
-// parseParamWithoutInit 不设置初始化的值，也就没有相应的依赖
-func parseParamWithoutInit(expr ast.Expr, name string) *ParamParseResult {
+// ParseParamWithoutInit 不设置初始化的值，也就没有相应的依赖
+func ParseParamWithoutInit(expr ast.Expr, name string) *ParamParseResult {
 	paramTypeMap := GetTypeParamMap()
 	// "_" 这种不处理了
 	var db ParamParseResult
@@ -600,7 +477,7 @@ func parseParamWithoutInit(expr ast.Expr, name string) *ParamParseResult {
 		}
 		// 指针类型
 	case *ast.StarExpr:
-		param := parseParamWithoutInit(dbType.X, name)
+		param := ParseParamWithoutInit(dbType.X, name)
 		db.ParamType = "*" + param.ParamType
 		if len(db.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
@@ -672,7 +549,7 @@ func parseFuncType(dbType *ast.FuncType) (string, []string) {
 	// 解析func的入参
 	list := dbType.Params.List
 	for _, v := range list {
-		param := parseParamWithoutInit(v.Type, "")
+		param := ParseParamWithoutInit(v.Type, "")
 		if len(param.ImportPkgPath) > 0 {
 			for _, v := range param.ImportPkgPath {
 				importPaths = append(importPaths, v)
@@ -696,7 +573,7 @@ func parseFuncType(dbType *ast.FuncType) (string, []string) {
 		for _, v := range fields {
 			if len(v.Names) > 0 {
 				for _, name := range v.Names {
-					param := parseParamWithoutInit(v.Type, name.Name)
+					param := ParseParamWithoutInit(v.Type, name.Name)
 					if len(param.ImportPkgPath) > 0 {
 						for _, v := range param.ImportPkgPath {
 							importPaths = append(importPaths, v)

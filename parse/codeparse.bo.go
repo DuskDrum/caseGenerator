@@ -1,6 +1,8 @@
 package parse
 
 import (
+	"caseGenerator/generate"
+	"caseGenerator/parse/vistitor"
 	"strings"
 	"sync"
 )
@@ -12,7 +14,28 @@ var (
 	TypeParamMap map[string]*ParamParseResult
 	// ImportInfo 依赖信息
 	ImportInfo Import
+	// ParamNeedToMap 信息
+	ParamNeedToMap sync.Map
+	// receiverInfo receiver信息
+	receiverInfo *vistitor.Receiver
+	// requestDetailList 请求详情列表
+	requestDetailList []generate.RequestDetail
 )
+
+func AppendRequestDetailToList(gr generate.RequestDetail) {
+	mu.Lock()
+	defer mu.Unlock()
+	if len(requestDetailList) == 0 {
+		requestDetailList = make([]generate.RequestDetail, 0, 10)
+	}
+	requestDetailList = append(requestDetailList, gr)
+}
+
+func GetRequestDetailList() []generate.RequestDetail {
+	mu.RLock()
+	defer mu.RUnlock()
+	return requestDetailList
+}
 
 func SetTypeParamMap(typeParamMap map[string]*ParamParseResult) {
 	mu.Lock()
@@ -82,4 +105,16 @@ func (i Import) GetImportPath(name string) string {
 		}
 	}
 	return name
+}
+
+func AddParamNeedToMapDetail(paramName string, p vistitor.Param) {
+	ParamNeedToMap.Store(paramName, p)
+}
+
+func SetReceiverInfo(r *vistitor.Receiver) {
+	receiverInfo = r
+}
+
+func GetReceiverInfo() *vistitor.Receiver {
+	return receiverInfo
 }
