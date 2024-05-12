@@ -31,7 +31,6 @@ func (v *RequestVisitor) Visit(n ast.Node) ast.Visitor {
 				}
 				db.RequestType = result.ParamType
 				db.RequestValue = result.ParamInitValue
-				db.ImportPkgPath = result.ImportPkgPath
 				db.IsEllipsis = result.IsEllipsis
 				dbs = append(dbs, db)
 				continue
@@ -51,7 +50,6 @@ func (v *RequestVisitor) Visit(n ast.Node) ast.Visitor {
 				}
 				db.RequestType = result.ParamType
 				db.RequestValue = result.ParamInitValue
-				db.ImportPkgPath = result.ImportPkgPath
 				db.IsEllipsis = result.IsEllipsis
 				dbs = append(dbs, db)
 			}

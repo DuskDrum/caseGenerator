@@ -10,7 +10,7 @@ type ParamParseResult struct {
 	// 参数校验值
 	ParamCheckValue string
 	// 参数引入的依赖包
-	ImportPkgPath []string
+	//ImportPkgPath []string
 	// 是否是省略号语法
 	IsEllipsis bool
 }
