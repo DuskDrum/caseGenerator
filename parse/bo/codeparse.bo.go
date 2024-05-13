@@ -2,7 +2,6 @@ package bo
 
 import (
 	"caseGenerator/generate"
-	"caseGenerator/parse/vistitor"
 	"strings"
 	"sync"
 )
@@ -17,7 +16,7 @@ var (
 	// ParamNeedToMap 信息
 	ParamNeedToMap sync.Map
 	// receiverInfo receiver信息
-	receiverInfo *vistitor.Receiver
+	receiverInfo *ReceiverInfo
 	// requestDetailList 请求详情列表
 	requestDetailList []generate.RequestDetail
 )
@@ -107,15 +106,15 @@ func (i Import) GetImportPath(name string) string {
 	return name
 }
 
-func AddParamNeedToMapDetail(paramName string, p vistitor.Param) {
+func AddParamNeedToMapDetail(paramName string, p Param) {
 	ParamNeedToMap.Store(paramName, p)
 }
 
-func SetReceiverInfo(r *vistitor.Receiver) {
+func SetReceiverInfo(r *ReceiverInfo) {
 	receiverInfo = r
 }
 
-func GetReceiverInfo() *vistitor.Receiver {
+func GetReceiverInfo() *ReceiverInfo {
 	return receiverInfo
 }
 

@@ -14,3 +14,8 @@ type ParamParseResult struct {
 	// 是否是省略号语法
 	IsEllipsis bool
 }
+
+type Param interface {
+	GetParamName() string
+	UnmarshalerInfo(jsonString string)
+}

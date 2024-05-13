@@ -35,7 +35,7 @@ func (v *ReceiverVisitor) Visit(n ast.Node) ast.Visitor {
 	default:
 		recvName = decl.Recv.List[0].Names[0].Name
 	}
-	rec := Receiver{
+	rec := bo.ReceiverInfo{
 		ReceiverName: recvName,
 	}
 	switch typeType := decl.Recv.List[0].Type.(type) {

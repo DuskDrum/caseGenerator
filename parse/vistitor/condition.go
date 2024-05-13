@@ -93,9 +93,9 @@ type SwitchCondition struct {
 	// 位置信息
 	PointSite int
 	// 条件字段
-	Factor Param
+	Factor bo.Param
 	// Case值
-	CaseValue Param
+	CaseValue bo.Param
 }
 
 // SwitchFallThroughCondition switch 的fallthrough
@@ -105,9 +105,9 @@ type SwitchFallThroughCondition struct {
 	// 位置信息
 	PointSite int
 	// 条件字段
-	Factor Param
+	Factor bo.Param
 	// Case值
-	CaseValue Param
+	CaseValue bo.Param
 }
 
 // CondBody 条件语句下的Body：做了哪些条件相关的处理；返回值了等

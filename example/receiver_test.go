@@ -5,7 +5,6 @@
 package example
 
 import (
-	"caseGenerator/utils"
 	"testing"
 )
 
@@ -21,7 +20,7 @@ func Test_receiverReceiverSample(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "efe4b546-f7f6-11ee-b8cd-7af6acbff8ec",
+			name:    "21495776-1139-11ef-a65f-7af6acbff8ed",
 			args:    args{},
 			wantErr: false,
 		},
@@ -35,9 +34,7 @@ func Test_receiverReceiverSample(t *testing.T) {
 				}
 			}()
 
-			convert := utils.Empty[Receiver]()
-
-			convert.ReceiverSample()
+			ReceiverSample()
 
 		})
 	}
@@ -55,7 +52,7 @@ func Test_receiverReceiverStarSample(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "efe4b9a6-f7f6-11ee-b8cd-7af6acbff8ec",
+			name:    "21495a50-1139-11ef-a65f-7af6acbff8ed",
 			args:    args{},
 			wantErr: false,
 		},
@@ -69,9 +66,7 @@ func Test_receiverReceiverStarSample(t *testing.T) {
 				}
 			}()
 
-			convert := utils.Empty[Receiver]()
-
-			convert.ReceiverStarSample()
+			ReceiverStarSample()
 
 		})
 	}
@@ -89,7 +84,7 @@ func Test_receiverReceiverEllipsis(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "efe4ba1e-f7f6-11ee-b8cd-7af6acbff8ec",
+			name:    "21495a6e-1139-11ef-a65f-7af6acbff8ed",
 			args:    args{},
 			wantErr: false,
 		},
@@ -103,9 +98,7 @@ func Test_receiverReceiverEllipsis(t *testing.T) {
 				}
 			}()
 
-			convert := utils.Empty[Receiver]()
-
-			convert.ReceiverEllipsis()
+			ReceiverEllipsis()
 
 		})
 	}

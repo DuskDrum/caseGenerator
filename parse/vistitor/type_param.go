@@ -1,7 +1,6 @@
 package vistitor
 
 import (
-	"caseGenerator/parse"
 	"caseGenerator/parse/bo"
 	"github.com/samber/lo"
 	"go/ast"
@@ -43,7 +42,7 @@ func (v *TypeParamVisitor) Visit(n ast.Node) ast.Visitor {
 				continue
 			}
 			//v.Obj.Decl
-			init := parse.ParseParamWithoutInit(field.Type, v.Name)
+			init := ParseParamWithoutInit(field.Type, v.Name)
 			typeParamsMap[v.Name] = init
 		}
 	}

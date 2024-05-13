@@ -12,33 +12,6 @@ import (
 	"sync"
 )
 
-var paramMap = make(map[string]Param, 10)
-
-type Param interface {
-	GetParamName() string
-	UnmarshalerInfo(jsonString string)
-}
-
-// Receiver 接受者，method独有。 receive有很多特性，所以直接定义为InvocationUnary
-type Receiver struct {
-	ReceiverName  string
-	ReceiverValue bo.InvocationUnary
-}
-
-func (r *Receiver) GetParamName() string {
-	return r.ReceiverName
-}
-
-func (r *Receiver) UnmarshalerInfo(jsonString string) {
-	dat := utils.Empty[bo.InvocationUnary]()
-	if err := json.Unmarshal([]byte(jsonString), &dat); err == nil {
-		fmt.Println(dat)
-		r.ReceiverValue = dat
-	} else {
-		fmt.Println(jsonString)
-	}
-}
-
 // Constant 常量
 type Constant struct {
 	ConstantName  string

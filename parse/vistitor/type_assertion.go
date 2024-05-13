@@ -1,7 +1,6 @@
 package vistitor
 
 import (
-	"caseGenerator/parse"
 	"caseGenerator/parse/bo"
 	"fmt"
 	"github.com/samber/lo"
@@ -41,7 +40,7 @@ func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
 			log.Fatalf("未成功解析出节点的名称...")
 		}
 		// 获取 typeParam
-		parse := parse.ParamParse(node.Type, "")
+		parse := ParamParse(node.Type, "")
 		v.AddTypeAssertionSlice(identName.Name, parse)
 	}
 

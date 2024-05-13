@@ -2,7 +2,6 @@ package vistitor
 
 import (
 	"caseGenerator/generate"
-	"caseGenerator/parse"
 	"caseGenerator/parse/bo"
 	"fmt"
 	"go/ast"
@@ -25,7 +24,7 @@ func (v *RequestVisitor) Visit(n ast.Node) ast.Visitor {
 			if requestParam.Names == nil && requestParam.Type != nil {
 				db.RequestName = "param" + strconv.Itoa(i)
 				// todo typeParam
-				result := parse.ParamParse(requestParam.Type, db.RequestName)
+				result := ParamParse(requestParam.Type, db.RequestName)
 				if result == nil {
 					fmt.Println(result)
 				}
@@ -44,7 +43,7 @@ func (v *RequestVisitor) Visit(n ast.Node) ast.Visitor {
 					db.RequestName = name.Name
 				}
 				// todo typeParamMap
-				result := parse.ParamParse(requestParam.Type, name.Name)
+				result := ParamParse(requestParam.Type, name.Name)
 				if result == nil {
 					fmt.Println(result)
 				}

@@ -1,8 +1,7 @@
-package parse
+package vistitor
 
 import (
 	"caseGenerator/parse/bo"
-	"caseGenerator/parse/vistitor"
 	"go/ast"
 	"log"
 	"strings"
@@ -17,7 +16,7 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 
 	switch dbType := expr.(type) {
 	case *ast.SelectorExpr:
-		expr := vistitor.GetRelationFromSelectorExpr(dbType)
+		expr := GetRelationFromSelectorExpr(dbType)
 		db.ParamType = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
@@ -52,7 +51,7 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 		bo.AppendImportList("\"github.com/samber/lo\"")
 	case *ast.FuncType:
 		paramType := parseFuncType(dbType)
-		var resultVisit vistitor.ResultVisitor
+		var resultVisit ResultVisitor
 		ast.Walk(&resultVisit, dbType)
 
 		db.ParamType = paramType
@@ -102,7 +101,7 @@ func parseParamMapType(mpType *ast.MapType) string {
 	// 处理key
 	switch eltType := mpType.Key.(type) {
 	case *ast.SelectorExpr:
-		expr := vistitor.GetRelationFromSelectorExpr(eltType)
+		expr := GetRelationFromSelectorExpr(eltType)
 		keyInfo = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
@@ -128,7 +127,7 @@ func parseParamMapType(mpType *ast.MapType) string {
 	// 处理value
 	switch eltType := mpType.Value.(type) {
 	case *ast.SelectorExpr:
-		expr := vistitor.GetRelationFromSelectorExpr(eltType)
+		expr := GetRelationFromSelectorExpr(eltType)
 		valueInfo = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
@@ -162,7 +161,7 @@ func parseParamArrayType(dbType *ast.ArrayType) string {
 	var requestType string
 	switch eltType := dbType.Elt.(type) {
 	case *ast.SelectorExpr:
-		expr := vistitor.GetRelationFromSelectorExpr(eltType)
+		expr := GetRelationFromSelectorExpr(eltType)
 		requestType = "[]" + expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
@@ -207,7 +206,7 @@ func ParseParamWithoutInit(expr ast.Expr, name string) *bo.ParamParseResult {
 
 	switch dbType := expr.(type) {
 	case *ast.SelectorExpr:
-		expr := vistitor.GetRelationFromSelectorExpr(dbType)
+		expr := GetRelationFromSelectorExpr(dbType)
 		db.ParamType = expr
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
