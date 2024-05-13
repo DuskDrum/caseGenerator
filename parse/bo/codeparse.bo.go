@@ -52,6 +52,12 @@ func GetTypeParamMap() map[string]*ParamParseResult {
 	}
 }
 
+// Import 依赖信息
+type Import struct {
+	ImportList     []string
+	AliasImportMap map[string]string
+}
+
 func GetImportInfo() Import {
 	mu.RLock()
 	defer mu.RUnlock()
@@ -80,12 +86,6 @@ func AppendAliasImport(key string, value string) {
 	mu.Lock()
 	defer mu.Unlock()
 	ImportInfo.AliasImportMap[key] = value
-}
-
-// Import 依赖信息
-type Import struct {
-	ImportList     []string
-	AliasImportMap map[string]string
 }
 
 // GetImportPath  获取import信息

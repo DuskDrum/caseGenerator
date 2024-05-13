@@ -5,14 +5,22 @@
 package example
 
 import (
+	"caseGenerator/example/dict"
+	"caseGenerator/utils"
+	"context"
 	"testing"
+	"time"
 )
 
-func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
+func Test_request_problemRequestPackStructProblem(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		param0 func() (*bool, bool)
+		req1 dict.ExampleDict
+
+		ctx context.Context
+
+		orderTime time.Time
 	}
 	tests := []struct {
 		args    args
@@ -21,10 +29,14 @@ func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a67f8524-03b9-11ef-a8b4-7af6acbff8ed",
+			name: "9cc2b0ac-113c-11ef-a025-7af6acbff8ed",
 			args: args{
 
-				param0: nil,
+				req1: utils.Empty[dict.ExampleDict](),
+
+				ctx: context.Background(),
+
+				orderTime: time.Now(),
 			},
 			wantErr: false,
 		},
@@ -38,7 +50,7 @@ func Test_request_problemRequestResponseGenericValueProblem(t *testing.T) {
 				}
 			}()
 
-			RequestResponseGenericValueProblem(tt.args.param0)
+			RequestPackStructProblem(tt.args.req1, tt.args.ctx, tt.args.orderTime)
 
 		})
 	}

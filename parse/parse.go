@@ -175,16 +175,3 @@ func importParse(af *ast.File) {
 		}
 	}
 }
-
-// containsMethod 判断是否存在于列表
-func containsMethod(methodList []string, methodName string) bool {
-	if len(methodList) == 0 {
-		return false
-	}
-	for _, m := range methodList {
-		if m == methodName {
-			return true
-		}
-	}
-	return false
-}
