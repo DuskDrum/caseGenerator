@@ -52,5 +52,5 @@ func (v *ReceiverVisitor) Visit(n ast.Node) ast.Visitor {
 	}
 	bo.AddParamNeedToMapDetail(recvName, &rec)
 	bo.SetReceiverInfo(&rec)
-	return v
+	return nil
 }

@@ -74,7 +74,6 @@ func extractFile(filename string) (err error) {
 	// 组装所有方法
 	methods := make([]string, 0, 10)
 	caseDetailList := make([]generate.CaseDetail, 0, 10)
-	importPackageList := make([]string, 0, 10)
 	// Loop in comment groups
 OuterLoop:
 	for _, cg := range f.Decls {
@@ -129,9 +128,9 @@ OuterLoop:
 			MethodName:  methodInfo.MethodName,
 			RequestList: bo.GetRequestDetailList(),
 		}
-		if bo.GetReceiverInfo() == nil {
+		if bo.GetReceiverInfo() != nil {
 			cd.ReceiverType = "utils.Empty[" + bo.GetReceiverInfo().ReceiverValue.InvocationName + "]()"
-			importPackageList = append(importPackageList, "\"caseGenerator/utils\"")
+			bo.AppendImportList("\"caseGenerator/utils\"")
 		}
 		// 11. 开始处理mock
 
@@ -158,7 +157,7 @@ OuterLoop:
 		Package:        packageName,
 		FileName:       fileName,
 		FilePath:       filePath,
-		ImportPkgPaths: importPackageList,
+		ImportPkgPaths: bo.GetImportInfo().ImportList,
 		CaseDetailList: caseDetailList,
 	}
 
