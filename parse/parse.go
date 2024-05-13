@@ -78,6 +78,8 @@ func extractFile(filename string) (err error) {
 	// Loop in comment groups
 OuterLoop:
 	for _, cg := range f.Decls {
+		// 1. 先清理bo
+		bo.ClearBo()
 		decl, ok := cg.(*ast.FuncDecl)
 		if !ok {
 			fmt.Print("不处理非 ast.FuncDecl 的内容")

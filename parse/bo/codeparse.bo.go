@@ -118,3 +118,16 @@ func SetReceiverInfo(r *vistitor.Receiver) {
 func GetReceiverInfo() *vistitor.Receiver {
 	return receiverInfo
 }
+
+func ClearBo() {
+	mu.Lock()
+	defer mu.Unlock()
+	TypeParamMap = make(map[string]*ParamParseResult, 10)
+	ImportInfo = Import{
+		ImportList:     make([]string, 0, 10),
+		AliasImportMap: make(map[string]string, 10),
+	}
+	ParamNeedToMap = sync.Map{}
+	receiverInfo = nil
+	requestDetailList = make([]generate.RequestDetail, 0, 10)
+}
