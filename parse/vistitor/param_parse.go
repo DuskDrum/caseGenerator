@@ -21,7 +21,7 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportInfo().GetImportPath(firstField))
+			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
 		}
 		if expr == "context.Context" {
 			db.ParamInitValue = "context.Background()"
@@ -106,7 +106,7 @@ func parseParamMapType(mpType *ast.MapType) string {
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportInfo().GetImportPath(firstField))
+			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
 		}
 	case *ast.Ident:
 		result, ok := typeParamsMap[eltType.Name]
@@ -132,7 +132,7 @@ func parseParamMapType(mpType *ast.MapType) string {
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportInfo().GetImportPath(firstField))
+			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
 		}
 	case *ast.Ident:
 		result, ok := typeParamsMap[eltType.Name]
@@ -166,7 +166,7 @@ func parseParamArrayType(dbType *ast.ArrayType) string {
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportInfo().GetImportPath(firstField))
+			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
 		}
 	case *ast.Ident:
 		result, ok := paramTypeMap[eltType.Name]
@@ -211,7 +211,7 @@ func ParseParamWithoutInit(expr ast.Expr, name string) *bo.ParamParseResult {
 		if strings.Contains(expr, ".") {
 			parts := strings.Split(expr, ".")
 			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportInfo().GetImportPath(firstField))
+			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
 		}
 	case *ast.Ident:
 		result, ok := paramTypeMap[dbType.Name]

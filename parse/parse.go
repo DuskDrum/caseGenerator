@@ -157,7 +157,7 @@ OuterLoop:
 		Package:        packageName,
 		FileName:       fileName,
 		FilePath:       filePath,
-		ImportPkgPaths: bo.GetImportInfo().ImportList,
+		ImportPkgPaths: bo.GetImportInfo(),
 		CaseDetailList: caseDetailList,
 	}
 

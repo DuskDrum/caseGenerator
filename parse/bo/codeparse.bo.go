@@ -11,8 +11,9 @@ var (
 	mu sync.RWMutex
 	// TypeParamMap 用来存储TypeParam
 	TypeParamMap map[string]*ParamParseResult
-	// ImportInfo 依赖信息
-	ImportInfo Import
+	// ImportList 依赖信息
+	ImportList     []string
+	AliasImportMap map[string]string
 	// ParamNeedToMap 信息
 	ParamNeedToMap sync.Map
 	// receiverInfo receiver信息
@@ -52,51 +53,39 @@ func GetTypeParamMap() map[string]*ParamParseResult {
 	}
 }
 
-// Import 依赖信息
-type Import struct {
-	ImportList     []string
-	AliasImportMap map[string]string
-}
-
-func GetImportInfo() Import {
+func GetImportInfo() []string {
 	mu.RLock()
 	defer mu.RUnlock()
-	return ImportInfo
+	return ImportList
 }
 
 func InitImport() {
 	mu.Lock()
 	defer mu.Unlock()
-	importList := make([]string, 0, 10)
-	importMap := make(map[string]string, 10)
-	importInfo := Import{
-		ImportList:     importList,
-		AliasImportMap: importMap,
-	}
-	ImportInfo = importInfo
+	ImportList = make([]string, 0, 10)
+	AliasImportMap = make(map[string]string, 10)
 }
 
 func AppendImportList(item string) {
 	mu.Lock()
 	defer mu.Unlock()
-	ImportInfo.ImportList = append(ImportInfo.ImportList, item)
+	ImportList = append(ImportList, item)
 }
 
 func AppendAliasImport(key string, value string) {
 	mu.Lock()
 	defer mu.Unlock()
-	ImportInfo.AliasImportMap[key] = value
+	AliasImportMap[key] = value
 }
 
-// GetImportPath  获取import信息
-func (i Import) GetImportPath(name string) string {
-	s, ok := i.AliasImportMap[name]
+func GetImportPathFromAliasMap(name string) string {
+	s, ok := AliasImportMap[name]
 	if ok {
 		result := strings.ReplaceAll(s, "\"", "")
 		result = name + " \"" + result + "\""
 		return result
 	}
-	for _, info := range i.ImportList {
+	for _, info := range ImportList {
 		xx := strings.ReplaceAll(info, "\"", "")
 		if strings.HasSuffix(xx, name) {
 			result := "\"" + xx + "\""
@@ -122,10 +111,6 @@ func ClearBo() {
 	mu.Lock()
 	defer mu.Unlock()
 	TypeParamMap = make(map[string]*ParamParseResult, 10)
-	ImportInfo = Import{
-		ImportList:     make([]string, 0, 10),
-		AliasImportMap: make(map[string]string, 10),
-	}
 	ParamNeedToMap = sync.Map{}
 	receiverInfo = nil
 	requestDetailList = make([]generate.RequestDetail, 0, 10)
