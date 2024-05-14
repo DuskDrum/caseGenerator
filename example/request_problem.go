@@ -1,13 +1,7 @@
 package example
 
-import (
-	"caseGenerator/example/dict"
-	"context"
-	"time"
-)
-
-// RequestPackStructProblem 包名引用的struct
-func RequestPackStructProblem(req1 dict.ExampleDict, ctx context.Context, orderTime time.Time) {
+// RequestGenericProblem 泛型
+func RequestGenericProblem[T, R any](list []T, process func([]T) []R, batchSize int) {
 
 }
 

@@ -5,22 +5,23 @@
 package example
 
 import (
-	"caseGenerator/example/dict"
 	"caseGenerator/utils"
-	"context"
 	"testing"
-	"time"
 )
 
-func Test_request_problemRequestPackStructProblem(t *testing.T) {
+func Test_request_problemRequestGenericProblem(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 dict.ExampleDict
+		list []any
 
-		ctx context.Context
+		process func([]any)
 
-		orderTime time.Time
+		batchSize int
+
+		param0 []any
+
+		param0 []any
 	}
 	tests := []struct {
 		args    args
@@ -29,14 +30,18 @@ func Test_request_problemRequestPackStructProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "e254fe66-11e3-11ef-a302-7af6acbff8ed",
+			name: "db99bc3a-1204-11ef-9efb-7af6acbff8ed",
 			args: args{
 
-				req1: utils.Empty[dict.ExampleDict](),
+				list: make([]any, 0, 10),
 
-				ctx: context.Background(),
+				process: nil,
 
-				orderTime: time.Now(),
+				batchSize: utils.Empty[int](),
+
+				param0: make([]any, 0, 10),
+
+				param0: make([]any, 0, 10),
 			},
 			wantErr: false,
 		},
@@ -50,7 +55,7 @@ func Test_request_problemRequestPackStructProblem(t *testing.T) {
 				}
 			}()
 
-			RequestPackStructProblem(tt.args.req1, tt.args.ctx, tt.args.orderTime)
+			RequestGenericProblem(tt.args.list, tt.args.process, tt.args.batchSize, tt.args.param0, tt.args.param0)
 
 		})
 	}
