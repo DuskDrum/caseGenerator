@@ -109,8 +109,7 @@ OuterLoop:
 		var typeAssertVisitor vistitor.TypeAssertionVisitor
 		ast.Walk(&typeAssertVisitor, cg)
 		// 7. 定义所有request
-		var requestVisitor vistitor.RequestVisitor
-		ast.Walk(&requestVisitor, decl.Type.Params)
+		vistitor.ParseRequest(decl.Type.Params)
 
 		// 8. 获取所有赋值、变量
 		var paramVisitor vistitor.ParamVisitor

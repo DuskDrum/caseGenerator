@@ -40,7 +40,7 @@ func Test_requestRequestSimple(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc8e26-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a234f6-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: utils.Empty[string](),
@@ -90,7 +90,7 @@ func Test_requestRequestStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc904c-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23726-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: utils.Empty[Example](),
@@ -130,7 +130,7 @@ func Test_requestRequestPackStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9114-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23802-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: utils.Empty[dict.ExampleDict](),
@@ -188,7 +188,7 @@ func Test_requestRequestArray(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9196-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a238ca-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: make([]string, 0, 10),
@@ -244,7 +244,7 @@ func Test_requestRequestEllipsis(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc91be-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a238f2-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req2: utils.Empty[string](),
@@ -288,7 +288,7 @@ func Test_requestRequestVariableParam(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc91dc-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a2392e-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: utils.Empty[string](),
@@ -340,7 +340,7 @@ func Test_requestRequestMap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9240-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23992-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: make(map[string]string, 10),
@@ -398,7 +398,7 @@ func Test_requestRequestStar(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc92ae-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23a46-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: lo.ToPtr(utils.Empty[Example]()),
@@ -458,7 +458,7 @@ func Test_requestRequestChan(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9312-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23ab4-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: make(<-chan string),
@@ -499,13 +499,9 @@ func Test_requestRequestGeneric(t *testing.T) {
 	type args struct {
 		list []any
 
-		process func([]any)
+		process func([]any) []any
 
 		batchSize int
-
-		param0 []any
-
-		param0 []any
 	}
 	tests := []struct {
 		args    args
@@ -514,7 +510,7 @@ func Test_requestRequestGeneric(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc93bc-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23ae6-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				list: make([]any, 0, 10),
@@ -522,10 +518,6 @@ func Test_requestRequestGeneric(t *testing.T) {
 				process: nil,
 
 				batchSize: utils.Empty[int](),
-
-				param0: make([]any, 0, 10),
-
-				param0: make([]any, 0, 10),
 			},
 			wantErr: false,
 		},
@@ -539,7 +531,95 @@ func Test_requestRequestGeneric(t *testing.T) {
 				}
 			}()
 
-			RequestGeneric(tt.args.list, tt.args.process, tt.args.batchSize, tt.args.param0, tt.args.param0)
+			RequestGeneric(tt.args.list, tt.args.process, tt.args.batchSize)
+
+		})
+	}
+}
+
+func Test_requestRequestGeneric1(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+		list []any
+
+		process func([]any) ([]any, string)
+
+		batchSize int
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "11a23b18-12c3-11ef-8a13-7af6acbff8ed",
+			args: args{
+
+				list: make([]any, 0, 10),
+
+				process: nil,
+
+				batchSize: utils.Empty[int](),
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestGeneric1(tt.args.list, tt.args.process, tt.args.batchSize)
+
+		})
+	}
+}
+
+func Test_requestRequestGeneric2(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+		list []any
+
+		process func([]any) ([]any, string)
+
+		batchSize int
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "11a23b68-12c3-11ef-8a13-7af6acbff8ed",
+			args: args{
+
+				list: make([]any, 0, 10),
+
+				process: nil,
+
+				batchSize: utils.Empty[int](),
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestGeneric2(tt.args.list, tt.args.process, tt.args.batchSize)
 
 		})
 	}
@@ -558,7 +638,7 @@ func Test_requestRequestGenericValue(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9402-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23bc2-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				p: lo.ToPtr(utils.Empty[bool]()),
@@ -596,7 +676,7 @@ func Test_requestRequestGenericEquals(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9452-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23bfe-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				s1: lo.ToPtr(utils.Empty[string]()),
@@ -636,7 +716,7 @@ func Test_requestRequestGenericNoEquals(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc947a-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23c30-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				s1: lo.ToPtr(utils.Empty[string]()),
@@ -674,7 +754,7 @@ func Test_requestRequestGenericPointerToStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc94b6-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23c62-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				pointer: lo.ToPtr(utils.Empty[any]()),
@@ -710,7 +790,7 @@ func Test_requestToPoint(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc94de-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23c80-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				source: utils.Empty[any](),
@@ -737,17 +817,7 @@ func Test_requestRequestFunc(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 func(string, Example)
-
-		param0 string
-
-		param1 Example
-
-		param2 context.Context
-
-		param0 dict.ExampleDict
-
-		param1 error
+		req1 func(string, Example, context.Context) (dict.ExampleDict, error)
 	}
 	tests := []struct {
 		args    args
@@ -756,20 +826,10 @@ func Test_requestRequestFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc951a-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23cb2-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: nil,
-
-				param0: utils.Empty[string](),
-
-				param1: utils.Empty[Example](),
-
-				param2: context.Background(),
-
-				param0: utils.Empty[dict.ExampleDict](),
-
-				param1: utils.Empty[error](),
 			},
 			wantErr: false,
 		},
@@ -783,7 +843,7 @@ func Test_requestRequestFunc(t *testing.T) {
 				}
 			}()
 
-			RequestFunc(tt.args.req1, tt.args.param0, tt.args.param1, tt.args.param2, tt.args.param0, tt.args.param1)
+			RequestFunc(tt.args.req1)
 
 		})
 	}
@@ -802,7 +862,7 @@ func Test_requestRequestBlankFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9538-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23cd0-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				req1: nil,
@@ -830,22 +890,6 @@ func Test_requestRequestResponseSimpleFunc(t *testing.T) {
 	}
 	type args struct {
 		param0 func() (string, int, int32, float32, float64, bool, any, error)
-
-		req1 string
-
-		req2 int
-
-		req3 int32
-
-		req4 float32
-
-		req5 float64
-
-		req6 bool
-
-		req7 any
-
-		req8 error
 	}
 	tests := []struct {
 		args    args
@@ -854,26 +898,10 @@ func Test_requestRequestResponseSimpleFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc956a-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23d70-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: utils.Empty[string](),
-
-				req2: utils.Empty[int](),
-
-				req3: utils.Empty[int32](),
-
-				req4: utils.Empty[float32](),
-
-				req5: utils.Empty[float64](),
-
-				req6: utils.Empty[bool](),
-
-				req7: utils.Empty[any](),
-
-				req8: utils.Empty[error](),
 			},
 			wantErr: false,
 		},
@@ -887,7 +915,7 @@ func Test_requestRequestResponseSimpleFunc(t *testing.T) {
 				}
 			}()
 
-			RequestResponseSimpleFunc(tt.args.param0, tt.args.req1, tt.args.req2, tt.args.req3, tt.args.req4, tt.args.req5, tt.args.req6, tt.args.req7, tt.args.req8)
+			RequestResponseSimpleFunc(tt.args.param0)
 
 		})
 	}
@@ -898,8 +926,6 @@ func Test_requestRequestResponseStruct(t *testing.T) {
 	}
 	type args struct {
 		param0 func() Example
-
-		req1 Example
 	}
 	tests := []struct {
 		args    args
@@ -908,12 +934,10 @@ func Test_requestRequestResponseStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9588-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23da2-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: utils.Empty[Example](),
 			},
 			wantErr: false,
 		},
@@ -927,7 +951,7 @@ func Test_requestRequestResponseStruct(t *testing.T) {
 				}
 			}()
 
-			RequestResponseStruct(tt.args.param0, tt.args.req1)
+			RequestResponseStruct(tt.args.param0)
 
 		})
 	}
@@ -938,12 +962,6 @@ func Test_requestRequestResponsePackStruct(t *testing.T) {
 	}
 	type args struct {
 		param0 func() (dict.ExampleDict, context.Context, time.Time)
-
-		req1 dict.ExampleDict
-
-		ctx context.Context
-
-		orderTime time.Time
 	}
 	tests := []struct {
 		args    args
@@ -952,16 +970,10 @@ func Test_requestRequestResponsePackStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc95c4-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23dca-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: utils.Empty[dict.ExampleDict](),
-
-				ctx: context.Background(),
-
-				orderTime: time.Now(),
 			},
 			wantErr: false,
 		},
@@ -975,7 +987,7 @@ func Test_requestRequestResponsePackStruct(t *testing.T) {
 				}
 			}()
 
-			RequestResponsePackStruct(tt.args.param0, tt.args.req1, tt.args.ctx, tt.args.orderTime)
+			RequestResponsePackStruct(tt.args.param0)
 
 		})
 	}
@@ -985,19 +997,7 @@ func Test_requestRequestResponseFunc(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		param0 func() func(string, Example)
-
-		req1 func(string, Example)
-
-		param0 string
-
-		param1 Example
-
-		param2 context.Context
-
-		param0 dict.ExampleDict
-
-		param1 error
+		param0 func() func(string, Example, context.Context) (dict.ExampleDict, error)
 	}
 	tests := []struct {
 		args    args
@@ -1006,22 +1006,10 @@ func Test_requestRequestResponseFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dc9614-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23dfc-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: nil,
-
-				param0: utils.Empty[string](),
-
-				param1: utils.Empty[Example](),
-
-				param2: context.Background(),
-
-				param0: utils.Empty[dict.ExampleDict](),
-
-				param1: utils.Empty[error](),
 			},
 			wantErr: false,
 		},
@@ -1035,7 +1023,7 @@ func Test_requestRequestResponseFunc(t *testing.T) {
 				}
 			}()
 
-			RequestResponseFunc(tt.args.param0, tt.args.req1, tt.args.param0, tt.args.param1, tt.args.param2, tt.args.param0, tt.args.param1)
+			RequestResponseFunc(tt.args.param0)
 
 		})
 	}
@@ -1046,8 +1034,6 @@ func Test_requestRequestResponseBlankFunc(t *testing.T) {
 	}
 	type args struct {
 		param0 func() func()
-
-		req1 func()
 	}
 	tests := []struct {
 		args    args
@@ -1056,12 +1042,10 @@ func Test_requestRequestResponseBlankFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca3ac-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23e1a-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: nil,
 			},
 			wantErr: false,
 		},
@@ -1075,7 +1059,7 @@ func Test_requestRequestResponseBlankFunc(t *testing.T) {
 				}
 			}()
 
-			RequestResponseBlankFunc(tt.args.param0, tt.args.req1)
+			RequestResponseBlankFunc(tt.args.param0)
 
 		})
 	}
@@ -1086,26 +1070,6 @@ func Test_requestRequestResponseArray(t *testing.T) {
 	}
 	type args struct {
 		param0 func() ([]string, []int, []bool, []Example, []dict.ExampleDict, [][]string, [][][][]Example, [][]*dict.ExampleDict, [][][]map[string]string, [][][][][][]map[*Example][][][][]*dict.ExampleDict)
-
-		req1 []string
-
-		req2 []int
-
-		req3 []bool
-
-		req4 []Example
-
-		req5 []dict.ExampleDict
-
-		req6 [][]string
-
-		req7 [][][][]Example
-
-		req8 [][]*dict.ExampleDict
-
-		req9 [][][]map[string]string
-
-		req10 [][][][][][]map[*Example][][][][]*dict.ExampleDict
 	}
 	tests := []struct {
 		args    args
@@ -1114,30 +1078,10 @@ func Test_requestRequestResponseArray(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca4b0-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23ea6-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: make([]string, 0, 10),
-
-				req2: make([]int, 0, 10),
-
-				req3: make([]bool, 0, 10),
-
-				req4: make([]Example, 0, 10),
-
-				req5: make([]dict.ExampleDict, 0, 10),
-
-				req6: make([][]string, 0, 10),
-
-				req7: make([][][][]Example, 0, 10),
-
-				req8: make([][]*dict.ExampleDict, 0, 10),
-
-				req9: make([][][]map[string]string, 0, 10),
-
-				req10: make([][][][][][]map[*Example][][][][]*dict.ExampleDict, 0, 10),
 			},
 			wantErr: false,
 		},
@@ -1151,7 +1095,7 @@ func Test_requestRequestResponseArray(t *testing.T) {
 				}
 			}()
 
-			RequestResponseArray(tt.args.param0, tt.args.req1, tt.args.req2, tt.args.req3, tt.args.req4, tt.args.req5, tt.args.req6, tt.args.req7, tt.args.req8, tt.args.req9, tt.args.req10)
+			RequestResponseArray(tt.args.param0)
 
 		})
 	}
@@ -1162,14 +1106,6 @@ func Test_requestRequestResponseVariableParam(t *testing.T) {
 	}
 	type args struct {
 		param0 func() (string, string, string, string)
-
-		req1 string
-
-		req2 string
-
-		req3 string
-
-		req4 string
 	}
 	tests := []struct {
 		args    args
@@ -1178,18 +1114,10 @@ func Test_requestRequestResponseVariableParam(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca4d8-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23ec4-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: utils.Empty[string](),
-
-				req2: utils.Empty[string](),
-
-				req3: utils.Empty[string](),
-
-				req4: utils.Empty[string](),
 			},
 			wantErr: false,
 		},
@@ -1203,7 +1131,7 @@ func Test_requestRequestResponseVariableParam(t *testing.T) {
 				}
 			}()
 
-			RequestResponseVariableParam(tt.args.param0, tt.args.req1, tt.args.req2, tt.args.req3, tt.args.req4)
+			RequestResponseVariableParam(tt.args.param0)
 
 		})
 	}
@@ -1213,19 +1141,7 @@ func Test_requestRequestResponseMap(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		param0 func()
-
-		param0 map[string]string
-
-		param1 map[Example]dict.ExampleDict
-
-		param2 map[*Example]*dict.ExampleDict
-
-		param3 map[context.Context][]string
-
-		param4 map[string][][][][][]*Example
-
-		param5 map[string]map[*Example]map[context.Context]map[time.Time]bool
+		param0 func() (map[string]string, map[Example]dict.ExampleDict, map[*Example]*dict.ExampleDict, map[context.Context][]string, map[string][][][][][]*Example, map[string]map[*Example]map[context.Context]map[time.Time]bool)
 	}
 	tests := []struct {
 		args    args
@@ -1234,22 +1150,10 @@ func Test_requestRequestResponseMap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca564-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23f50-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				param0: make(map[string]string, 10),
-
-				param1: make(map[Example]dict.ExampleDict, 10),
-
-				param2: make(map[*Example]*dict.ExampleDict, 10),
-
-				param3: make(map[context.Context][]string, 10),
-
-				param4: make(map[string][][][][][]*Example, 10),
-
-				param5: make(map[string]map[*Example]map[context.Context]map[time.Time]bool, 10),
 			},
 			wantErr: false,
 		},
@@ -1263,7 +1167,7 @@ func Test_requestRequestResponseMap(t *testing.T) {
 				}
 			}()
 
-			RequestResponseMap(tt.args.param0, tt.args.param0, tt.args.param1, tt.args.param2, tt.args.param3, tt.args.param4, tt.args.param5)
+			RequestResponseMap(tt.args.param0)
 
 		})
 	}
@@ -1274,20 +1178,6 @@ func Test_requestRequestResponseStar(t *testing.T) {
 	}
 	type args struct {
 		param0 func() (*Example, *dict.ExampleDict, []*Example, *[]Example, *[][][][]*Example, *map[string]string, *map[*Example]map[*dict.ExampleDict][][][][]*Example)
-
-		req1 *Example
-
-		req2 *dict.ExampleDict
-
-		req3 []*Example
-
-		req4 *[]Example
-
-		req5 *[][][][]*Example
-
-		req6 *map[string]string
-
-		req7 *map[*Example]map[*dict.ExampleDict][][][][]*Example
 	}
 	tests := []struct {
 		args    args
@@ -1296,24 +1186,10 @@ func Test_requestRequestResponseStar(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca5f0-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23fa0-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				req1: lo.ToPtr(utils.Empty[Example]()),
-
-				req2: lo.ToPtr(utils.Empty[dict.ExampleDict]()),
-
-				req3: make([]*Example, 0, 10),
-
-				req4: lo.ToPtr(make([]Example, 0, 10)),
-
-				req5: lo.ToPtr(make([][][][]*Example, 0, 10)),
-
-				req6: lo.ToPtr(make(map[string]string, 10)),
-
-				req7: lo.ToPtr(make(map[*Example]map[*dict.ExampleDict][][][][]*Example, 10)),
 			},
 			wantErr: false,
 		},
@@ -1327,7 +1203,7 @@ func Test_requestRequestResponseStar(t *testing.T) {
 				}
 			}()
 
-			RequestResponseStar(tt.args.param0, tt.args.req1, tt.args.req2, tt.args.req3, tt.args.req4, tt.args.req5, tt.args.req6, tt.args.req7)
+			RequestResponseStar(tt.args.param0)
 
 		})
 	}
@@ -1337,21 +1213,7 @@ func Test_requestRequestResponseChan(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		param0 func()
-
-		param0 <-chan string
-
-		param1 chan<- string
-
-		param2 <-chan Example
-
-		param3 <-chan dict.ExampleDict
-
-		param4 chan<- *dict.ExampleDict
-
-		param5 chan<- [][][][][][][]*Example
-
-		param6 chan<- [][][]map[Example][][][][]*dict.ExampleDict
+		param0 func() (<-chan string, chan<- string, <-chan Example, <-chan dict.ExampleDict, chan<- *dict.ExampleDict, chan<- [][][][][][][]*Example, chan<- [][][]map[Example][][][][]*dict.ExampleDict)
 	}
 	tests := []struct {
 		args    args
@@ -1360,24 +1222,10 @@ func Test_requestRequestResponseChan(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca672-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a23ffa-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				param0: make(<-chan string),
-
-				param1: make(chan<- string),
-
-				param2: make(<-chan Example),
-
-				param3: make(<-chan dict.ExampleDict),
-
-				param4: make(chan<- *dict.ExampleDict),
-
-				param5: make(chan<- [][][][][][][]*Example),
-
-				param6: make(chan<- [][][]map[Example][][][][]*dict.ExampleDict),
 			},
 			wantErr: false,
 		},
@@ -1391,7 +1239,7 @@ func Test_requestRequestResponseChan(t *testing.T) {
 				}
 			}()
 
-			RequestResponseChan(tt.args.param0, tt.args.param0, tt.args.param1, tt.args.param2, tt.args.param3, tt.args.param4, tt.args.param5, tt.args.param6)
+			RequestResponseChan(tt.args.param0)
 
 		})
 	}
@@ -1401,17 +1249,7 @@ func Test_requestRequestResponseGeneric(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		param0 func() ([]any, func([]any), int)
-
-		list []any
-
-		process func([]any)
-
-		batchSize int
-
-		param0 []any
-
-		param0 []any
+		param0 func() ([]any, func([]any) []any, int)
 	}
 	tests := []struct {
 		args    args
@@ -1420,20 +1258,10 @@ func Test_requestRequestResponseGeneric(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca6b8-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a2402c-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				list: make([]any, 0, 10),
-
-				process: nil,
-
-				batchSize: utils.Empty[int](),
-
-				param0: make([]any, 0, 10),
-
-				param0: make([]any, 0, 10),
 			},
 			wantErr: false,
 		},
@@ -1447,7 +1275,7 @@ func Test_requestRequestResponseGeneric(t *testing.T) {
 				}
 			}()
 
-			RequestResponseGeneric(tt.args.param0, tt.args.list, tt.args.process, tt.args.batchSize, tt.args.param0, tt.args.param0)
+			RequestResponseGeneric(tt.args.param0)
 
 		})
 	}
@@ -1458,10 +1286,6 @@ func Test_requestRequestResponseGenericValue(t *testing.T) {
 	}
 	type args struct {
 		param0 func() (*bool, bool)
-
-		p *bool
-
-		s bool
 	}
 	tests := []struct {
 		args    args
@@ -1470,14 +1294,10 @@ func Test_requestRequestResponseGenericValue(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "f6dca6f4-11e3-11ef-85cc-7af6acbff8ed",
+			name: "11a24054-12c3-11ef-8a13-7af6acbff8ed",
 			args: args{
 
 				param0: nil,
-
-				p: lo.ToPtr(utils.Empty[bool]()),
-
-				s: utils.Empty[bool](),
 			},
 			wantErr: false,
 		},
@@ -1491,7 +1311,7 @@ func Test_requestRequestResponseGenericValue(t *testing.T) {
 				}
 			}()
 
-			RequestResponseGenericValue(tt.args.param0, tt.args.p, tt.args.s)
+			RequestResponseGenericValue(tt.args.param0)
 
 		})
 	}

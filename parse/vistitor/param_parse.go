@@ -51,8 +51,6 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 		bo.AppendImportList("\"github.com/samber/lo\"")
 	case *ast.FuncType:
 		paramType := parseFuncType(dbType)
-		var resultVisit ResultVisitor
-		ast.Walk(&resultVisit, dbType)
 
 		db.ParamType = paramType
 		db.ParamInitValue = "nil"
@@ -290,6 +288,9 @@ func parseFuncType(dbType *ast.FuncType) string {
 					param := ParseParamWithoutInit(v.Type, name.Name)
 					paramType = paramType + param.ParamType + ", "
 				}
+			} else if v.Type != nil {
+				param := ParseParamWithoutInit(v.Type, "param")
+				paramType = paramType + param.ParamType + ", "
 			}
 
 		}

@@ -57,6 +57,16 @@ func RequestGeneric[T, R any](list []T, process func([]T) []R, batchSize int) {
 
 }
 
+// RequestGeneric1 泛型
+func RequestGeneric1[T, R any](list []T, process func([]T) ([]R, string), batchSize int) {
+
+}
+
+// RequestGeneric2 泛型
+func RequestGeneric2[T, R any](list []T, process func([]T) (result []R, str string), batchSize int) {
+
+}
+
 func RequestGenericValue[T int | uint | int8 | int16 | int32 | int64 | float32 | float64 | string | bool](p *T) T {
 	if p == nil {
 		//基础类型初始化0值

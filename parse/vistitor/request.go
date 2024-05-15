@@ -8,12 +8,9 @@ import (
 	"strconv"
 )
 
-type RequestVisitor struct {
-}
-
-func (v *RequestVisitor) Visit(n ast.Node) ast.Visitor {
+func ParseRequest(n ast.Node) {
 	if n == nil {
-		return v
+		return
 	}
 	if list, ok := n.(*ast.FieldList); ok {
 		dbs := make([]generate.RequestDetail, 0, 10)
@@ -61,6 +58,4 @@ func (v *RequestVisitor) Visit(n ast.Node) ast.Visitor {
 		}
 
 	}
-
-	return v
 }

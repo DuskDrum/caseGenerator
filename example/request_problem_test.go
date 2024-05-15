@@ -15,13 +15,9 @@ func Test_request_problemRequestGenericProblem(t *testing.T) {
 	type args struct {
 		list []any
 
-		process func([]any)
+		process func([]any) []any
 
 		batchSize int
-
-		param0 []any
-
-		param0 []any
 	}
 	tests := []struct {
 		args    args
@@ -30,7 +26,7 @@ func Test_request_problemRequestGenericProblem(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "db99bc3a-1204-11ef-9efb-7af6acbff8ed",
+			name: "b0f4ee1e-12c2-11ef-828a-7af6acbff8ed",
 			args: args{
 
 				list: make([]any, 0, 10),
@@ -38,10 +34,6 @@ func Test_request_problemRequestGenericProblem(t *testing.T) {
 				process: nil,
 
 				batchSize: utils.Empty[int](),
-
-				param0: make([]any, 0, 10),
-
-				param0: make([]any, 0, 10),
 			},
 			wantErr: false,
 		},
@@ -55,7 +47,95 @@ func Test_request_problemRequestGenericProblem(t *testing.T) {
 				}
 			}()
 
-			RequestGenericProblem(tt.args.list, tt.args.process, tt.args.batchSize, tt.args.param0, tt.args.param0)
+			RequestGenericProblem(tt.args.list, tt.args.process, tt.args.batchSize)
+
+		})
+	}
+}
+
+func Test_request_problemRequestGeneric1Problem(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+		list []any
+
+		process func([]any) ([]any, string)
+
+		batchSize int
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "b0f4f4cc-12c2-11ef-828a-7af6acbff8ed",
+			args: args{
+
+				list: make([]any, 0, 10),
+
+				process: nil,
+
+				batchSize: utils.Empty[int](),
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestGeneric1Problem(tt.args.list, tt.args.process, tt.args.batchSize)
+
+		})
+	}
+}
+
+func Test_request_problemRequestGeneric3Problem(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+		list []any
+
+		process func([]any) ([]any, string)
+
+		batchSize int
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "b0f4f54e-12c2-11ef-828a-7af6acbff8ed",
+			args: args{
+
+				list: make([]any, 0, 10),
+
+				process: nil,
+
+				batchSize: utils.Empty[int](),
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			RequestGeneric3Problem(tt.args.list, tt.args.process, tt.args.batchSize)
 
 		})
 	}
