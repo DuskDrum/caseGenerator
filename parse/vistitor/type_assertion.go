@@ -1,6 +1,7 @@
 package vistitor
 
 import (
+	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
 	"fmt"
 	"github.com/samber/lo"
@@ -22,11 +23,11 @@ func (v *TypeAssertionVisitor) AddTypeAssertionSlice(key string, value *bo.Param
 	if v.TypeAssertionSlice == nil {
 		v.TypeAssertionSlice = make([]TypeAssertionMapBo, 0, 10)
 	}
-	bo := TypeAssertionMapBo{
+	mapBo := TypeAssertionMapBo{
 		Key:                  key,
 		TypeAssertionContent: value,
 	}
-	v.TypeAssertionSlice = append(v.TypeAssertionSlice, bo)
+	v.TypeAssertionSlice = append(v.TypeAssertionSlice, mapBo)
 }
 
 func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
@@ -48,7 +49,7 @@ func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
 }
 
 // CombinationTypeAssertionRequest 排列组合所有类型断言的可能性
-func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest() {
+func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest(reqList []generate.RequestDetail) []generate.RequestDetail {
 	// 1. 先按照key转为map<key,slice>
 	typeAssertionSliceMap := lo.GroupBy(v.TypeAssertionSlice, func(item TypeAssertionMapBo) string {
 		return item.Key
@@ -57,4 +58,6 @@ func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest() {
 	for i := range typeAssertionSliceMap {
 		fmt.Print(i)
 	}
+	// todo 代写
+	return nil
 }

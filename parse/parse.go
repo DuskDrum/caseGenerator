@@ -105,11 +105,13 @@ OuterLoop:
 		// 5. 获取typeParam
 		var typeParamVisitor vistitor.TypeParamVisitor
 		ast.Walk(&typeParamVisitor, cg)
-		// 6. 判断是否有类型断言
+		// 6. 定义所有request
+		vistitor.ParseRequest(decl.Type.Params)
+		// 7. 判断是否有类型断言
 		var typeAssertVisitor vistitor.TypeAssertionVisitor
 		ast.Walk(&typeAssertVisitor, cg)
-		// 7. 定义所有request
-		vistitor.ParseRequest(decl.Type.Params)
+		slice := typeAssertVisitor.TypeAssertionSlice
+		fmt.Println(slice)
 
 		// 8. 获取所有赋值、变量
 		var paramVisitor vistitor.ParamVisitor
