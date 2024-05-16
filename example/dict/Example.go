@@ -8,3 +8,8 @@ type ExampleDict struct {
 
 type ReceiverDict struct {
 }
+
+// TestReceiverFunc 用来模拟Receive方法
+func (r *ReceiverDict) TestReceiverFunc(v string) string {
+	return v
+}
