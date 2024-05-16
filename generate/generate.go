@@ -77,8 +77,6 @@ type RequestDetail struct {
 	RequestType string
 	// 请求值
 	RequestValue string
-	// 依赖的地址
-	ImportPkgPath []string
 	// 是否是省略号语法
 	IsEllipsis bool
 }
@@ -109,11 +107,6 @@ func GenFile(data GenMeta) {
 					requestNameString += "tt.args." + r.RequestName + "... , "
 				} else {
 					requestNameString += "tt.args." + r.RequestName + ", "
-				}
-				if len(r.ImportPkgPath) > 0 {
-					for _, v := range r.ImportPkgPath {
-						importList = append(importList, v)
-					}
 				}
 			}
 			requestNameString = strings.TrimRight(requestNameString, ", ")

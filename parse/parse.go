@@ -12,9 +12,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 func Extract(path string, excludedPaths ...string) error {
@@ -59,6 +58,11 @@ func Extract(path string, excludedPaths ...string) error {
 }
 
 func extractFile(filename string) (err error) {
+	defer func() {
+		if err := recover(); err != nil {
+			_ = fmt.Errorf("extractFile parse error: %s", err)
+		}
+	}()
 	// Parse file and create the AST
 	var fset = token.NewFileSet()
 	var f *ast.File
@@ -110,8 +114,15 @@ OuterLoop:
 		// 7. 判断是否有类型断言
 		var typeAssertVisitor vistitor.TypeAssertionVisitor
 		ast.Walk(&typeAssertVisitor, cg)
-		slice := typeAssertVisitor.TypeAssertionSlice
-		fmt.Println(slice)
+		combinationSLice := typeAssertVisitor.CombinationTypeAssertionRequest(bo.GetRequestDetailList())
+		for i, v := range combinationSLice {
+			cd := generate.CaseDetail{
+				CaseName:    methodInfo.MethodName + strconv.Itoa(i),
+				MethodName:  methodInfo.MethodName,
+				RequestList: v,
+			}
+			caseDetailList = append(caseDetailList, cd)
+		}
 
 		// 8. 获取所有赋值、变量
 		var paramVisitor vistitor.ParamVisitor
@@ -123,9 +134,8 @@ OuterLoop:
 		fmt.Printf("参数信息:%v \n", string(paramVMarshal))
 
 		// 10. 开始处理receiver
-		uu, _ := uuid.NewUUID()
 		cd := generate.CaseDetail{
-			CaseName:    uu.String(),
+			CaseName:    methodInfo.MethodName,
 			MethodName:  methodInfo.MethodName,
 			RequestList: bo.GetRequestDetailList(),
 		}

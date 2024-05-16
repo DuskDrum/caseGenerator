@@ -147,24 +147,7 @@ func (v *ParamVisitor) Visit(n ast.Node) ast.Visitor {
 				}
 				// 类型断言可以是 a.(type) 也可以是A.B.C.(type)
 			case *ast.TypeAssertExpr:
-				var tau bo.TypeAssertUnary
-				switch tae := nRhsType.X.(type) {
-				case *ast.Ident:
-					tau.ParamValue = tae.Name
-				case *ast.SelectorExpr:
-					tau.ParamValue = GetRelationFromSelectorExpr(tae)
-				default:
-					log.Fatalf("不支持此类型")
-				}
-				switch nr := nRhsType.Type.(type) {
-				case *ast.Ident:
-					tau.AssertType = nr.Name
-				case *ast.SelectorExpr:
-					tau.AssertType = GetRelationFromSelectorExpr(nr)
-				default:
-					log.Fatalf("不支持此类型")
-				}
-				ab.Y = &tau
+				continue
 			case *ast.UnaryExpr:
 				if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
 					ab.Y = CompositeLitParse(se)

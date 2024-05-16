@@ -3,7 +3,6 @@ package vistitor
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
-	"fmt"
 	"github.com/samber/lo"
 	"go/ast"
 	"log"
@@ -49,15 +48,28 @@ func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
 }
 
 // CombinationTypeAssertionRequest 排列组合所有类型断言的可能性
-func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest(reqList []generate.RequestDetail) []generate.RequestDetail {
+func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest(reqList []generate.RequestDetail) [][]generate.RequestDetail {
 	// 1. 先按照key转为map<key,slice>
-	typeAssertionSliceMap := lo.GroupBy(v.TypeAssertionSlice, func(item TypeAssertionMapBo) string {
-		return item.Key
+	typeAssertionRequestDetail := lo.Map(v.TypeAssertionSlice, func(item TypeAssertionMapBo, index int) generate.RequestDetail {
+		return generate.RequestDetail{
+			RequestName:  item.TypeAssertionContent.ParamName,
+			RequestType:  item.TypeAssertionContent.ParamType,
+			RequestValue: item.TypeAssertionContent.ParamInitValue,
+			IsEllipsis:   false,
+		}
 	})
-	// 2. 排列组合
-	for i := range typeAssertionSliceMap {
-		fmt.Print(i)
+	combinations := make([][]generate.RequestDetail, 0, 10)
+	// 2. 排列组合, 使用嵌套循环
+	for _, v := range typeAssertionRequestDetail {
+		detail := make([]generate.RequestDetail, 0, 10)
+		for _, v2 := range reqList {
+			if v.RequestName == v2.RequestName {
+				detail = append(detail, v)
+			} else {
+				detail = append(detail, v2)
+			}
+		}
+		combinations = append(combinations, detail)
 	}
-	// todo 代写
-	return nil
+	return combinations
 }

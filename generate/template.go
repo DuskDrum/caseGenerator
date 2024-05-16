@@ -14,7 +14,7 @@ import (
 )
 
 {{range .CaseDetailList}}
-func Test_{{.FileName}}{{.MethodName}}(t *testing.T) {
+func Test_{{.FileName}}{{.CaseName}}(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
