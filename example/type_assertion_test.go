@@ -8,7 +8,6 @@ import (
 	"caseGenerator/example/dict"
 	"caseGenerator/utils"
 	"context"
-	"errors"
 	"testing"
 	"time"
 )
@@ -17,7 +16,7 @@ func Test_type_assertionTypeAssertionAnyTest0(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req string
 	}
 	tests := []struct {
 		args    args
@@ -29,7 +28,7 @@ func Test_type_assertionTypeAssertionAnyTest0(t *testing.T) {
 			name: "TypeAssertionAnyTest0",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: utils.Empty[string](),
 			},
 			wantErr: false,
 		},
@@ -53,7 +52,7 @@ func Test_type_assertionTypeAssertionAnyTest1(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req bool
 	}
 	tests := []struct {
 		args    args
@@ -65,7 +64,7 @@ func Test_type_assertionTypeAssertionAnyTest1(t *testing.T) {
 			name: "TypeAssertionAnyTest1",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: utils.Empty[bool](),
 			},
 			wantErr: false,
 		},
@@ -89,7 +88,7 @@ func Test_type_assertionTypeAssertionAnyTest2(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req map[string]string
 	}
 	tests := []struct {
 		args    args
@@ -101,7 +100,7 @@ func Test_type_assertionTypeAssertionAnyTest2(t *testing.T) {
 			name: "TypeAssertionAnyTest2",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: make(map[string]string, 10),
 			},
 			wantErr: false,
 		},
@@ -125,7 +124,7 @@ func Test_type_assertionTypeAssertionAnyTest3(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req map[Example]dict.ExampleDict
 	}
 	tests := []struct {
 		args    args
@@ -137,7 +136,7 @@ func Test_type_assertionTypeAssertionAnyTest3(t *testing.T) {
 			name: "TypeAssertionAnyTest3",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: make(map[Example]dict.ExampleDict, 10),
 			},
 			wantErr: false,
 		},
@@ -161,7 +160,7 @@ func Test_type_assertionTypeAssertionAnyTest4(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req map[*Example]*dict.ExampleDict
 	}
 	tests := []struct {
 		args    args
@@ -173,7 +172,7 @@ func Test_type_assertionTypeAssertionAnyTest4(t *testing.T) {
 			name: "TypeAssertionAnyTest4",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: make(map[*Example]*dict.ExampleDict, 10),
 			},
 			wantErr: false,
 		},
@@ -197,7 +196,7 @@ func Test_type_assertionTypeAssertionAnyTest5(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req map[context.Context][]string
 	}
 	tests := []struct {
 		args    args
@@ -209,7 +208,7 @@ func Test_type_assertionTypeAssertionAnyTest5(t *testing.T) {
 			name: "TypeAssertionAnyTest5",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: make(map[context.Context][]string, 10),
 			},
 			wantErr: false,
 		},
@@ -233,7 +232,7 @@ func Test_type_assertionTypeAssertionAnyTest6(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req map[string][][][][][]*Example
 	}
 	tests := []struct {
 		args    args
@@ -245,7 +244,7 @@ func Test_type_assertionTypeAssertionAnyTest6(t *testing.T) {
 			name: "TypeAssertionAnyTest6",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: make(map[string][][][][][]*Example, 10),
 			},
 			wantErr: false,
 		},
@@ -269,7 +268,7 @@ func Test_type_assertionTypeAssertionAnyTest7(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req any
+		req map[string]map[*Example]map[context.Context]map[time.Time]bool
 	}
 	tests := []struct {
 		args    args
@@ -281,7 +280,7 @@ func Test_type_assertionTypeAssertionAnyTest7(t *testing.T) {
 			name: "TypeAssertionAnyTest7",
 			args: args{
 
-				req: utils.Empty[any](),
+				req: make(map[string]map[*Example]map[context.Context]map[time.Time]bool, 10),
 			},
 			wantErr: false,
 		},
@@ -341,7 +340,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest0(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 string
 
 		req2 any
 	}
@@ -355,7 +354,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest0(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest0",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: utils.Empty[string](),
 
 				req2: utils.Empty[any](),
 			},
@@ -381,7 +380,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest1(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 bool
 
 		req2 any
 	}
@@ -395,7 +394,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest1(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest1",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: utils.Empty[bool](),
 
 				req2: utils.Empty[any](),
 			},
@@ -421,7 +420,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest2(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 map[string]string
 
 		req2 any
 	}
@@ -435,7 +434,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest2(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest2",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: make(map[string]string, 10),
 
 				req2: utils.Empty[any](),
 			},
@@ -461,7 +460,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest3(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 map[Example]dict.ExampleDict
 
 		req2 any
 	}
@@ -475,7 +474,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest3(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest3",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: make(map[Example]dict.ExampleDict, 10),
 
 				req2: utils.Empty[any](),
 			},
@@ -501,7 +500,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest4(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 map[*Example]*dict.ExampleDict
 
 		req2 any
 	}
@@ -515,7 +514,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest4(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest4",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: make(map[*Example]*dict.ExampleDict, 10),
 
 				req2: utils.Empty[any](),
 			},
@@ -541,7 +540,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest5(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 map[context.Context][]string
 
 		req2 any
 	}
@@ -555,7 +554,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest5(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest5",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: make(map[context.Context][]string, 10),
 
 				req2: utils.Empty[any](),
 			},
@@ -581,7 +580,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest6(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 map[string][][][][][]*Example
 
 		req2 any
 	}
@@ -595,7 +594,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest6(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest6",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: make(map[string][][][][][]*Example, 10),
 
 				req2: utils.Empty[any](),
 			},
@@ -621,7 +620,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest7(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
-		req1 any
+		req1 map[string]map[*Example]map[context.Context]map[time.Time]bool
 
 		req2 any
 	}
@@ -635,7 +634,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest7(t *testing.T) {
 			name: "TypeMultipleAssertionAnyTest7",
 			args: args{
 
-				req1: utils.Empty[any](),
+				req1: make(map[string]map[*Example]map[context.Context]map[time.Time]bool, 10),
 
 				req2: utils.Empty[any](),
 			},
@@ -663,7 +662,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest8(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 string
 	}
 	tests := []struct {
 		args    args
@@ -677,7 +676,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest8(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: utils.Empty[string](),
 			},
 			wantErr: false,
 		},
@@ -703,7 +702,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest9(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 bool
 	}
 	tests := []struct {
 		args    args
@@ -717,7 +716,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest9(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: utils.Empty[bool](),
 			},
 			wantErr: false,
 		},
@@ -743,7 +742,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest10(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 map[string]string
 	}
 	tests := []struct {
 		args    args
@@ -757,7 +756,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest10(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: make(map[string]string, 10),
 			},
 			wantErr: false,
 		},
@@ -783,7 +782,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest11(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 map[Example]dict.ExampleDict
 	}
 	tests := []struct {
 		args    args
@@ -797,7 +796,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest11(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: make(map[Example]dict.ExampleDict, 10),
 			},
 			wantErr: false,
 		},
@@ -823,7 +822,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest12(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 map[*Example]*dict.ExampleDict
 	}
 	tests := []struct {
 		args    args
@@ -837,7 +836,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest12(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: make(map[*Example]*dict.ExampleDict, 10),
 			},
 			wantErr: false,
 		},
@@ -863,7 +862,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest13(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 map[context.Context][]string
 	}
 	tests := []struct {
 		args    args
@@ -877,7 +876,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest13(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: make(map[context.Context][]string, 10),
 			},
 			wantErr: false,
 		},
@@ -903,7 +902,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest14(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 map[string][][][][][]*Example
 	}
 	tests := []struct {
 		args    args
@@ -917,7 +916,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest14(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: make(map[string][][][][][]*Example, 10),
 			},
 			wantErr: false,
 		},
@@ -943,7 +942,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest15(t *testing.T) {
 	type args struct {
 		req1 any
 
-		req2 any
+		req2 map[string]map[*Example]map[context.Context]map[time.Time]bool
 	}
 	tests := []struct {
 		args    args
@@ -957,7 +956,7 @@ func Test_type_assertionTypeMultipleAssertionAnyTest15(t *testing.T) {
 
 				req1: utils.Empty[any](),
 
-				req2: utils.Empty[any](),
+				req2: make(map[string]map[*Example]map[context.Context]map[time.Time]bool, 10),
 			},
 			wantErr: false,
 		},

@@ -40,7 +40,7 @@ func Test_requestRequestSimple(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c7b92-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestSimple",
 			args: args{
 
 				req1: utils.Empty[string](),
@@ -90,7 +90,7 @@ func Test_requestRequestStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c7e08-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestStruct",
 			args: args{
 
 				req1: utils.Empty[Example](),
@@ -130,7 +130,7 @@ func Test_requestRequestPackStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c7eb2-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestPackStruct",
 			args: args{
 
 				req1: utils.Empty[dict.ExampleDict](),
@@ -188,7 +188,7 @@ func Test_requestRequestArray(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c7f2a-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestArray",
 			args: args{
 
 				req1: make([]string, 0, 10),
@@ -244,7 +244,7 @@ func Test_requestRequestEllipsis(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c7f52-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestEllipsis",
 			args: args{
 
 				req2: utils.Empty[string](),
@@ -288,7 +288,7 @@ func Test_requestRequestVariableParam(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c7f98-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestVariableParam",
 			args: args{
 
 				req1: utils.Empty[string](),
@@ -340,7 +340,7 @@ func Test_requestRequestMap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8010-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestMap",
 			args: args{
 
 				req1: make(map[string]string, 10),
@@ -398,7 +398,7 @@ func Test_requestRequestStar(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c806a-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestStar",
 			args: args{
 
 				req1: lo.ToPtr(utils.Empty[Example]()),
@@ -458,7 +458,7 @@ func Test_requestRequestChan(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c80ce-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestChan",
 			args: args{
 
 				req1: make(<-chan string),
@@ -510,7 +510,7 @@ func Test_requestRequestGeneric(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8100-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestGeneric",
 			args: args{
 
 				list: make([]any, 0, 10),
@@ -554,7 +554,7 @@ func Test_requestRequestGeneric1(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8132-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestGeneric1",
 			args: args{
 
 				list: make([]any, 0, 10),
@@ -598,7 +598,7 @@ func Test_requestRequestGeneric2(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c818c-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestGeneric2",
 			args: args{
 
 				list: make([]any, 0, 10),
@@ -638,7 +638,7 @@ func Test_requestRequestGenericValue(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c81dc-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestGenericValue",
 			args: args{
 
 				p: lo.ToPtr(utils.Empty[bool]()),
@@ -676,7 +676,7 @@ func Test_requestRequestGenericEquals(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8218-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestGenericEquals",
 			args: args{
 
 				s1: lo.ToPtr(utils.Empty[string]()),
@@ -716,7 +716,7 @@ func Test_requestRequestGenericNoEquals(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8240-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestGenericNoEquals",
 			args: args{
 
 				s1: lo.ToPtr(utils.Empty[string]()),
@@ -754,7 +754,7 @@ func Test_requestRequestGenericPointerToStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8272-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestGenericPointerToStruct",
 			args: args{
 
 				pointer: lo.ToPtr(utils.Empty[any]()),
@@ -790,7 +790,7 @@ func Test_requestToPoint(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8290-1372-11ef-98bb-7af6acbff8ed",
+			name: "ToPoint",
 			args: args{
 
 				source: utils.Empty[any](),
@@ -826,7 +826,7 @@ func Test_requestRequestFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c82d6-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestFunc",
 			args: args{
 
 				req1: nil,
@@ -862,7 +862,7 @@ func Test_requestRequestBlankFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c82f4-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestBlankFunc",
 			args: args{
 
 				req1: nil,
@@ -898,7 +898,7 @@ func Test_requestRequestResponseSimpleFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c83a8-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseSimpleFunc",
 			args: args{
 
 				param0: nil,
@@ -934,7 +934,7 @@ func Test_requestRequestResponseStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c83d0-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseStruct",
 			args: args{
 
 				param0: nil,
@@ -970,7 +970,7 @@ func Test_requestRequestResponsePackStruct(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8402-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponsePackStruct",
 			args: args{
 
 				param0: nil,
@@ -1006,7 +1006,7 @@ func Test_requestRequestResponseFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8448-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseFunc",
 			args: args{
 
 				param0: nil,
@@ -1042,7 +1042,7 @@ func Test_requestRequestResponseBlankFunc(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8470-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseBlankFunc",
 			args: args{
 
 				param0: nil,
@@ -1078,7 +1078,7 @@ func Test_requestRequestResponseArray(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c84f2-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseArray",
 			args: args{
 
 				param0: nil,
@@ -1114,7 +1114,7 @@ func Test_requestRequestResponseVariableParam(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c851a-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseVariableParam",
 			args: args{
 
 				param0: nil,
@@ -1150,7 +1150,7 @@ func Test_requestRequestResponseMap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c85a6-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseMap",
 			args: args{
 
 				param0: nil,
@@ -1186,7 +1186,7 @@ func Test_requestRequestResponseStar(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c8600-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseStar",
 			args: args{
 
 				param0: nil,
@@ -1222,7 +1222,7 @@ func Test_requestRequestResponseChan(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c865a-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseChan",
 			args: args{
 
 				param0: nil,
@@ -1258,7 +1258,7 @@ func Test_requestRequestResponseGeneric(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c868c-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseGeneric",
 			args: args{
 
 				param0: nil,
@@ -1294,7 +1294,7 @@ func Test_requestRequestResponseGenericValue(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "a06c86be-1372-11ef-98bb-7af6acbff8ed",
+			name: "RequestResponseGenericValue",
 			args: args{
 
 				param0: nil,

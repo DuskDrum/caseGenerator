@@ -2,6 +2,7 @@ package bo
 
 import (
 	"caseGenerator/generate"
+	"go/ast"
 	"strings"
 	"sync"
 )
@@ -12,8 +13,10 @@ var (
 	// TypeParamMap 用来存储TypeParam
 	TypeParamMap map[string]*ParamParseResult
 	// ImportList 依赖信息
-	ImportList     []string
-	AliasImportMap map[string]string
+	initImportList     []string
+	initAliasImportMap map[string]string
+
+	ImportList []string
 	// ParamNeedToMap 信息
 	ParamNeedToMap sync.Map
 	// receiverInfo receiver信息
@@ -59,11 +62,18 @@ func GetImportInfo() []string {
 	return ImportList
 }
 
-func InitImport() {
+func InitImport(af *ast.File) {
 	mu.Lock()
 	defer mu.Unlock()
-	ImportList = make([]string, 0, 10)
-	AliasImportMap = make(map[string]string, 10)
+	initImportList = make([]string, 0, 10)
+	initAliasImportMap = make(map[string]string, 10)
+	for _, importSpec := range af.Imports {
+		if importSpec.Name == nil {
+			appendInitImportList(importSpec.Path.Value)
+		} else {
+			appendInitAliasImport(importSpec.Name.Name, importSpec.Path.Value)
+		}
+	}
 }
 
 func AppendImportList(item string) {
@@ -72,20 +82,22 @@ func AppendImportList(item string) {
 	ImportList = append(ImportList, item)
 }
 
-func AppendAliasImport(key string, value string) {
-	mu.Lock()
-	defer mu.Unlock()
-	AliasImportMap[key] = value
+func appendInitImportList(item string) {
+	initImportList = append(initImportList, item)
+}
+
+func appendInitAliasImport(key string, value string) {
+	initAliasImportMap[key] = value
 }
 
 func GetImportPathFromAliasMap(name string) string {
-	s, ok := AliasImportMap[name]
+	s, ok := initAliasImportMap[name]
 	if ok {
 		result := strings.ReplaceAll(s, "\"", "")
 		result = name + " \"" + result + "\""
 		return result
 	}
-	for _, info := range ImportList {
+	for _, info := range initImportList {
 		xx := strings.ReplaceAll(info, "\"", "")
 		if strings.HasSuffix(xx, name) {
 			result := "\"" + xx + "\""

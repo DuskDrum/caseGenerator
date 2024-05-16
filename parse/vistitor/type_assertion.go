@@ -40,7 +40,7 @@ func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
 			log.Fatalf("未成功解析出节点的名称...")
 		}
 		// 获取 typeParam
-		parse := ParamParse(node.Type, "")
+		parse := ParamParse(node.Type, identName.Name)
 		v.AddTypeAssertionSlice(identName.Name, parse)
 	}
 

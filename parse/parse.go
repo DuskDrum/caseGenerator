@@ -73,8 +73,7 @@ func extractFile(filename string) (err error) {
 	// 1. 组装package、method信息
 	_ = bo.Package{PackagePath: "", PackageName: f.Name.Name}
 	// 2. 组装import信息
-	bo.InitImport()
-	importParse(f)
+	bo.InitImport(f)
 	// 组装所有方法
 	methods := make([]string, 0, 10)
 	caseDetailList := make([]generate.CaseDetail, 0, 10)
@@ -175,14 +174,4 @@ OuterLoop:
 	generate.GenFile(gm)
 
 	return
-}
-
-func importParse(af *ast.File) {
-	for _, importSpec := range af.Imports {
-		if importSpec.Name == nil {
-			bo.AppendImportList(importSpec.Path.Value)
-		} else {
-			bo.AppendAliasImport(importSpec.Name.Name, importSpec.Path.Value)
-		}
-	}
 }
