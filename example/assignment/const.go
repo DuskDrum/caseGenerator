@@ -16,3 +16,13 @@ func ConstAssignmentTest1() {
 		fmt.Print("CONST_CONFIF_KEY == config.key")
 	}
 }
+
+// ConstAssignmentTest2 使用 const进行赋值
+func ConstAssignmentTest2(str string) string {
+	rd := dict.ReceiverDict{}
+	receiverResult := rd.TestReceiverFunc(str)
+	if CONST_CONFIG_KEY == receiverResult {
+		fmt.Print("CONST_CONFIF_KEY == config.key")
+	}
+	return str
+}
