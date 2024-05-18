@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+// var的数据不处理
+
 var (
 	varConfigKey = "config.key"
 	varRd        = dict.ReceiverDict{}
