@@ -124,9 +124,9 @@ OuterLoop:
 		}
 
 		// 8. 获取所有赋值、变量
-		var paramVisitor vistitor.ParamVisitor
-		ast.Walk(&paramVisitor, cg)
-		paramVMarshal, err := json.Marshal(&paramVisitor)
+		var assignmentVisitor vistitor.AssignmentVisitor
+		ast.Walk(&assignmentVisitor, cg)
+		paramVMarshal, err := json.Marshal(&assignmentVisitor)
 		if err != nil {
 			continue
 		}
