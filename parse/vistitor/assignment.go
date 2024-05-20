@@ -58,7 +58,9 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			case *ast.CompositeLit:
 				ab.Y = CompositeLitParse(nRhsType)
 			case *ast.BasicLit:
-				// 基本字面值,数字或者字符串。跳过不解析
+			// 基本字面值,数字或者字符串。跳过不解析
+			case *ast.FuncLit:
+
 			default:
 				log.Fatalf("不支持此类型")
 			}
