@@ -5,18 +5,19 @@ import "fmt"
 // AnonymousFunctionTest1 匿名函数1
 func AnonymousFunctionTest1() {
 	// 定义一个接受回调函数的函数
-	performAction := func(callback func(int) int) int {
+	performAction := func(callback func(int) int) (int, error) {
 		result := callback(10)
-		return result * 2
+		return result * 2, nil
 	}
 
 	// 使用匿名函数作为回调函数
-	result := performAction(func(x int) int {
+	result, err := performAction(func(x int) int {
 		fmt.Println("Callback function called with", x)
 		return x + 5
 	})
 
 	fmt.Println("Result:", result) // 输出: Callback function called with 10, Result: 30
+	fmt.Println("Err:", err)       // 输出: Callback function called with 10, Result: 30
 }
 
 // AnonymousFunctionTest2 匿名函数2
