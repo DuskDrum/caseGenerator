@@ -24,15 +24,16 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			// 左边：变量，层级调用
 			// 右边：类型断言，赋值，方法
 			var ab bo.AssignmentBinary
+			var adi bo.AssignmentDetailInfo
 			switch nLhsType := nodeLhs.(type) {
 			case *ast.Ident:
 				name := nLhsType.Name
 				if name == "_" {
 					continue
 				}
-				ab.X = bo.ParamUnary{nLhsType.Name}
+				adi.LeftName = []string{nLhsType.Name}
 			case *ast.SelectorExpr:
-				ab.X = bo.ParamUnary{GetRelationFromSelectorExpr(nLhsType)}
+				adi.LeftName = []string{GetRelationFromSelectorExpr(nLhsType)}
 			}
 
 			switch nRhsType := node.Rhs[0].(type) {
@@ -60,10 +61,11 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			case *ast.BasicLit:
 			// 基本字面值,数字或者字符串。跳过不解析
 			case *ast.FuncLit:
-
+			// 内部函数，暂时不处理
 			default:
 				log.Fatalf("不支持此类型")
 			}
+			bo.AppendAssignmentDetailInfoToList(adi)
 			bo.AddParamNeedToMapDetail(ab.X.ParamValue, &BinaryParam{
 				ParamName:   ab.X.ParamValue,
 				BinaryParam: &ab,

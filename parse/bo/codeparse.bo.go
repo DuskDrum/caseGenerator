@@ -23,7 +23,16 @@ var (
 	receiverInfo *ReceiverInfo
 	// requestDetailList 请求详情列表
 	requestDetailList []generate.RequestDetail
+	// assignmentInfoList  赋值list
+	assignmentInfoList []AssignmentDetailInfo
 )
+
+func AppendAssignmentDetailInfoToList(info AssignmentDetailInfo) {
+	if len(assignmentInfoList) == 0 {
+		assignmentInfoList = make([]AssignmentDetailInfo, 0, 10)
+	}
+	assignmentInfoList = append(assignmentInfoList, info)
+}
 
 func AppendRequestDetailToList(gr generate.RequestDetail) {
 	mu.Lock()
