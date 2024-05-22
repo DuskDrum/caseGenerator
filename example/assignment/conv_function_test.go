@@ -5,10 +5,11 @@
 package assignment
 
 import (
+	"caseGenerator/utils"
 	"testing"
 )
 
-func Test_anonymous_functionAnonymousFunctionTest1(t *testing.T) {
+func Test_conv_functionConvFunctionTest1(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
@@ -20,7 +21,7 @@ func Test_anonymous_functionAnonymousFunctionTest1(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "AnonymousFunctionTest1",
+			name:    "ConvFunctionTest1",
 			args:    args{},
 			wantErr: false,
 		},
@@ -34,13 +35,13 @@ func Test_anonymous_functionAnonymousFunctionTest1(t *testing.T) {
 				}
 			}()
 
-			AnonymousFunctionTest1()
+			ConvFunctionTest1()
 
 		})
 	}
 }
 
-func Test_anonymous_functionAnonymousFunctionTest2(t *testing.T) {
+func Test_conv_functionConvFunctionTest2(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
@@ -52,7 +53,7 @@ func Test_anonymous_functionAnonymousFunctionTest2(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "AnonymousFunctionTest2",
+			name:    "ConvFunctionTest2",
 			args:    args{},
 			wantErr: false,
 		},
@@ -66,7 +67,7 @@ func Test_anonymous_functionAnonymousFunctionTest2(t *testing.T) {
 				}
 			}()
 
-			AnonymousFunctionTest2()
+			ConvFunctionTest2()
 
 		})
 	}

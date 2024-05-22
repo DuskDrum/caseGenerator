@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func Test_anonymous_functionAnonymousFunctionTest1(t *testing.T) {
+func Test_closure_functionClosureFunctionTest1(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
@@ -20,7 +20,7 @@ func Test_anonymous_functionAnonymousFunctionTest1(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "AnonymousFunctionTest1",
+			name:    "ClosureFunctionTest1",
 			args:    args{},
 			wantErr: false,
 		},
@@ -34,13 +34,13 @@ func Test_anonymous_functionAnonymousFunctionTest1(t *testing.T) {
 				}
 			}()
 
-			AnonymousFunctionTest1()
+			ClosureFunctionTest1()
 
 		})
 	}
 }
 
-func Test_anonymous_functionAnonymousFunctionTest2(t *testing.T) {
+func Test_closure_functionClosureFunctionTest2(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
@@ -52,7 +52,7 @@ func Test_anonymous_functionAnonymousFunctionTest2(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "AnonymousFunctionTest2",
+			name:    "ClosureFunctionTest2",
 			args:    args{},
 			wantErr: false,
 		},
@@ -66,7 +66,39 @@ func Test_anonymous_functionAnonymousFunctionTest2(t *testing.T) {
 				}
 			}()
 
-			AnonymousFunctionTest2()
+			ClosureFunctionTest2()
+
+		})
+	}
+}
+
+func Test_closure_functionClosureFunctionTest3(t *testing.T) {
+	type fields struct {
+	}
+	type args struct {
+	}
+	tests := []struct {
+		args    args
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "ClosureFunctionTest3",
+			args:    args{},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				//统一处理
+				if err := recover(); err != nil {
+					t.Log("recover了")
+				}
+			}()
+
+			ClosureFunctionTest3()
 
 		})
 	}

@@ -22,7 +22,6 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 	case *ast.AssignStmt:
 		// 左边：变量，层级调用
 		// 右边：类型断言，赋值，方法
-		var ab bo.AssignmentBinary
 		var adi bo.AssignmentDetailInfo
 		adi.LeftName = make([]string, 0, 10)
 		for _, nodeLhs := range node.Lhs {
@@ -42,9 +41,13 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 		case *ast.CallExpr:
 			switch callFunType := nRhsType.Fun.(type) {
 			case *ast.Ident:
-				ab.Y = &bo.ParamUnary{callFunType.Name}
+				adi.RightType = "call"
+				adi.RightFormula = callFunType.Name
+				adi.RightEmptyValue = "nil"
 			case *ast.SelectorExpr:
-				ab.Y = &bo.ParamUnary{GetRelationFromSelectorExpr(callFunType)}
+				adi.RightType = "call"
+				adi.RightFormula = GetRelationFromSelectorExpr(callFunType)
+				adi.RightEmptyValue = "nil"
 			default:
 				log.Fatalf("不支持此类型")
 			}
@@ -53,13 +56,19 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			// 类型断言已在上面处理了
 		case *ast.UnaryExpr:
 			if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
-				ab.Y = CompositeLitParse(se)
+				adi.RightType = "composite"
+				adi.RightFormula = CompositeLitParse(se).ResultStructName
+				adi.RightEmptyValue = "nil"
 			}
 			if ident, ok := nRhsType.X.(*ast.Ident); ok {
-				ab.Y = &bo.ParamUnary{ident.Name}
+				adi.RightType = "composite"
+				adi.RightFormula = ident.Name
+				adi.RightEmptyValue = "nil"
 			}
 		case *ast.CompositeLit:
-			ab.Y = CompositeLitParse(nRhsType)
+			adi.RightType = "composite"
+			adi.RightFormula = CompositeLitParse(nRhsType).ResultStructName
+			adi.RightEmptyValue = "nil"
 		case *ast.BasicLit:
 		// 基本字面值,数字或者字符串。跳过不解析
 		case *ast.FuncLit:

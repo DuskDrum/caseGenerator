@@ -5,6 +5,10 @@
 package assignment
 
 import (
+	"caseGenerator/example"
+	"caseGenerator/example/dict"
+	"caseGenerator/utils"
+	"github.com/samber/lo"
 	"testing"
 )
 

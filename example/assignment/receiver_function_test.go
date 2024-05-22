@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func Test_varVarAssignmentTest1(t *testing.T) {
+func Test_receiver_functionReceiverFunctionTest1(t *testing.T) {
 	type fields struct {
 	}
 	type args struct {
@@ -24,7 +24,7 @@ func Test_varVarAssignmentTest1(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "VarAssignmentTest1",
+			name:    "ReceiverFunctionTest1",
 			args:    args{},
 			wantErr: false,
 		},
@@ -38,7 +38,7 @@ func Test_varVarAssignmentTest1(t *testing.T) {
 				}
 			}()
 
-			VarAssignmentTest1()
+			ReceiverFunctionTest1()
 
 		})
 	}
