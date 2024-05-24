@@ -3,6 +3,7 @@ package vistitor
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
+	"caseGenerator/parse/enum"
 	"fmt"
 	"go/ast"
 	"log"
@@ -23,7 +24,7 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 		// 左边：变量，层级调用
 		// 右边：类型断言，赋值，方法
 		var adi bo.AssignmentDetailInfo
-		adi.LeftName = make([]string, 0, 10)
+		adi.LeftName = make([]bo.ParamParseResult, 0, 10)
 		for _, nodeLhs := range node.Lhs {
 			switch nLhsType := nodeLhs.(type) {
 			case *ast.Ident:
@@ -41,11 +42,11 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 		case *ast.CallExpr:
 			switch callFunType := nRhsType.Fun.(type) {
 			case *ast.Ident:
-				adi.RightType = "call"
+				adi.RightType = enum.RIGHT_TYPE_CALL
 				adi.RightFormula = callFunType.Name
 				adi.RightEmptyValue = "nil"
 			case *ast.SelectorExpr:
-				adi.RightType = "call"
+				adi.RightType = enum.RIGHT_TYPE_CALL
 				adi.RightFormula = GetRelationFromSelectorExpr(callFunType)
 				adi.RightEmptyValue = "nil"
 			default:
@@ -56,17 +57,17 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			// 类型断言已在上面处理了
 		case *ast.UnaryExpr:
 			if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
-				adi.RightType = "composite"
+				adi.RightType = enum.RIGHT_TYPE_COMPOSITE
 				adi.RightFormula = CompositeLitParse(se).ResultStructName
 				adi.RightEmptyValue = "nil"
 			}
 			if ident, ok := nRhsType.X.(*ast.Ident); ok {
-				adi.RightType = "composite"
+				adi.RightType = enum.RIGHT_TYPE_COMPOSITE
 				adi.RightFormula = ident.Name
 				adi.RightEmptyValue = "nil"
 			}
 		case *ast.CompositeLit:
-			adi.RightType = "composite"
+			adi.RightType = enum.RIGHT_TYPE_COMPOSITE
 			adi.RightFormula = CompositeLitParse(nRhsType).ResultStructName
 			adi.RightEmptyValue = "nil"
 		case *ast.BasicLit:
@@ -74,7 +75,7 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 		case *ast.FuncLit:
 			funcType := nRhsType.Type
 			paramType := parseFuncType(funcType)
-			adi.RightType = "function"
+			adi.RightType = enum.RIGHT_TYPE_FUNCTION
 			adi.RightFormula = paramType
 			adi.RightEmptyValue = "nil"
 		// 内部函数，暂时不处理

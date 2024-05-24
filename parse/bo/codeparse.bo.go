@@ -25,7 +25,22 @@ var (
 	requestDetailList []generate.RequestDetail
 	// assignmentInfoList  赋值list
 	assignmentInfoList []AssignmentDetailInfo
+	// mockInfoList mock数据列表
+	mockInfoList []MockInstruct
 )
+
+func AppendMockInfoList(item MockInstruct) {
+	mu.Lock()
+	defer mu.Unlock()
+	if mockInfoList == nil {
+		mockInfoList = make([]MockInstruct, 0, 10)
+	}
+	mockInfoList = append(mockInfoList, item)
+}
+
+func GetMockInfoList() []MockInstruct {
+	return mockInfoList
+}
 
 func AppendAssignmentDetailInfoToList(info AssignmentDetailInfo) {
 	if len(assignmentInfoList) == 0 {

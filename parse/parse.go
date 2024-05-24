@@ -3,6 +3,7 @@ package parse
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
+	"caseGenerator/parse/enum"
 	"caseGenerator/parse/vistitor"
 	"encoding/json"
 	"fmt"
@@ -133,7 +134,19 @@ OuterLoop:
 			fmt.Printf("遍历所有赋值失败，详情为:%s", err.Error())
 
 		}
-		fmt.Printf("遍历所有赋值为:%+v", marshal)
+		fmt.Printf("遍历所有赋值为:%+v", string(marshal))
+		for _, v := range list {
+			if v.RightType == enum.RIGHT_TYPE_CALL {
+				// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+				// 	"github.com/bytedance/mockey"
+				bo.AppendImportList("\"github.com/bytedance/mockey\"")
+				bo.AppendMockInfoList(bo.MockInstruct{
+					MockName:  v.,
+					MockValue: "",
+					MockType:  "",
+				})
+			}
+		}
 
 		// 10. 开始处理receiver
 		cd := generate.CaseDetail{
