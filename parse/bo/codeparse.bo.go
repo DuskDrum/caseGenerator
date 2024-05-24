@@ -34,6 +34,10 @@ func AppendAssignmentDetailInfoToList(info AssignmentDetailInfo) {
 	assignmentInfoList = append(assignmentInfoList, info)
 }
 
+func GetAssignmentDetailInfoList() []AssignmentDetailInfo {
+	return assignmentInfoList
+}
+
 func AppendRequestDetailToList(gr generate.RequestDetail) {
 	mu.Lock()
 	defer mu.Unlock()

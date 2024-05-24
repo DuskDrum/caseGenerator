@@ -11,6 +11,4 @@ type AssignmentDetailInfo struct {
 	RightEmptyValue string
 	// 等式右边的mock值
 	RightFillingValue string
-	// mock公式
-	MockFactors string
 }

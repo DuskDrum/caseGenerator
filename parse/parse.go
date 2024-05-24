@@ -126,11 +126,14 @@ OuterLoop:
 		// 8. 获取所有赋值、变量
 		var assignmentVisitor vistitor.AssignmentVisitor
 		ast.Walk(&assignmentVisitor, cg)
-		paramVMarshal, err := json.Marshal(&assignmentVisitor)
+		// 8.1 遍历所有赋值和变量
+		list := bo.GetAssignmentDetailInfoList()
+		marshal, err := json.Marshal(list)
 		if err != nil {
-			continue
+			fmt.Printf("遍历所有赋值失败，详情为:%s", err.Error())
+
 		}
-		fmt.Printf("参数信息:%v \n", string(paramVMarshal))
+		fmt.Printf("遍历所有赋值为:%+v", marshal)
 
 		// 10. 开始处理receiver
 		cd := generate.CaseDetail{
