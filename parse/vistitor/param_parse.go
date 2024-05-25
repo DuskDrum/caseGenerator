@@ -303,3 +303,36 @@ func parseFuncType(dbType *ast.FuncType) string {
 	}
 	return paramType
 }
+
+// ParseFuncTypeParamParseResult 解析结果，第一个响应是请求参数列表，第二个参数是响应参数列表
+func ParseFuncTypeParamParseResult(dbType *ast.FuncType) ([]bo.ParamParseResult, []bo.ParamParseResult) {
+	// 请求参数列表
+	requests := make([]bo.ParamParseResult, 0, 10)
+	// 响应参数列表
+	results := make([]bo.ParamParseResult, 0, 10)
+	// 解析func的入参
+	list := dbType.Params.List
+	for _, v := range list {
+		param := ParseParamWithoutInit(v.Type, "")
+		requests = append(requests, *param)
+	}
+	// 解析func的出参
+	if dbType.Results == nil || dbType.Results.List == nil {
+		return requests, results
+	}
+	fields := dbType.Results.List
+	if len(fields) > 0 {
+		for _, v := range fields {
+			if len(v.Names) > 0 {
+				for _, name := range v.Names {
+					param := ParseParamWithoutInit(v.Type, name.Name)
+					results = append(results, *param)
+				}
+			} else if v.Type != nil {
+				param := ParseParamWithoutInit(v.Type, "param")
+				results = append(results, *param)
+			}
+		}
+	}
+	return requests, results
+}

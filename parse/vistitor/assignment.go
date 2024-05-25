@@ -26,16 +26,8 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 		var adi bo.AssignmentDetailInfo
 		adi.LeftName = make([]bo.ParamParseResult, 0, 10)
 		for _, nodeLhs := range node.Lhs {
-			switch nLhsType := nodeLhs.(type) {
-			case *ast.Ident:
-				name := nLhsType.Name
-				if name == "_" {
-					continue
-				}
-				adi.LeftName = append(adi.LeftName, nLhsType.Name)
-			case *ast.SelectorExpr:
-				adi.LeftName = append(adi.LeftName, GetRelationFromSelectorExpr(nLhsType))
-			}
+			parseResult := ParseParamWithoutInit(nodeLhs, "")
+			adi.LeftName = append(adi.LeftName, *parseResult)
 		}
 
 		switch nRhsType := node.Rhs[0].(type) {
@@ -44,11 +36,14 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			case *ast.Ident:
 				adi.RightType = enum.RIGHT_TYPE_CALL
 				adi.RightFormula = callFunType.Name
-				adi.RightEmptyValue = "nil"
+				adi.RightFunctionParam = []string{"nil"}
+				adi.LeftResultType = []string{"nil"}
 			case *ast.SelectorExpr:
 				adi.RightType = enum.RIGHT_TYPE_CALL
 				adi.RightFormula = GetRelationFromSelectorExpr(callFunType)
-				adi.RightEmptyValue = "nil"
+				adi.RightFunctionParam = []string{"nil"}
+				adi.LeftResultType = []string{"nil"}
+
 			default:
 				log.Fatalf("不支持此类型")
 			}
@@ -59,26 +54,30 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
 				adi.RightType = enum.RIGHT_TYPE_COMPOSITE
 				adi.RightFormula = CompositeLitParse(se).ResultStructName
-				adi.RightEmptyValue = "nil"
+				adi.RightFunctionParam = []string{"nil"}
+				adi.LeftResultType = []string{"nil"}
 			}
 			if ident, ok := nRhsType.X.(*ast.Ident); ok {
 				adi.RightType = enum.RIGHT_TYPE_COMPOSITE
 				adi.RightFormula = ident.Name
-				adi.RightEmptyValue = "nil"
+				adi.RightFunctionParam = []string{"nil"}
+				adi.LeftResultType = []string{"nil"}
 			}
 		case *ast.CompositeLit:
 			adi.RightType = enum.RIGHT_TYPE_COMPOSITE
 			adi.RightFormula = CompositeLitParse(nRhsType).ResultStructName
-			adi.RightEmptyValue = "nil"
+			adi.RightFunctionParam = []string{"nil"}
+			adi.LeftResultType = []string{"nil"}
 		case *ast.BasicLit:
 		// 基本字面值,数字或者字符串。跳过不解析
 		case *ast.FuncLit:
 			funcType := nRhsType.Type
 			paramType := parseFuncType(funcType)
-			adi.RightType = enum.RIGHT_TYPE_FUNCTION
 			adi.RightFormula = paramType
-			adi.RightEmptyValue = "nil"
-		// 内部函数，暂时不处理
+			adi.RightFunctionParam = []string{}
+			// 匿名函数
+			adi.RightType = enum.RIGHT_TYPE_FUNCTION
+			adi.LeftResultType = []string{enum.RIGHT_TYPE_FUNCTION.Code}
 		default:
 			log.Fatalf("不支持此类型")
 		}

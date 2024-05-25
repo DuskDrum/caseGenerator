@@ -141,9 +141,10 @@ OuterLoop:
 				// 	"github.com/bytedance/mockey"
 				bo.AppendImportList("\"github.com/bytedance/mockey\"")
 				bo.AppendMockInfoList(bo.MockInstruct{
-					MockName:  v.,
-					MockValue: "",
-					MockType:  "",
+					MockResponseParam:  v.LeftName,
+					MockFunction:       v.RightFormula,
+					MockFunctionParam:  nil,
+					MockFunctionResult: nil,
 				})
 			}
 		}
