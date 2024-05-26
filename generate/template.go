@@ -57,7 +57,8 @@ func Test_{{.FileName}}{{.CaseName}}(t *testing.T) {
 			{{else}}
 			{{if .MockList}}
 			{{range .MockList}}
-			Mock({{.MockDealMethod}}).Return({{.MockResponseList}}).Build()
+			{{.MockNumber}} := bytedanceMockey.Mock({{.MockFunction}}).Return({{.MockReturns}}).Build()
+			defer {{.MockNumber}}.UnPatch()
 			{{end}}
 			{{end}}
 			{{.MethodName}}({{.RequestNameString}})

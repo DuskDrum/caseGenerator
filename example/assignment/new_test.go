@@ -8,7 +8,8 @@ import (
 	"caseGenerator/example"
 	"caseGenerator/example/dict"
 	"caseGenerator/utils"
-	"github.com/samber/lo"
+	"fmt"
+	bytedanceMockey "github.com/bytedance/mockey"
 	"testing"
 )
 
@@ -37,6 +38,2562 @@ func Test_newNewAssignmentTest1(t *testing.T) {
 					t.Log("recover了")
 				}
 			}()
+
+			mock0 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock0.UnPatch()
+
+			mock1 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock1.UnPatch()
+
+			mock2 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock2.UnPatch()
+
+			mock3 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock3.UnPatch()
+
+			mock4 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock4.UnPatch()
+
+			mock5 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock5.UnPatch()
+
+			mock6 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock6.UnPatch()
+
+			mock7 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock7.UnPatch()
+
+			mock8 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock8.UnPatch()
+
+			mock9 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock9.UnPatch()
+
+			mock10 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock10.UnPatch()
+
+			mock11 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock11.UnPatch()
+
+			mock12 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock12.UnPatch()
+
+			mock13 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock13.UnPatch()
+
+			mock14 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock14.UnPatch()
+
+			mock15 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock15.UnPatch()
+
+			mock16 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock16.UnPatch()
+
+			mock17 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock17.UnPatch()
+
+			mock18 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock18.UnPatch()
+
+			mock19 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock19.UnPatch()
+
+			mock20 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock20.UnPatch()
+
+			mock21 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock21.UnPatch()
+
+			mock22 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock22.UnPatch()
+
+			mock23 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock23.UnPatch()
+
+			mock24 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock24.UnPatch()
+
+			mock25 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock25.UnPatch()
+
+			mock26 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock26.UnPatch()
+
+			mock27 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock27.UnPatch()
+
+			mock28 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock28.UnPatch()
+
+			mock29 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock29.UnPatch()
+
+			mock30 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock30.UnPatch()
+
+			mock31 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock31.UnPatch()
+
+			mock32 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock32.UnPatch()
+
+			mock33 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock33.UnPatch()
+
+			mock34 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock34.UnPatch()
+
+			mock35 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock35.UnPatch()
+
+			mock36 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock36.UnPatch()
+
+			mock37 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock37.UnPatch()
+
+			mock38 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock38.UnPatch()
+
+			mock39 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock39.UnPatch()
+
+			mock40 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock40.UnPatch()
+
+			mock41 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock41.UnPatch()
+
+			mock42 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock42.UnPatch()
+
+			mock43 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock43.UnPatch()
+
+			mock44 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock44.UnPatch()
+
+			mock45 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock45.UnPatch()
+
+			mock46 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock46.UnPatch()
+
+			mock47 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock47.UnPatch()
+
+			mock48 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock48.UnPatch()
+
+			mock49 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock49.UnPatch()
+
+			mock50 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock50.UnPatch()
+
+			mock51 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock51.UnPatch()
+
+			mock52 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock52.UnPatch()
+
+			mock53 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock53.UnPatch()
+
+			mock54 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock54.UnPatch()
+
+			mock55 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock55.UnPatch()
+
+			mock56 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock56.UnPatch()
+
+			mock57 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock57.UnPatch()
+
+			mock58 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock58.UnPatch()
+
+			mock59 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock59.UnPatch()
+
+			mock60 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock60.UnPatch()
+
+			mock61 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock61.UnPatch()
+
+			mock62 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock62.UnPatch()
+
+			mock63 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock63.UnPatch()
+
+			mock64 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock64.UnPatch()
+
+			mock65 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock65.UnPatch()
+
+			mock66 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock66.UnPatch()
+
+			mock67 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock67.UnPatch()
+
+			mock68 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock68.UnPatch()
+
+			mock69 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock69.UnPatch()
+
+			mock70 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock70.UnPatch()
+
+			mock71 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock71.UnPatch()
+
+			mock72 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock72.UnPatch()
+
+			mock73 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock73.UnPatch()
+
+			mock74 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock74.UnPatch()
+
+			mock75 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock75.UnPatch()
+
+			mock76 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock76.UnPatch()
+
+			mock77 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock77.UnPatch()
+
+			mock78 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock78.UnPatch()
+
+			mock79 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock79.UnPatch()
+
+			mock80 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock80.UnPatch()
+
+			mock81 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock81.UnPatch()
+
+			mock82 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock82.UnPatch()
+
+			mock83 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock83.UnPatch()
+
+			mock84 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock84.UnPatch()
+
+			mock85 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock85.UnPatch()
+
+			mock86 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock86.UnPatch()
+
+			mock87 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock87.UnPatch()
+
+			mock88 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock88.UnPatch()
+
+			mock89 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock89.UnPatch()
+
+			mock90 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock90.UnPatch()
+
+			mock91 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock91.UnPatch()
+
+			mock92 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock92.UnPatch()
+
+			mock93 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock93.UnPatch()
+
+			mock94 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock94.UnPatch()
+
+			mock95 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock95.UnPatch()
+
+			mock96 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock96.UnPatch()
+
+			mock97 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock97.UnPatch()
+
+			mock98 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock98.UnPatch()
+
+			mock99 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock99.UnPatch()
+
+			mock100 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock100.UnPatch()
+
+			mock101 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock101.UnPatch()
+
+			mock102 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock102.UnPatch()
+
+			mock103 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock103.UnPatch()
+
+			mock104 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock104.UnPatch()
+
+			mock105 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock105.UnPatch()
+
+			mock106 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock106.UnPatch()
+
+			mock107 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock107.UnPatch()
+
+			mock108 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock108.UnPatch()
+
+			mock109 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock109.UnPatch()
+
+			mock110 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock110.UnPatch()
+
+			mock111 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock111.UnPatch()
+
+			mock112 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock112.UnPatch()
+
+			mock113 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock113.UnPatch()
+
+			mock114 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock114.UnPatch()
+
+			mock115 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock115.UnPatch()
+
+			mock116 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock116.UnPatch()
+
+			mock117 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock117.UnPatch()
+
+			mock118 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock118.UnPatch()
+
+			mock119 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock119.UnPatch()
+
+			mock120 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock120.UnPatch()
+
+			mock121 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock121.UnPatch()
+
+			mock122 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock122.UnPatch()
+
+			mock123 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock123.UnPatch()
+
+			mock124 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock124.UnPatch()
+
+			mock125 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock125.UnPatch()
+
+			mock126 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock126.UnPatch()
+
+			mock127 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock127.UnPatch()
+
+			mock128 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock128.UnPatch()
+
+			mock129 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock129.UnPatch()
+
+			mock130 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock130.UnPatch()
+
+			mock131 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock131.UnPatch()
+
+			mock132 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock132.UnPatch()
+
+			mock133 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock133.UnPatch()
+
+			mock134 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock134.UnPatch()
+
+			mock135 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock135.UnPatch()
+
+			mock136 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock136.UnPatch()
+
+			mock137 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock137.UnPatch()
+
+			mock138 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock138.UnPatch()
+
+			mock139 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock139.UnPatch()
+
+			mock140 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock140.UnPatch()
+
+			mock141 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock141.UnPatch()
+
+			mock142 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock142.UnPatch()
+
+			mock143 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock143.UnPatch()
+
+			mock144 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock144.UnPatch()
+
+			mock145 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock145.UnPatch()
+
+			mock146 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock146.UnPatch()
+
+			mock147 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock147.UnPatch()
+
+			mock148 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock148.UnPatch()
+
+			mock149 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock149.UnPatch()
+
+			mock150 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock150.UnPatch()
+
+			mock151 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock151.UnPatch()
+
+			mock152 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock152.UnPatch()
+
+			mock153 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock153.UnPatch()
+
+			mock154 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock154.UnPatch()
+
+			mock155 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock155.UnPatch()
+
+			mock156 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock156.UnPatch()
+
+			mock157 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock157.UnPatch()
+
+			mock158 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock158.UnPatch()
+
+			mock159 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock159.UnPatch()
+
+			mock160 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock160.UnPatch()
+
+			mock161 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock161.UnPatch()
+
+			mock162 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock162.UnPatch()
+
+			mock163 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock163.UnPatch()
+
+			mock164 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock164.UnPatch()
+
+			mock165 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock165.UnPatch()
+
+			mock166 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock166.UnPatch()
+
+			mock167 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock167.UnPatch()
+
+			mock168 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock168.UnPatch()
+
+			mock169 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock169.UnPatch()
+
+			mock170 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock170.UnPatch()
+
+			mock171 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock171.UnPatch()
+
+			mock172 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock172.UnPatch()
+
+			mock173 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock173.UnPatch()
+
+			mock174 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock174.UnPatch()
+
+			mock175 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock175.UnPatch()
+
+			mock176 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock176.UnPatch()
+
+			mock177 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock177.UnPatch()
+
+			mock178 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock178.UnPatch()
+
+			mock179 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock179.UnPatch()
+
+			mock180 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock180.UnPatch()
+
+			mock181 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock181.UnPatch()
+
+			mock182 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock182.UnPatch()
+
+			mock183 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock183.UnPatch()
+
+			mock184 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock184.UnPatch()
+
+			mock185 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock185.UnPatch()
+
+			mock186 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock186.UnPatch()
+
+			mock187 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock187.UnPatch()
+
+			mock188 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock188.UnPatch()
+
+			mock189 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock189.UnPatch()
+
+			mock190 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock190.UnPatch()
+
+			mock191 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock191.UnPatch()
+
+			mock192 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock192.UnPatch()
+
+			mock193 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock193.UnPatch()
+
+			mock194 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock194.UnPatch()
+
+			mock195 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock195.UnPatch()
+
+			mock196 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock196.UnPatch()
+
+			mock197 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock197.UnPatch()
+
+			mock198 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock198.UnPatch()
+
+			mock199 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock199.UnPatch()
+
+			mock200 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock200.UnPatch()
+
+			mock201 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock201.UnPatch()
+
+			mock202 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock202.UnPatch()
+
+			mock203 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock203.UnPatch()
+
+			mock204 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock204.UnPatch()
+
+			mock205 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock205.UnPatch()
+
+			mock206 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock206.UnPatch()
+
+			mock207 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock207.UnPatch()
+
+			mock208 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock208.UnPatch()
+
+			mock209 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock209.UnPatch()
+
+			mock210 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock210.UnPatch()
+
+			mock211 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock211.UnPatch()
+
+			mock212 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock212.UnPatch()
+
+			mock213 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock213.UnPatch()
+
+			mock214 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock214.UnPatch()
+
+			mock215 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock215.UnPatch()
+
+			mock216 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock216.UnPatch()
+
+			mock217 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock217.UnPatch()
+
+			mock218 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock218.UnPatch()
+
+			mock219 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock219.UnPatch()
+
+			mock220 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock220.UnPatch()
+
+			mock221 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock221.UnPatch()
+
+			mock222 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock222.UnPatch()
+
+			mock223 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock223.UnPatch()
+
+			mock224 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock224.UnPatch()
+
+			mock225 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock225.UnPatch()
+
+			mock226 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock226.UnPatch()
+
+			mock227 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock227.UnPatch()
+
+			mock228 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock228.UnPatch()
+
+			mock229 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock229.UnPatch()
+
+			mock230 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock230.UnPatch()
+
+			mock231 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock231.UnPatch()
+
+			mock232 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock232.UnPatch()
+
+			mock233 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock233.UnPatch()
+
+			mock234 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock234.UnPatch()
+
+			mock235 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock235.UnPatch()
+
+			mock236 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock236.UnPatch()
+
+			mock237 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock237.UnPatch()
+
+			mock238 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock238.UnPatch()
+
+			mock239 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock239.UnPatch()
+
+			mock240 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock240.UnPatch()
+
+			mock241 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock241.UnPatch()
+
+			mock242 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock242.UnPatch()
+
+			mock243 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock243.UnPatch()
+
+			mock244 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock244.UnPatch()
+
+			mock245 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock245.UnPatch()
+
+			mock246 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock246.UnPatch()
+
+			mock247 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock247.UnPatch()
+
+			mock248 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock248.UnPatch()
+
+			mock249 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock249.UnPatch()
+
+			mock250 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock250.UnPatch()
+
+			mock251 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock251.UnPatch()
+
+			mock252 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock252.UnPatch()
+
+			mock253 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock253.UnPatch()
+
+			mock254 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock254.UnPatch()
+
+			mock255 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock255.UnPatch()
+
+			mock256 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock256.UnPatch()
+
+			mock257 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock257.UnPatch()
+
+			mock258 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock258.UnPatch()
+
+			mock259 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock259.UnPatch()
+
+			mock260 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock260.UnPatch()
+
+			mock261 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock261.UnPatch()
+
+			mock262 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock262.UnPatch()
+
+			mock263 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock263.UnPatch()
+
+			mock264 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock264.UnPatch()
+
+			mock265 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock265.UnPatch()
+
+			mock266 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock266.UnPatch()
+
+			mock267 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock267.UnPatch()
+
+			mock268 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock268.UnPatch()
+
+			mock269 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock269.UnPatch()
+
+			mock270 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock270.UnPatch()
+
+			mock271 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock271.UnPatch()
+
+			mock272 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock272.UnPatch()
+
+			mock273 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock273.UnPatch()
+
+			mock274 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock274.UnPatch()
+
+			mock275 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock275.UnPatch()
+
+			mock276 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock276.UnPatch()
+
+			mock277 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock277.UnPatch()
+
+			mock278 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock278.UnPatch()
+
+			mock279 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock279.UnPatch()
+
+			mock280 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock280.UnPatch()
+
+			mock281 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock281.UnPatch()
+
+			mock282 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock282.UnPatch()
+
+			mock283 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock283.UnPatch()
+
+			mock284 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock284.UnPatch()
+
+			mock285 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock285.UnPatch()
+
+			mock286 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock286.UnPatch()
+
+			mock287 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock287.UnPatch()
+
+			mock288 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock288.UnPatch()
+
+			mock289 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock289.UnPatch()
+
+			mock290 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock290.UnPatch()
+
+			mock291 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock291.UnPatch()
+
+			mock292 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock292.UnPatch()
+
+			mock293 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock293.UnPatch()
+
+			mock294 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock294.UnPatch()
+
+			mock295 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock295.UnPatch()
+
+			mock296 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock296.UnPatch()
+
+			mock297 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock297.UnPatch()
+
+			mock298 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock298.UnPatch()
+
+			mock299 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock299.UnPatch()
+
+			mock300 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock300.UnPatch()
+
+			mock301 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock301.UnPatch()
+
+			mock302 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock302.UnPatch()
+
+			mock303 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock303.UnPatch()
+
+			mock304 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock304.UnPatch()
+
+			mock305 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock305.UnPatch()
+
+			mock306 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock306.UnPatch()
+
+			mock307 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock307.UnPatch()
+
+			mock308 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock308.UnPatch()
+
+			mock309 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock309.UnPatch()
+
+			mock310 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock310.UnPatch()
+
+			mock311 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock311.UnPatch()
+
+			mock312 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock312.UnPatch()
+
+			mock313 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock313.UnPatch()
+
+			mock314 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock314.UnPatch()
+
+			mock315 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock315.UnPatch()
+
+			mock316 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock316.UnPatch()
+
+			mock317 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock317.UnPatch()
+
+			mock318 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock318.UnPatch()
+
+			mock319 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock319.UnPatch()
+
+			mock320 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock320.UnPatch()
+
+			mock321 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock321.UnPatch()
+
+			mock322 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock322.UnPatch()
+
+			mock323 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock323.UnPatch()
+
+			mock324 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock324.UnPatch()
+
+			mock325 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock325.UnPatch()
+
+			mock326 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock326.UnPatch()
+
+			mock327 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock327.UnPatch()
+
+			mock328 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock328.UnPatch()
+
+			mock329 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock329.UnPatch()
+
+			mock330 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock330.UnPatch()
+
+			mock331 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock331.UnPatch()
+
+			mock332 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock332.UnPatch()
+
+			mock333 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock333.UnPatch()
+
+			mock334 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock334.UnPatch()
+
+			mock335 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock335.UnPatch()
+
+			mock336 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock336.UnPatch()
+
+			mock337 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock337.UnPatch()
+
+			mock338 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock338.UnPatch()
+
+			mock339 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock339.UnPatch()
+
+			mock340 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock340.UnPatch()
+
+			mock341 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock341.UnPatch()
+
+			mock342 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock342.UnPatch()
+
+			mock343 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock343.UnPatch()
+
+			mock344 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock344.UnPatch()
+
+			mock345 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock345.UnPatch()
+
+			mock346 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock346.UnPatch()
+
+			mock347 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock347.UnPatch()
+
+			mock348 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock348.UnPatch()
+
+			mock349 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock349.UnPatch()
+
+			mock350 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock350.UnPatch()
+
+			mock351 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock351.UnPatch()
+
+			mock352 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock352.UnPatch()
+
+			mock353 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock353.UnPatch()
+
+			mock354 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock354.UnPatch()
+
+			mock355 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock355.UnPatch()
+
+			mock356 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock356.UnPatch()
+
+			mock357 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock357.UnPatch()
+
+			mock358 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock358.UnPatch()
+
+			mock359 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock359.UnPatch()
+
+			mock360 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock360.UnPatch()
+
+			mock361 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock361.UnPatch()
+
+			mock362 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock362.UnPatch()
+
+			mock363 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock363.UnPatch()
+
+			mock364 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock364.UnPatch()
+
+			mock365 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock365.UnPatch()
+
+			mock366 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock366.UnPatch()
+
+			mock367 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock367.UnPatch()
+
+			mock368 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock368.UnPatch()
+
+			mock369 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock369.UnPatch()
+
+			mock370 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock370.UnPatch()
+
+			mock371 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock371.UnPatch()
+
+			mock372 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock372.UnPatch()
+
+			mock373 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock373.UnPatch()
+
+			mock374 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock374.UnPatch()
+
+			mock375 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock375.UnPatch()
+
+			mock376 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock376.UnPatch()
+
+			mock377 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock377.UnPatch()
+
+			mock378 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock378.UnPatch()
+
+			mock379 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock379.UnPatch()
+
+			mock380 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock380.UnPatch()
+
+			mock381 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock381.UnPatch()
+
+			mock382 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock382.UnPatch()
+
+			mock383 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock383.UnPatch()
+
+			mock384 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock384.UnPatch()
+
+			mock385 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock385.UnPatch()
+
+			mock386 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock386.UnPatch()
+
+			mock387 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock387.UnPatch()
+
+			mock388 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock388.UnPatch()
+
+			mock389 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock389.UnPatch()
+
+			mock390 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock390.UnPatch()
+
+			mock391 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock391.UnPatch()
+
+			mock392 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock392.UnPatch()
+
+			mock393 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock393.UnPatch()
+
+			mock394 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock394.UnPatch()
+
+			mock395 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock395.UnPatch()
+
+			mock396 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock396.UnPatch()
+
+			mock397 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock397.UnPatch()
+
+			mock398 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock398.UnPatch()
+
+			mock399 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock399.UnPatch()
+
+			mock400 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock400.UnPatch()
+
+			mock401 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock401.UnPatch()
+
+			mock402 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock402.UnPatch()
+
+			mock403 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock403.UnPatch()
+
+			mock404 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock404.UnPatch()
+
+			mock405 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock405.UnPatch()
+
+			mock406 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock406.UnPatch()
+
+			mock407 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock407.UnPatch()
+
+			mock408 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock408.UnPatch()
+
+			mock409 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock409.UnPatch()
+
+			mock410 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock410.UnPatch()
+
+			mock411 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock411.UnPatch()
+
+			mock412 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock412.UnPatch()
+
+			mock413 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock413.UnPatch()
+
+			mock414 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock414.UnPatch()
+
+			mock415 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock415.UnPatch()
+
+			mock416 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock416.UnPatch()
+
+			mock417 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock417.UnPatch()
+
+			mock418 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock418.UnPatch()
+
+			mock419 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock419.UnPatch()
+
+			mock420 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock420.UnPatch()
+
+			mock421 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock421.UnPatch()
+
+			mock422 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock422.UnPatch()
+
+			mock423 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock423.UnPatch()
+
+			mock424 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock424.UnPatch()
+
+			mock425 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock425.UnPatch()
+
+			mock426 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock426.UnPatch()
+
+			mock427 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock427.UnPatch()
+
+			mock428 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock428.UnPatch()
+
+			mock429 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock429.UnPatch()
+
+			mock430 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock430.UnPatch()
+
+			mock431 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock431.UnPatch()
+
+			mock432 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock432.UnPatch()
+
+			mock433 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock433.UnPatch()
+
+			mock434 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock434.UnPatch()
+
+			mock435 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock435.UnPatch()
+
+			mock436 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock436.UnPatch()
+
+			mock437 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock437.UnPatch()
+
+			mock438 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock438.UnPatch()
+
+			mock439 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock439.UnPatch()
+
+			mock440 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock440.UnPatch()
+
+			mock441 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock441.UnPatch()
+
+			mock442 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock442.UnPatch()
+
+			mock443 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock443.UnPatch()
+
+			mock444 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock444.UnPatch()
+
+			mock445 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock445.UnPatch()
+
+			mock446 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock446.UnPatch()
+
+			mock447 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock447.UnPatch()
+
+			mock448 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock448.UnPatch()
+
+			mock449 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock449.UnPatch()
+
+			mock450 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock450.UnPatch()
+
+			mock451 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock451.UnPatch()
+
+			mock452 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock452.UnPatch()
+
+			mock453 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock453.UnPatch()
+
+			mock454 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock454.UnPatch()
+
+			mock455 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock455.UnPatch()
+
+			mock456 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock456.UnPatch()
+
+			mock457 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock457.UnPatch()
+
+			mock458 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock458.UnPatch()
+
+			mock459 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock459.UnPatch()
+
+			mock460 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock460.UnPatch()
+
+			mock461 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock461.UnPatch()
+
+			mock462 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock462.UnPatch()
+
+			mock463 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock463.UnPatch()
+
+			mock464 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock464.UnPatch()
+
+			mock465 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock465.UnPatch()
+
+			mock466 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock466.UnPatch()
+
+			mock467 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock467.UnPatch()
+
+			mock468 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock468.UnPatch()
+
+			mock469 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock469.UnPatch()
+
+			mock470 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock470.UnPatch()
+
+			mock471 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock471.UnPatch()
+
+			mock472 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock472.UnPatch()
+
+			mock473 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock473.UnPatch()
+
+			mock474 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock474.UnPatch()
+
+			mock475 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock475.UnPatch()
+
+			mock476 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock476.UnPatch()
+
+			mock477 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock477.UnPatch()
+
+			mock478 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock478.UnPatch()
+
+			mock479 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock479.UnPatch()
+
+			mock480 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock480.UnPatch()
+
+			mock481 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock481.UnPatch()
+
+			mock482 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock482.UnPatch()
+
+			mock483 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock483.UnPatch()
+
+			mock484 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock484.UnPatch()
+
+			mock485 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock485.UnPatch()
+
+			mock486 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock486.UnPatch()
+
+			mock487 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock487.UnPatch()
+
+			mock488 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock488.UnPatch()
+
+			mock489 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock489.UnPatch()
+
+			mock490 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock490.UnPatch()
+
+			mock491 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock491.UnPatch()
+
+			mock492 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock492.UnPatch()
+
+			mock493 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock493.UnPatch()
+
+			mock494 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock494.UnPatch()
+
+			mock495 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock495.UnPatch()
+
+			mock496 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock496.UnPatch()
+
+			mock497 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock497.UnPatch()
+
+			mock498 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock498.UnPatch()
+
+			mock499 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock499.UnPatch()
+
+			mock500 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock500.UnPatch()
+
+			mock501 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock501.UnPatch()
+
+			mock502 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock502.UnPatch()
+
+			mock503 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock503.UnPatch()
+
+			mock504 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock504.UnPatch()
+
+			mock505 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock505.UnPatch()
+
+			mock506 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock506.UnPatch()
+
+			mock507 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock507.UnPatch()
+
+			mock508 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock508.UnPatch()
+
+			mock509 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock509.UnPatch()
+
+			mock510 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock510.UnPatch()
+
+			mock511 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock511.UnPatch()
+
+			mock512 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock512.UnPatch()
+
+			mock513 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock513.UnPatch()
+
+			mock514 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock514.UnPatch()
+
+			mock515 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock515.UnPatch()
+
+			mock516 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock516.UnPatch()
+
+			mock517 := bytedanceMockey.Mock(test).Return([]any{nil}).Build()
+			defer mock517.UnPatch()
+
+			mock518 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock518.UnPatch()
+
+			mock519 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock519.UnPatch()
+
+			mock520 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock520.UnPatch()
+
+			mock521 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock521.UnPatch()
+
+			mock522 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock522.UnPatch()
+
+			mock523 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock523.UnPatch()
+
+			mock524 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock524.UnPatch()
+
+			mock525 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock525.UnPatch()
+
+			mock526 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock526.UnPatch()
+
+			mock527 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock527.UnPatch()
+
+			mock528 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock528.UnPatch()
+
+			mock529 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock529.UnPatch()
+
+			mock530 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock530.UnPatch()
+
+			mock531 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock531.UnPatch()
+
+			mock532 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock532.UnPatch()
+
+			mock533 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock533.UnPatch()
+
+			mock534 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock534.UnPatch()
+
+			mock535 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock535.UnPatch()
+
+			mock536 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock536.UnPatch()
+
+			mock537 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock537.UnPatch()
+
+			mock538 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock538.UnPatch()
+
+			mock539 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock539.UnPatch()
+
+			mock540 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock540.UnPatch()
+
+			mock541 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock541.UnPatch()
+
+			mock542 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock542.UnPatch()
+
+			mock543 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock543.UnPatch()
+
+			mock544 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock544.UnPatch()
+
+			mock545 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock545.UnPatch()
+
+			mock546 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock546.UnPatch()
+
+			mock547 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock547.UnPatch()
+
+			mock548 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock548.UnPatch()
+
+			mock549 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock549.UnPatch()
+
+			mock550 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock550.UnPatch()
+
+			mock551 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock551.UnPatch()
+
+			mock552 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock552.UnPatch()
+
+			mock553 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock553.UnPatch()
+
+			mock554 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock554.UnPatch()
+
+			mock555 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock555.UnPatch()
+
+			mock556 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock556.UnPatch()
+
+			mock557 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock557.UnPatch()
+
+			mock558 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock558.UnPatch()
+
+			mock559 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock559.UnPatch()
+
+			mock560 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock560.UnPatch()
+
+			mock561 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock561.UnPatch()
+
+			mock562 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock562.UnPatch()
+
+			mock563 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock563.UnPatch()
+
+			mock564 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock564.UnPatch()
+
+			mock565 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock565.UnPatch()
+
+			mock566 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock566.UnPatch()
+
+			mock567 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock567.UnPatch()
+
+			mock568 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock568.UnPatch()
+
+			mock569 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock569.UnPatch()
+
+			mock570 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock570.UnPatch()
+
+			mock571 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock571.UnPatch()
+
+			mock572 := bytedanceMockey.Mock(test).Return([]any{nil}).Build()
+			defer mock572.UnPatch()
+
+			mock573 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock573.UnPatch()
+
+			mock574 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock574.UnPatch()
+
+			mock575 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock575.UnPatch()
+
+			mock576 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock576.UnPatch()
+
+			mock577 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock577.UnPatch()
+
+			mock578 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock578.UnPatch()
+
+			mock579 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock579.UnPatch()
+
+			mock580 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock580.UnPatch()
+
+			mock581 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock581.UnPatch()
+
+			mock582 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock582.UnPatch()
+
+			mock583 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock583.UnPatch()
+
+			mock584 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock584.UnPatch()
+
+			mock585 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock585.UnPatch()
+
+			mock586 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock586.UnPatch()
+
+			mock587 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock587.UnPatch()
+
+			mock588 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock588.UnPatch()
+
+			mock589 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock589.UnPatch()
+
+			mock590 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock590.UnPatch()
+
+			mock591 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock591.UnPatch()
+
+			mock592 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock592.UnPatch()
+
+			mock593 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock593.UnPatch()
+
+			mock594 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock594.UnPatch()
+
+			mock595 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock595.UnPatch()
+
+			mock596 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock596.UnPatch()
+
+			mock597 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock597.UnPatch()
+
+			mock598 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock598.UnPatch()
+
+			mock599 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock599.UnPatch()
+
+			mock600 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock600.UnPatch()
+
+			mock601 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock601.UnPatch()
+
+			mock602 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock602.UnPatch()
+
+			mock603 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock603.UnPatch()
+
+			mock604 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock604.UnPatch()
+
+			mock605 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock605.UnPatch()
+
+			mock606 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock606.UnPatch()
+
+			mock607 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock607.UnPatch()
+
+			mock608 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock608.UnPatch()
+
+			mock609 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock609.UnPatch()
+
+			mock610 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock610.UnPatch()
+
+			mock611 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock611.UnPatch()
+
+			mock612 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock612.UnPatch()
+
+			mock613 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock613.UnPatch()
+
+			mock614 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock614.UnPatch()
+
+			mock615 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock615.UnPatch()
+
+			mock616 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock616.UnPatch()
+
+			mock617 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock617.UnPatch()
+
+			mock618 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock618.UnPatch()
+
+			mock619 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock619.UnPatch()
+
+			mock620 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock620.UnPatch()
+
+			mock621 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock621.UnPatch()
+
+			mock622 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock622.UnPatch()
+
+			mock623 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock623.UnPatch()
+
+			mock624 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock624.UnPatch()
+
+			mock625 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock625.UnPatch()
+
+			mock626 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock626.UnPatch()
+
+			mock627 := bytedanceMockey.Mock(test).Return([]any{nil}).Build()
+			defer mock627.UnPatch()
+
+			mock628 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock628.UnPatch()
+
+			mock629 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock629.UnPatch()
+
+			mock630 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock630.UnPatch()
+
+			mock631 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock631.UnPatch()
+
+			mock632 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock632.UnPatch()
+
+			mock633 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock633.UnPatch()
+
+			mock634 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock634.UnPatch()
+
+			mock635 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock635.UnPatch()
+
+			mock636 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock636.UnPatch()
+
+			mock637 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock637.UnPatch()
+
+			mock638 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock638.UnPatch()
+
+			mock639 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock639.UnPatch()
+
+			mock640 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock640.UnPatch()
+
+			mock641 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock641.UnPatch()
+
+			mock642 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock642.UnPatch()
+
+			mock643 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock643.UnPatch()
+
+			mock644 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock644.UnPatch()
+
+			mock645 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock645.UnPatch()
+
+			mock646 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock646.UnPatch()
+
+			mock647 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock647.UnPatch()
+
+			mock648 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock648.UnPatch()
+
+			mock649 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock649.UnPatch()
+
+			mock650 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock650.UnPatch()
+
+			mock651 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock651.UnPatch()
+
+			mock652 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock652.UnPatch()
+
+			mock653 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock653.UnPatch()
+
+			mock654 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock654.UnPatch()
+
+			mock655 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock655.UnPatch()
+
+			mock656 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock656.UnPatch()
+
+			mock657 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock657.UnPatch()
+
+			mock658 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock658.UnPatch()
+
+			mock659 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock659.UnPatch()
+
+			mock660 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock660.UnPatch()
+
+			mock661 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock661.UnPatch()
+
+			mock662 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock662.UnPatch()
+
+			mock663 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock663.UnPatch()
+
+			mock664 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock664.UnPatch()
+
+			mock665 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock665.UnPatch()
+
+			mock666 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock666.UnPatch()
+
+			mock667 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock667.UnPatch()
+
+			mock668 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock668.UnPatch()
+
+			mock669 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock669.UnPatch()
+
+			mock670 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock670.UnPatch()
+
+			mock671 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock671.UnPatch()
+
+			mock672 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock672.UnPatch()
+
+			mock673 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock673.UnPatch()
+
+			mock674 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock674.UnPatch()
+
+			mock675 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock675.UnPatch()
+
+			mock676 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock676.UnPatch()
+
+			mock677 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock677.UnPatch()
+
+			mock678 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock678.UnPatch()
+
+			mock679 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock679.UnPatch()
+
+			mock680 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock680.UnPatch()
+
+			mock681 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock681.UnPatch()
+
+			mock682 := bytedanceMockey.Mock(test).Return([]any{nil}).Build()
+			defer mock682.UnPatch()
+
+			mock683 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock683.UnPatch()
+
+			mock684 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock684.UnPatch()
+
+			mock685 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock685.UnPatch()
+
+			mock686 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock686.UnPatch()
+
+			mock687 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock687.UnPatch()
+
+			mock688 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock688.UnPatch()
+
+			mock689 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock689.UnPatch()
+
+			mock690 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock690.UnPatch()
+
+			mock691 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock691.UnPatch()
+
+			mock692 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock692.UnPatch()
+
+			mock693 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock693.UnPatch()
+
+			mock694 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock694.UnPatch()
+
+			mock695 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock695.UnPatch()
+
+			mock696 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock696.UnPatch()
+
+			mock697 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock697.UnPatch()
+
+			mock698 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock698.UnPatch()
+
+			mock699 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock699.UnPatch()
+
+			mock700 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock700.UnPatch()
+
+			mock701 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock701.UnPatch()
+
+			mock702 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock702.UnPatch()
+
+			mock703 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock703.UnPatch()
+
+			mock704 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock704.UnPatch()
+
+			mock705 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock705.UnPatch()
+
+			mock706 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock706.UnPatch()
+
+			mock707 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock707.UnPatch()
+
+			mock708 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock708.UnPatch()
+
+			mock709 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock709.UnPatch()
+
+			mock710 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock710.UnPatch()
+
+			mock711 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock711.UnPatch()
+
+			mock712 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock712.UnPatch()
+
+			mock713 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock713.UnPatch()
+
+			mock714 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock714.UnPatch()
+
+			mock715 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock715.UnPatch()
+
+			mock716 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock716.UnPatch()
+
+			mock717 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock717.UnPatch()
+
+			mock718 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock718.UnPatch()
+
+			mock719 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock719.UnPatch()
+
+			mock720 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock720.UnPatch()
+
+			mock721 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock721.UnPatch()
+
+			mock722 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock722.UnPatch()
+
+			mock723 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock723.UnPatch()
+
+			mock724 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock724.UnPatch()
+
+			mock725 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock725.UnPatch()
+
+			mock726 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock726.UnPatch()
+
+			mock727 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock727.UnPatch()
+
+			mock728 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock728.UnPatch()
+
+			mock729 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock729.UnPatch()
+
+			mock730 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock730.UnPatch()
+
+			mock731 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock731.UnPatch()
+
+			mock732 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock732.UnPatch()
+
+			mock733 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock733.UnPatch()
+
+			mock734 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock734.UnPatch()
+
+			mock735 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock735.UnPatch()
+
+			mock736 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock736.UnPatch()
+
+			mock737 := bytedanceMockey.Mock(test).Return([]any{nil}).Build()
+			defer mock737.UnPatch()
+
+			mock738 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock738.UnPatch()
+
+			mock739 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock739.UnPatch()
+
+			mock740 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock740.UnPatch()
+
+			mock741 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock741.UnPatch()
+
+			mock742 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock742.UnPatch()
+
+			mock743 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock743.UnPatch()
+
+			mock744 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock744.UnPatch()
+
+			mock745 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock745.UnPatch()
+
+			mock746 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock746.UnPatch()
+
+			mock747 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock747.UnPatch()
+
+			mock748 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock748.UnPatch()
+
+			mock749 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock749.UnPatch()
+
+			mock750 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock750.UnPatch()
+
+			mock751 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock751.UnPatch()
+
+			mock752 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock752.UnPatch()
+
+			mock753 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock753.UnPatch()
+
+			mock754 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock754.UnPatch()
+
+			mock755 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock755.UnPatch()
+
+			mock756 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock756.UnPatch()
+
+			mock757 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock757.UnPatch()
+
+			mock758 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock758.UnPatch()
+
+			mock759 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock759.UnPatch()
+
+			mock760 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock760.UnPatch()
+
+			mock761 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock761.UnPatch()
+
+			mock762 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock762.UnPatch()
+
+			mock763 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock763.UnPatch()
+
+			mock764 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock764.UnPatch()
+
+			mock765 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock765.UnPatch()
+
+			mock766 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock766.UnPatch()
+
+			mock767 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock767.UnPatch()
+
+			mock768 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock768.UnPatch()
+
+			mock769 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock769.UnPatch()
+
+			mock770 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock770.UnPatch()
+
+			mock771 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock771.UnPatch()
+
+			mock772 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock772.UnPatch()
+
+			mock773 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock773.UnPatch()
+
+			mock774 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock774.UnPatch()
+
+			mock775 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock775.UnPatch()
+
+			mock776 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock776.UnPatch()
+
+			mock777 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock777.UnPatch()
+
+			mock778 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock778.UnPatch()
+
+			mock779 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock779.UnPatch()
+
+			mock780 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock780.UnPatch()
+
+			mock781 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock781.UnPatch()
+
+			mock782 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock782.UnPatch()
+
+			mock783 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock783.UnPatch()
+
+			mock784 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock784.UnPatch()
+
+			mock785 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock785.UnPatch()
+
+			mock786 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock786.UnPatch()
+
+			mock787 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock787.UnPatch()
+
+			mock788 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock788.UnPatch()
+
+			mock789 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock789.UnPatch()
+
+			mock790 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock790.UnPatch()
+
+			mock791 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock791.UnPatch()
+
+			mock792 := bytedanceMockey.Mock(test).Return([]any{nil}).Build()
+			defer mock792.UnPatch()
+
+			mock793 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock793.UnPatch()
+
+			mock794 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock794.UnPatch()
+
+			mock795 := bytedanceMockey.Mock(func(func(int) int) (int, error)).Return([]any{nil}).Build()
+			defer mock795.UnPatch()
+
+			mock796 := bytedanceMockey.Mock(callback).Return([]any{nil}).Build()
+			defer mock796.UnPatch()
+
+			mock797 := bytedanceMockey.Mock(performAction).Return([]any{nil, nil}).Build()
+			defer mock797.UnPatch()
+
+			mock798 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock798.UnPatch()
+
+			mock799 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock799.UnPatch()
+
+			mock800 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock800.UnPatch()
+
+			mock801 := bytedanceMockey.Mock(func() func() int).Return([]any{nil}).Build()
+			defer mock801.UnPatch()
+
+			mock802 := bytedanceMockey.Mock(counter).Return([]any{nil}).Build()
+			defer mock802.UnPatch()
+
+			mock803 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock803.UnPatch()
+
+			mock804 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock804.UnPatch()
+
+			mock805 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock805.UnPatch()
+
+			mock806 := bytedanceMockey.Mock(func(int) func(int) int).Return([]any{nil}).Build()
+			defer mock806.UnPatch()
+
+			mock807 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock807.UnPatch()
+
+			mock808 := bytedanceMockey.Mock(multiplier).Return([]any{nil}).Build()
+			defer mock808.UnPatch()
+
+			mock809 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock809.UnPatch()
+
+			mock810 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock810.UnPatch()
+
+			mock811 := bytedanceMockey.Mock(func(string) func(string)).Return([]any{nil}).Build()
+			defer mock811.UnPatch()
+
+			mock812 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock812.UnPatch()
+
+			mock813 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock813.UnPatch()
+
+			mock814 := bytedanceMockey.Mock(makePrinter).Return([]any{nil}).Build()
+			defer mock814.UnPatch()
+
+			mock815 := bytedanceMockey.Mock(printInfo).Return([]any{}).Build()
+			defer mock815.UnPatch()
+
+			mock816 := bytedanceMockey.Mock(printWarning).Return([]any{}).Build()
+			defer mock816.UnPatch()
+
+			mock817 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock817.UnPatch()
+
+			mock818 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock818.UnPatch()
+
+			mock819 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock819.UnPatch()
+
+			mock820 := bytedanceMockey.Mock(ReceiverDict).Return([]any{nil}).Build()
+			defer mock820.UnPatch()
+
+			mock821 := bytedanceMockey.Mock(rd.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock821.UnPatch()
+
+			mock822 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock822.UnPatch()
+
+			mock823 := bytedanceMockey.Mock(strconv.Atoi).Return([]any{nil, nil}).Build()
+			defer mock823.UnPatch()
+
+			mock824 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock824.UnPatch()
+
+			mock825 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock825.UnPatch()
+
+			mock826 := bytedanceMockey.Mock(strconv.ParseInt).Return([]any{nil, nil}).Build()
+			defer mock826.UnPatch()
+
+			mock827 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock827.UnPatch()
+
+			mock828 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock828.UnPatch()
+
+			mock829 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock829.UnPatch()
+
+			mock830 := bytedanceMockey.Mock(strconv.Itoa).Return([]any{nil}).Build()
+			defer mock830.UnPatch()
+
+			mock831 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock831.UnPatch()
+
+			mock832 := bytedanceMockey.Mock(strconv.FormatInt).Return([]any{nil}).Build()
+			defer mock832.UnPatch()
+
+			mock833 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock833.UnPatch()
+
+			mock834 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock834.UnPatch()
+
+			mock835 := bytedanceMockey.Mock(TargetFunction).Return([]any{nil}).Build()
+			defer mock835.UnPatch()
+
+			mock836 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock836.UnPatch()
+
+			mock837 := bytedanceMockey.Mock(TargetEmptyFunction).Return([]any{}).Build()
+			defer mock837.UnPatch()
+
+			mock838 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock838.UnPatch()
+
+			mock839 := bytedanceMockey.Mock(innerEmptyFunction).Return([]any{}).Build()
+			defer mock839.UnPatch()
+
+			mock840 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock840.UnPatch()
+
+			mock841 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn).Return([]any{nil}).Build()
+			defer mock841.UnPatch()
+
+			mock842 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock842.UnPatch()
+
+			mock843 := bytedanceMockey.Mock(innerEmptyFunctionWithReturn2).Return([]any{nil}).Build()
+			defer mock843.UnPatch()
+
+			mock844 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock844.UnPatch()
+
+			mock845 := bytedanceMockey.Mock(innerFunctionWithReturn).Return([]any{nil, nil}).Build()
+			defer mock845.UnPatch()
+
+			mock846 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock846.UnPatch()
+
+			mock847 := bytedanceMockey.Mock(test).Return([]any{nil}).Build()
+			defer mock847.UnPatch()
+
+			mock848 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock848.UnPatch()
+
+			mock849 := bytedanceMockey.Mock(fmt.Println).Return([]any{}).Build()
+			defer mock849.UnPatch()
+
+			mock850 := bytedanceMockey.Mock(newDr.TestReceiverFunc).Return([]any{nil}).Build()
+			defer mock850.UnPatch()
+
+			mock851 := bytedanceMockey.Mock(fmt.Print).Return([]any{}).Build()
+			defer mock851.UnPatch()
 
 			NewAssignmentTest1()
 

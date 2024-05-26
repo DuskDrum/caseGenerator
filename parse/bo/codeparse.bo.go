@@ -26,23 +26,25 @@ var (
 	// assignmentInfoList  赋值list
 	assignmentInfoList []AssignmentDetailInfo
 	// mockInfoList mock数据列表
-	mockInfoList []MockInstruct
+	mockInfoList []*generate.MockInstruct
 )
 
-func AppendMockInfoList(item MockInstruct) {
+func AppendMockInfoList(item generate.MockInstruct) {
 	mu.Lock()
 	defer mu.Unlock()
 	if mockInfoList == nil {
-		mockInfoList = make([]MockInstruct, 0, 10)
+		mockInfoList = make([]*generate.MockInstruct, 0, 10)
 	}
-	mockInfoList = append(mockInfoList, item)
+	mockInfoList = append(mockInfoList, &item)
 }
 
-func GetMockInfoList() []MockInstruct {
+func GetMockInfoList() []*generate.MockInstruct {
 	return mockInfoList
 }
 
 func AppendAssignmentDetailInfoToList(info AssignmentDetailInfo) {
+	mu.Lock()
+	defer mu.Unlock()
 	if len(assignmentInfoList) == 0 {
 		assignmentInfoList = make([]AssignmentDetailInfo, 0, 10)
 	}

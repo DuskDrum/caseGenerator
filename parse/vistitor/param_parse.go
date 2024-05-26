@@ -2,6 +2,7 @@ package vistitor
 
 import (
 	"caseGenerator/parse/bo"
+	"caseGenerator/parse/enum"
 	"go/ast"
 	"log"
 	"strings"
@@ -259,6 +260,91 @@ func ParseParamWithoutInit(expr ast.Expr, name string) *bo.ParamParseResult {
 		log.Fatalf("未知类型...")
 	}
 	return &db
+}
+
+// ParseParamRequest 解析请求
+func ParseParamRequest(expr ast.Expr) []*bo.ParamParseRequest {
+	paramTypeMap := bo.GetTypeParamMap()
+	// "_" 这种不处理了
+	var db bo.ParamParseRequest
+
+	switch dbType := expr.(type) {
+	case *ast.SelectorExpr:
+		expr := GetRelationFromSelectorExpr(dbType)
+		db.ParamType = expr
+		if strings.Contains(expr, ".") {
+			parts := strings.Split(expr, ".")
+			firstField := parts[0]
+			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
+		}
+	case *ast.Ident:
+		result, ok := paramTypeMap[dbType.Name]
+		if ok {
+			db.ParamType = result.ParamType
+		} else {
+			db.ParamType = dbType.Name
+		}
+		// 指针类型
+	case *ast.StarExpr:
+		param := ParseParamWithoutInit(dbType.X, "")
+		db.ParamType = "*" + param.ParamType
+	case *ast.FuncType:
+		paramType := parseFuncType(dbType)
+		db.ParamType = paramType
+	case *ast.InterfaceType:
+		// 啥也不做
+		db.ParamType = "interface{}"
+	case *ast.ArrayType:
+		requestType := parseParamArrayType(dbType)
+		db.ParamType = requestType
+	case *ast.MapType:
+		requestType := parseParamMapType(dbType)
+		db.ParamType = requestType
+	// 可变长度，省略号表达式
+	case *ast.Ellipsis:
+		// 处理Elt
+		param := ParamParse(dbType.Elt, "")
+		db.ParamType = "[]" + param.ParamType
+	case *ast.ChanType:
+		// 处理value
+		param := ParamParse(dbType.Value, "")
+		if dbType.Dir == ast.RECV {
+			db.ParamType = "<-chan " + param.ParamType
+		} else {
+			db.ParamType = "chan<- " + param.ParamType
+		}
+	case *ast.IndexExpr:
+		// 下标类型，一般是泛型，处理不了
+		return nil
+	case *ast.BinaryExpr:
+		// 先直接取Y
+		param := ParamParse(dbType.Y, "")
+		db.ParamType = param.ParamType
+	case *ast.BasicLit:
+		db.ParamVale = dbType.Value
+		db.ParamType = dbType.Kind.String()
+	case *ast.FuncLit:
+		funcType := parseFuncType(dbType.Type)
+		db.ParamVale = funcType
+		db.ParamType = enum.RIGHT_TYPE_FUNCTION.Code
+	case *ast.CompositeLit:
+		db.ParamType = enum.RIGHT_TYPE_COMPOSITE.Code
+		init := ParseParamWithoutInit(dbType.Type, "")
+		db.ParamVale = init.ParamType
+	case *ast.CallExpr:
+		args := dbType.Args
+		requests := make([]*bo.ParamParseRequest, 0, 10)
+		for _, v := range args {
+			request := ParseParamRequest(v)
+			for _, s := range request {
+				requests = append(requests, s)
+			}
+		}
+		return requests
+	default:
+		log.Fatalf("未知类型...")
+	}
+	return []*bo.ParamParseRequest{&db}
 }
 
 func parseFuncType(dbType *ast.FuncType) string {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"text/template"
 	"unicode"
@@ -35,11 +36,34 @@ type CaseDetail struct {
 	// case名称
 	CaseName string
 	// mock列表
-	MockList []MockDetail
+	MockList []*MockInstruct
 	// 请求列表
 	RequestList []RequestDetail
 	// 把请求名按照tt.args.xx，并按照","分割，最后一位没有逗号
 	RequestNameString string
+}
+
+type MockInstruct struct {
+	MockResponseParam []string
+	MockFunction      string
+	MockNumber        string
+	// mock 返回
+	MockReturns        string
+	MockFunctionParam  []ParamParseResult
+	MockFunctionResult []ParamParseResult
+}
+
+type ParamParseResult struct {
+	// 参数名
+	ParamName string
+	// 参数类型
+	ParamType string
+	// 参数初始化值
+	ParamInitValue string
+	// 参数校验值
+	ParamCheckValue string
+	// 是否是省略号语法
+	IsEllipsis bool
 }
 
 type MockDetail struct {
@@ -112,16 +136,36 @@ func GenFile(data GenMeta) {
 			requestNameString = strings.TrimRight(requestNameString, ", ")
 			cd.RequestNameString = requestNameString
 		}
-		if len(cd.MockList) > 0 {
-			data.ImportPkgPaths = append(data.ImportPkgPaths, ". \"github.com/bytedance/mockey\"")
-			for _, r := range cd.MockList {
-				if r.MockMethodPackage == "" {
-					r.MockDealMethod = r.MockMethodName
-				} else {
-					// 增加import
-					r.MockDealMethod = r.MockMethodPackage + "." + r.MockMethodName
-				}
+
+		cd.MockList = lo.Filter(cd.MockList, func(item *MockInstruct, index int) bool {
+			if item.MockFunction == "" {
+				return false
+			} else {
+				return true
 			}
+		})
+
+		cd.MockList = lo.Uniq(cd.MockList)
+
+		if len(cd.MockList) > 0 {
+			// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+			fmt.Printf("接收到mock请求，请求详情为:%+v", cd.MockList)
+			for i, v := range cd.MockList {
+				str := "[]any{"
+				for range v.MockResponseParam {
+					str += " nil,"
+				}
+				// 去掉最后一个逗号
+				lastCommaIndex := strings.LastIndex(str, ",")
+				if lastCommaIndex != -1 {
+					str = str[:lastCommaIndex]
+				}
+				str += "}"
+				v.MockReturns = str
+
+				v.MockNumber = "mock" + strconv.Itoa(i)
+			}
+
 		}
 		cdList = append(cdList, cd)
 	}

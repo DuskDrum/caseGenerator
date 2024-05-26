@@ -13,6 +13,13 @@ type ParamParseResult struct {
 	IsEllipsis bool
 }
 
+type ParamParseRequest struct {
+	// 参数值
+	ParamVale string
+	// 参数类型
+	ParamType string
+}
+
 type Param interface {
 	GetParamName() string
 	UnmarshalerInfo(jsonString string)

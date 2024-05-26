@@ -2,8 +2,9 @@ package vistitor
 
 import (
 	"caseGenerator/parse/bo"
-	"github.com/samber/lo"
 	"go/ast"
+
+	"github.com/samber/lo"
 )
 
 // TypeParamVisitor typeParam

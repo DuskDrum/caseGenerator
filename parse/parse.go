@@ -3,7 +3,6 @@ package parse
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
-	"caseGenerator/parse/enum"
 	"caseGenerator/parse/vistitor"
 	"encoding/json"
 	"fmt"
@@ -136,17 +135,17 @@ OuterLoop:
 		}
 		fmt.Printf("遍历所有赋值为:%+v", string(marshal))
 		for _, v := range list {
-			if v.RightType == enum.RIGHT_TYPE_CALL {
-				// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
-				// 	"github.com/bytedance/mockey"
-				bo.AppendImportList("\"github.com/bytedance/mockey\"")
-				bo.AppendMockInfoList(bo.MockInstruct{
-					MockResponseParam:  v.LeftName,
-					MockFunction:       v.RightFormula,
-					MockFunctionParam:  nil,
-					MockFunctionResult: nil,
-				})
-			}
+			//if v.RightType == enum.RIGHT_TYPE_CALL {
+			// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+			// 	"github.com/bytedance/mockey"
+			bo.AppendImportList("bytedanceMockey \"github.com/bytedance/mockey\"")
+			bo.AppendMockInfoList(generate.MockInstruct{
+				MockResponseParam:  v.LeftName,
+				MockFunction:       v.RightFormula,
+				MockFunctionParam:  nil,
+				MockFunctionResult: nil,
+			})
+			//}
 		}
 
 		// 10. 开始处理receiver
@@ -154,6 +153,7 @@ OuterLoop:
 			CaseName:    methodInfo.MethodName,
 			MethodName:  methodInfo.MethodName,
 			RequestList: bo.GetRequestDetailList(),
+			MockList:    bo.GetMockInfoList(),
 		}
 		if bo.GetReceiverInfo() != nil {
 			cd.ReceiverType = "utils.Empty[" + bo.GetReceiverInfo().ReceiverValue.InvocationName + "]()"
