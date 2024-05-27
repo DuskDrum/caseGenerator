@@ -4,7 +4,6 @@ import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
 	"caseGenerator/parse/vistitor"
-	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -128,12 +127,12 @@ OuterLoop:
 		ast.Walk(&assignmentVisitor, cg)
 		// 8.1 遍历所有赋值和变量
 		list := bo.GetAssignmentDetailInfoList()
-		marshal, err := json.Marshal(list)
-		if err != nil {
-			fmt.Printf("遍历所有赋值失败，详情为:%s", err.Error())
-
-		}
-		fmt.Printf("遍历所有赋值为:%+v", string(marshal))
+		//marshal, err := json.Marshal(list)
+		//if err != nil {
+		//	fmt.Printf("遍历所有赋值失败，详情为:%s", err.Error())
+		//
+		//}
+		//fmt.Printf("遍历所有赋值为:%+v", string(marshal))
 		for _, v := range list {
 			//if v.RightType == enum.RIGHT_TYPE_CALL {
 			// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
