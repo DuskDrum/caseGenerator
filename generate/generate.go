@@ -4,13 +4,17 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
 	"unicode"
 
 	"github.com/samber/lo"
+	"golang.org/x/mod/modfile"
 )
 
 type GenMeta struct {
@@ -149,6 +153,8 @@ func GenFile(data GenMeta) {
 
 		if len(cd.MockList) > 0 {
 			// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+			// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
+			// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
 			fmt.Printf("接收到mock请求，请求详情为:%+v", cd.MockList)
 			for i, v := range cd.MockList {
 				str := "[]any{"
@@ -199,4 +205,41 @@ func render(tmpl string, wr io.Writer, data interface{}) error {
 		return err
 	}
 	return t.Execute(wr, data)
+}
+
+// 获取go.mod的module
+func main() {
+	modPath := findModFile()
+	content, err := ioutil.ReadFile(modPath)
+	if err != nil {
+		log.Fatalf("failed to read go.mod file: %v", err)
+	}
+
+	modFile, err := modfile.Parse(modPath, content, nil)
+	if err != nil {
+		log.Fatalf("failed to parse go.mod file: %v", err)
+	}
+
+	modulePath := modFile.Module.Mod.Path
+	fmt.Printf("Module path: %s\n", modulePath)
+}
+
+func findModFile() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("failed to get working directory: %v", err)
+	}
+	for {
+		modPath := filepath.Join(dir, "go.mod")
+		if _, err := os.Stat(modPath); err == nil {
+			return modPath
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	log.Fatal("go.mod file not found")
+	return ""
 }

@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/bytedance/mockey v1.2.10
 	github.com/samber/lo v1.39.0
+	golang.org/x/mod v0.6.0-dev.0.20211013180041-c96bc1413d57
 )
 
 require (
@@ -14,4 +15,5 @@ require (
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	golang.org/x/arch v0.0.0-20201008161808-52c3e6f60cff // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )
