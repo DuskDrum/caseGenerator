@@ -2,19 +2,15 @@ package generate
 
 import (
 	"bytes"
+	"caseGenerator/utils"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"os"
-	"path/filepath"
-	"strconv"
 	"strings"
 	"text/template"
 	"unicode"
 
 	"github.com/samber/lo"
-	"golang.org/x/mod/modfile"
 )
 
 type GenMeta struct {
@@ -55,6 +51,10 @@ type MockInstruct struct {
 	MockReturns        string
 	MockFunctionParam  []ParamParseResult
 	MockFunctionResult []ParamParseResult
+}
+
+// GoLinkInstruct go:link 关联的私有方法信息
+type GoLinkInstruct struct {
 }
 
 type ParamParseResult struct {
@@ -149,14 +149,18 @@ func GenFile(data GenMeta) {
 			}
 		})
 
-		cd.MockList = lo.Uniq(cd.MockList)
+		mockInstructs := make([]*MockInstruct, 0, 10)
+		goLinkInstructs := make([]*GoLinkInstruct, 0, 10)
 
+		// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+		// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
+		// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
 		if len(cd.MockList) > 0 {
-			// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
-			// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
-			// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
-			fmt.Printf("接收到mock请求，请求详情为:%+v", cd.MockList)
-			for i, v := range cd.MockList {
+			by := lo.SliceToMap(cd.MockList, func(item *MockInstruct) (string, *MockInstruct) {
+				return item.MockFunction, item
+			})
+			for k, v := range by {
+				// 1. 组装mock的响应值
 				str := "[]any{"
 				for range v.MockResponseParam {
 					str += " nil,"
@@ -167,10 +171,25 @@ func GenFile(data GenMeta) {
 					str = str[:lastCommaIndex]
 				}
 				str += "}"
-				v.MockReturns = str
+				mockReturns := str
+				// 2. 组装mock的返回
+				mockNumber := "mock" + k
+				// 3. 如果方法名是小写开头，且没有包名引用，说明需要go-linkname
+				if utils.IsLower(v.MockFunction) && !strings.Contains(v.MockFunction, ".") {
 
-				v.MockNumber = "mock" + strconv.Itoa(i)
+				}
+
+				mi := MockInstruct{
+					MockResponseParam:  v.MockResponseParam,
+					MockFunction:       v.MockFunction,
+					MockNumber:         mockNumber,
+					MockReturns:        mockReturns,
+					MockFunctionParam:  v.MockFunctionParam,
+					MockFunctionResult: v.MockFunctionResult,
+				}
+				mockInstructs = append(mockInstructs, &mi)
 			}
+			cd.MockList = mockInstructs
 
 		}
 		cdList = append(cdList, cd)
@@ -205,41 +224,4 @@ func render(tmpl string, wr io.Writer, data interface{}) error {
 		return err
 	}
 	return t.Execute(wr, data)
-}
-
-// 获取go.mod的module
-func main() {
-	modPath := findModFile()
-	content, err := ioutil.ReadFile(modPath)
-	if err != nil {
-		log.Fatalf("failed to read go.mod file: %v", err)
-	}
-
-	modFile, err := modfile.Parse(modPath, content, nil)
-	if err != nil {
-		log.Fatalf("failed to parse go.mod file: %v", err)
-	}
-
-	modulePath := modFile.Module.Mod.Path
-	fmt.Printf("Module path: %s\n", modulePath)
-}
-
-func findModFile() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("failed to get working directory: %v", err)
-	}
-	for {
-		modPath := filepath.Join(dir, "go.mod")
-		if _, err := os.Stat(modPath); err == nil {
-			return modPath
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	log.Fatal("go.mod file not found")
-	return ""
 }
