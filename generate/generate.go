@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 	"text/template"
-	"unicode"
 
 	"github.com/samber/lo"
 )
@@ -55,6 +54,25 @@ type MockInstruct struct {
 
 // GoLinkInstruct go:link 关联的私有方法信息
 type GoLinkInstruct struct {
+	ModulePath string
+	// 定义的goLink方法名
+	AliasName string
+	// 文件路径
+	FilePath string
+	// 方法名
+	MethodName string
+	// go-link的方法入参，列表
+	RequestParamList []SimpleParamInfo
+	// go-link的方法出参，列表
+	ResponseParamList []SimpleParamInfo
+}
+
+// SimpleParamInfo 简单的参数关系
+type SimpleParamInfo struct {
+	// 参数名
+	ParamName string
+	// 参数类型
+	ParamType string
 }
 
 type ParamParseResult struct {
@@ -117,15 +135,11 @@ func GenFile(data GenMeta) {
 	cdList := make([]CaseDetail, 0, 10)
 	importList := make([]string, 0, 10)
 	importList = append(importList, "\"testing\"")
+
+	modulePath := utils.GetModulePath()
 	for _, cd := range caseDetails {
 		// 如果是内部方法，那么跳过处理
 		// 将字符串转换为rune类型
-		firstChar := []rune(cd.MethodName)[0]
-		// 判断首字母是否是小写字母
-		isLower := unicode.IsLower(firstChar)
-		if isLower {
-			continue
-		}
 
 		cd.FileName = strings.ReplaceAll(data.FileName, ".", "")
 		if len(cd.RequestList) > 0 {
@@ -187,6 +201,16 @@ func GenFile(data GenMeta) {
 					MockFunctionParam:  v.MockFunctionParam,
 					MockFunctionResult: v.MockFunctionResult,
 				}
+
+				gli := GoLinkInstruct{
+					ModulePath:        modulePath,
+					AliasName:         "",
+					FilePath:          "",
+					MethodName:        "",
+					RequestParamList:  nil,
+					ResponseParamList: nil,
+				}
+				goLinkInstructs = append(goLinkInstructs, &gli)
 				mockInstructs = append(mockInstructs, &mi)
 			}
 			cd.MockList = mockInstructs
