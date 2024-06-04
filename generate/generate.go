@@ -23,6 +23,10 @@ type GenMeta struct {
 	ImportPkgPaths []string
 	// case列表
 	CaseDetailList []CaseDetail
+	// mock列表
+	MockList []*MockInstruct
+	// goLink 列表
+	GoLinkInstructs []*GoLinkInstruct
 }
 
 type CaseDetail struct {
@@ -34,8 +38,6 @@ type CaseDetail struct {
 	ReceiverType string
 	// case名称
 	CaseName string
-	// mock列表
-	MockList []*MockInstruct
 	// 请求列表
 	RequestList []RequestDetail
 	// 把请求名按照tt.args.xx，并按照","分割，最后一位没有逗号
@@ -154,71 +156,69 @@ func GenFile(data GenMeta) {
 			requestNameString = strings.TrimRight(requestNameString, ", ")
 			cd.RequestNameString = requestNameString
 		}
-
-		cd.MockList = lo.Filter(cd.MockList, func(item *MockInstruct, index int) bool {
-			if item.MockFunction == "" {
-				return false
-			} else {
-				return true
-			}
-		})
-
-		mockInstructs := make([]*MockInstruct, 0, 10)
-		goLinkInstructs := make([]*GoLinkInstruct, 0, 10)
-
-		// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
-		// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
-		// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
-		if len(cd.MockList) > 0 {
-			by := lo.SliceToMap(cd.MockList, func(item *MockInstruct) (string, *MockInstruct) {
-				return item.MockFunction, item
-			})
-			for k, v := range by {
-				// 1. 组装mock的响应值
-				str := "[]any{"
-				for range v.MockResponseParam {
-					str += " nil,"
-				}
-				// 去掉最后一个逗号
-				lastCommaIndex := strings.LastIndex(str, ",")
-				if lastCommaIndex != -1 {
-					str = str[:lastCommaIndex]
-				}
-				str += "}"
-				mockReturns := str
-				// 2. 组装mock的返回
-				mockNumber := "mock" + k
-				// 3. 如果方法名是小写开头，且没有包名引用，说明需要go-linkname
-				if utils.IsLower(v.MockFunction) && !strings.Contains(v.MockFunction, ".") {
-
-				}
-
-				mi := MockInstruct{
-					MockResponseParam:  v.MockResponseParam,
-					MockFunction:       v.MockFunction,
-					MockNumber:         mockNumber,
-					MockReturns:        mockReturns,
-					MockFunctionParam:  v.MockFunctionParam,
-					MockFunctionResult: v.MockFunctionResult,
-				}
-
-				gli := GoLinkInstruct{
-					ModulePath:        modulePath,
-					AliasName:         "",
-					FilePath:          "",
-					MethodName:        "",
-					RequestParamList:  nil,
-					ResponseParamList: nil,
-				}
-				goLinkInstructs = append(goLinkInstructs, &gli)
-				mockInstructs = append(mockInstructs, &mi)
-			}
-			cd.MockList = mockInstructs
-
-		}
 		cdList = append(cdList, cd)
 	}
 	data.CaseDetailList = cdList
+
+	data.MockList = lo.Filter(data.MockList, func(item *MockInstruct, index int) bool {
+		if item.MockFunction == "" {
+			return false
+		} else {
+			return true
+		}
+	})
+	mockInstructs := make([]*MockInstruct, 0, 10)
+	goLinkInstructs := make([]*GoLinkInstruct, 0, 10)
+
+	// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+	// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
+	// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
+	if len(data.MockList) > 0 {
+		by := lo.SliceToMap(data.MockList, func(item *MockInstruct) (string, *MockInstruct) {
+			return item.MockFunction, item
+		})
+		for k, v := range by {
+			// 1. 组装mock的响应值
+			str := "[]any{"
+			for range v.MockResponseParam {
+				str += " nil,"
+			}
+			// 去掉最后一个逗号
+			lastCommaIndex := strings.LastIndex(str, ",")
+			if lastCommaIndex != -1 {
+				str = str[:lastCommaIndex]
+			}
+			str += "}"
+			mockReturns := str
+			// 2. 组装mock的返回
+			mockNumber := "mock" + k
+			// 3. 如果方法名是小写开头，且没有包名引用，说明需要go-linkname
+			if utils.IsLower(v.MockFunction) && !strings.Contains(v.MockFunction, ".") {
+
+			}
+
+			mi := MockInstruct{
+				MockResponseParam:  v.MockResponseParam,
+				MockFunction:       v.MockFunction,
+				MockNumber:         mockNumber,
+				MockReturns:        mockReturns,
+				MockFunctionParam:  v.MockFunctionParam,
+				MockFunctionResult: v.MockFunctionResult,
+			}
+
+			gli := GoLinkInstruct{
+				ModulePath:        modulePath,
+				AliasName:         "",
+				FilePath:          "",
+				MethodName:        "",
+				RequestParamList:  nil,
+				ResponseParamList: nil,
+			}
+			goLinkInstructs = append(goLinkInstructs, &gli)
+			mockInstructs = append(mockInstructs, &mi)
+		}
+		data.MockList = mockInstructs
+	}
 
 	if len(data.ImportPkgPaths) > 0 {
 		for _, v := range data.ImportPkgPaths {
