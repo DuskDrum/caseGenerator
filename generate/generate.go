@@ -38,6 +38,8 @@ type CaseDetail struct {
 	ReceiverType string
 	// case名称
 	CaseName string
+	// mock列表
+	MockList []*MockInstruct
 	// 请求列表
 	RequestList []RequestDetail
 	// 把请求名按照tt.args.xx，并按照","分割，最后一位没有逗号
