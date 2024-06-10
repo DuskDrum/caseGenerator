@@ -44,6 +44,8 @@ type CaseDetail struct {
 	RequestList []RequestDetail
 	// 把请求名按照tt.args.xx，并按照","分割，最后一位没有逗号
 	RequestNameString string
+	// goLink 列表
+	GoLinkInstructs []*GoLinkInstruct
 }
 
 type MockInstruct struct {
