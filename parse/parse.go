@@ -228,6 +228,11 @@ func ExtractGoLinkFunction(path string, excludedPaths ...string) error {
 	})
 }
 
+// 解析文件，并且生成go-linkname的方法
+func parseLinkFile(filename string) error {
+	// 1. 遍历解析文件夹
+
+}
 func extractFile(filename string) (err error) {
 	defer func() {
 		if err := recover(); err != nil {
