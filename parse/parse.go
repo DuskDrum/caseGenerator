@@ -3,6 +3,7 @@ package parse
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
+	"caseGenerator/parse/visitor_v2"
 	"caseGenerator/parse/vistitor"
 	"fmt"
 	"go/ast"
@@ -192,43 +193,6 @@ OuterLoop:
 	return
 }
 
-func ExtractGoLinkFunction(path string, excludedPaths ...string) error {
-	return filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-
-		// Process error
-		if err != nil {
-			return err
-		}
-
-		// Skip excluded paths
-		for _, p := range excludedPaths {
-			if p == path {
-				if info.IsDir() {
-					return filepath.SkipDir
-				}
-				return nil
-			}
-		}
-
-		// Only process go files
-		if !info.IsDir() && filepath.Ext(path) != ".go" {
-			return nil
-		}
-
-		// Everything is fine here, extract if path is a file
-		if !info.IsDir() {
-			hasSuffix := strings.HasSuffix(path, "_test.go")
-			if hasSuffix {
-				return nil
-			}
-			if err = extractFile(path); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}
-
 // 遍历文件夹，找到所有私有方法的调用
 func extractPrivateFile(filename string) (err error) {
 	// 1. 遍历解析文件夹
@@ -257,8 +221,11 @@ func extractPrivateFile(filename string) (err error) {
 
 				// 判断是否是私有方法
 				if unicode.IsLower([]rune(funcDecl.Name.Name)[0]) {
-					// 解析私有方法
-					fmt.Println(funcDecl.Name.Name)
+					param, err := extractFileFunction(funcDecl)
+					if err != nil {
+						return false
+					}
+					param.generateMockGoLinked()
 				}
 				return true
 			})
@@ -266,4 +233,42 @@ func extractPrivateFile(filename string) (err error) {
 		return nil
 	})
 	return err
+}
+
+type FunctionParam struct {
+	requestList  []generate.RequestDetail
+	responseList []generate.ResponseDetail
+	funcName     string
+	// 需要依赖的import
+	ImportPkgPaths []string
+}
+
+func (FunctionParam) generateMockGoLinked() string {
+
+	return ""
+}
+
+func extractFileFunction(funcDecl *ast.FuncDecl) (functionParam FunctionParam, err error) {
+	defer func() {
+		if err := recover(); err != nil {
+			_ = fmt.Errorf("extractFile parse error: %s", err)
+		}
+	}()
+	// 1. 解析request列表
+	vReq := visitor_v2.Request{}
+	vReq.Parse(funcDecl.Type.Params)
+	// 2. 解析response列表
+	vResp := visitor_v2.Response{}
+	vResp.Parse(funcDecl.Type.Params)
+	// 3. 解析function name
+	funcName := funcDecl.Name
+
+	functionParam = FunctionParam{
+		requestList:    vReq.RequestList,
+		responseList:   vResp.ResponseList,
+		funcName:       funcName.Name,
+		ImportPkgPaths: nil,
+	}
+
+	return
 }
