@@ -5,6 +5,8 @@ import (
 	"caseGenerator/parse/bo"
 	"caseGenerator/parse/visitor_v2"
 	"caseGenerator/parse/vistitor"
+	"caseGenerator/utils"
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -18,6 +20,12 @@ import (
 )
 
 func Extract(path string, excludedPaths ...string) error {
+	// 解析出path下每个目录下的私有方法，落入map
+	privateFunctionLinkedMap, err := extractPrivateFile(path)
+	if err != nil {
+		return err
+	}
+
 	return filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		// Process error
 		if err != nil {
@@ -50,7 +58,7 @@ func Extract(path string, excludedPaths ...string) error {
 			if hasSuffix {
 				return nil
 			}
-			if err = extractFile(path); err != nil {
+			if err = extractFile(path, privateFunctionLinkedMap); err != nil {
 				return err
 			}
 		}
@@ -58,12 +66,13 @@ func Extract(path string, excludedPaths ...string) error {
 	})
 }
 
-func extractFile(filename string) (err error) {
+func extractFile(filename string, privateFunctionLinkedMap PrivateFunctionLinked) (err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			_ = fmt.Errorf("extractFile parse error: %s", err)
 		}
 	}()
+
 	// Parse file and create the AST
 	var fset = token.NewFileSet()
 	var f *ast.File
@@ -75,6 +84,7 @@ func extractFile(filename string) (err error) {
 	_ = bo.Package{PackagePath: "", PackageName: f.Name.Name}
 	// 2. 组装import信息
 	bo.InitImport(f)
+
 	// 组装所有方法
 	methods := make([]string, 0, 10)
 	caseDetailList := make([]generate.CaseDetail, 0, 10)
@@ -129,16 +139,7 @@ OuterLoop:
 		ast.Walk(&assignmentVisitor, cg)
 		// 8.1 遍历所有赋值和变量
 		list := bo.GetAssignmentDetailInfoList()
-		//marshal, err := json.Marshal(list)
-		//if err != nil {
-		//	fmt.Printf("遍历所有赋值失败，详情为:%s", err.Error())
-		//
-		//}
-		//fmt.Printf("遍历所有赋值为:%+v", string(marshal))
 		for _, v := range list {
-			//if v.RightType == enum.RIGHT_TYPE_CALL {
-			// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
-			// 	"github.com/bytedance/mockey"
 			bo.AppendImportList("bytedanceMockey \"github.com/bytedance/mockey\"")
 			bo.AppendMockInfoList(generate.MockInstruct{
 				MockResponseParam:  v.LeftName,
@@ -146,8 +147,9 @@ OuterLoop:
 				MockFunctionParam:  nil,
 				MockFunctionResult: nil,
 			})
-			//}
 		}
+		// 9. 解析出所有需要go-link的function
+		goLinkedList := make([]string, 0, 10)
 
 		// 10. 开始处理receiver
 		cd := generate.CaseDetail{
@@ -155,6 +157,7 @@ OuterLoop:
 			MethodName:  methodInfo.MethodName,
 			RequestList: bo.GetRequestDetailList(),
 			MockList:    bo.GetMockInfoList(),
+			GoLinkList:  goLinkedList,
 		}
 		if bo.GetReceiverInfo() != nil {
 			cd.ReceiverType = "utils.Empty[" + bo.GetReceiverInfo().ReceiverValue.InvocationName + "]()"
@@ -193,10 +196,39 @@ OuterLoop:
 	return
 }
 
+// PrivateFunctionLinked 将所有private方法的信息存储在一起。一部分是内置函数，一部分是包中所有的私有方法的goLinked写法
+type PrivateFunctionLinked struct {
+	PrivateFunctionLinkedMap map[string]string
+}
+
+// GenerateKey path是全路径，判断如果是.go结尾，那么就拿最后一个目录文件夹
+func (pfl PrivateFunctionLinked) GenerateKey(path string, funcName string) string {
+	// 不以go结尾，直接拼接
+	if filepath.Ext(path) != ".go" {
+		return path + funcName
+	} else {
+		return path[0:strings.LastIndex(path, "/")]
+	}
+}
+
+func (pfl PrivateFunctionLinked) GetLinkedInfoByFunctionName(key string) (string, error) {
+	s, ok := pfl.PrivateFunctionLinkedMap[key]
+	if ok {
+		return s, nil
+	} else {
+		return "", errors.New("don't exist")
+	}
+}
+
+func (pfl PrivateFunctionLinked) AddLinkedInfo(key string, linkedInfo string) {
+	pfl.PrivateFunctionLinkedMap[key] = linkedInfo
+}
+
 // 遍历文件夹，找到所有私有方法的调用
-func extractPrivateFile(filename string) (err error) {
+func extractPrivateFile(fileDir string) (PrivateFunctionLinked, error) {
+	privateFunctionLinked := PrivateFunctionLinked{}
 	// 1. 遍历解析文件夹
-	err = filepath.Walk(filename, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(fileDir, func(path string, info os.FileInfo, err error) error {
 		// Process error
 		if err != nil {
 			return err
@@ -221,18 +253,21 @@ func extractPrivateFile(filename string) (err error) {
 
 				// 判断是否是私有方法
 				if unicode.IsLower([]rune(funcDecl.Name.Name)[0]) {
-					param, err := extractFileFunction(funcDecl)
+					param, err := extractFileFunction(funcDecl, path)
 					if err != nil {
 						return false
 					}
-					param.generateMockGoLinked()
+					linkedStr := param.GenerateMockGoLinked()
+					// 组装map的key, key是每个方法的目录+funcName
+					key := privateFunctionLinked.GenerateKey(path, param.funcName)
+					privateFunctionLinked.AddLinkedInfo(key, linkedStr)
 				}
 				return true
 			})
 		}
 		return nil
 	})
-	return err
+	return privateFunctionLinked, err
 }
 
 type FunctionParam struct {
@@ -247,9 +282,11 @@ type FunctionParam struct {
 }
 
 // mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+
+// GenerateMockGoLinked 根据解析出来的方法信息，生成go-linked记录
 // //go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
 // func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
-func (fp FunctionParam) generateMockGoLinked() string {
+func (fp FunctionParam) GenerateMockGoLinked() string {
 	// 1. 使用 stringBuilder 解析go linkname
 	var stringBuilder strings.Builder
 	stringBuilder.WriteString("//go:linkname ")
@@ -266,15 +303,33 @@ func (fp FunctionParam) generateMockGoLinked() string {
 	stringBuilder.WriteString(fp.aliasFuncName)
 	stringBuilder.WriteString("(")
 	// 2.1 解析内部方法的请求
-
-	// 2.2 解析内部方法的响应
+	requestStr := ""
+	for _, v := range fp.requestList {
+		content := v.GenerateRequestContent()
+		requestStr = requestStr + content + ", "
+	}
+	if len(requestStr) > 0 {
+		requestStr = requestStr[0 : len(requestStr)-2]
+	}
+	stringBuilder.WriteString(requestStr)
 	stringBuilder.WriteString(")")
+	// 2.2 解析内部方法的响应
+	if len(fp.responseList) > 0 {
+		stringBuilder.WriteString("(")
+		responseStr := ""
+		for _, v := range fp.responseList {
+			content := v.GenerateResponseContent()
+			responseStr = responseStr + content + ", "
+		}
+		responseStr = responseStr[0 : len(responseStr)-2]
+		stringBuilder.WriteString(responseStr)
+		stringBuilder.WriteString(")")
+	}
 
 	return stringBuilder.String()
-	return ""
 }
 
-func extractFileFunction(funcDecl *ast.FuncDecl) (functionParam FunctionParam, err error) {
+func extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam FunctionParam, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			_ = fmt.Errorf("extractFile parse error: %s", err)
@@ -293,6 +348,8 @@ func extractFileFunction(funcDecl *ast.FuncDecl) (functionParam FunctionParam, e
 		requestList:    vReq.RequestList,
 		responseList:   vResp.ResponseList,
 		funcName:       funcName.Name,
+		moduleName:     utils.GetModulePath(),
+		filepath:       filepath,
 		ImportPkgPaths: nil,
 	}
 

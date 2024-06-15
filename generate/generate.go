@@ -26,7 +26,7 @@ type GenMeta struct {
 	// mock列表
 	MockList []*MockInstruct
 	// goLink 列表
-	GoLinkInstructs []*GoLinkInstruct
+	GoLinkList []string
 }
 
 type CaseDetail struct {
@@ -45,7 +45,7 @@ type CaseDetail struct {
 	// 把请求名按照tt.args.xx，并按照","分割，最后一位没有逗号
 	RequestNameString string
 	// goLink 列表
-	GoLinkInstructs []*GoLinkInstruct
+	GoLinkList []string
 }
 
 type MockInstruct struct {
@@ -56,21 +56,6 @@ type MockInstruct struct {
 	MockReturns        string
 	MockFunctionParam  []ParamParseResult
 	MockFunctionResult []ParamParseResult
-}
-
-// GoLinkInstruct go:link 关联的私有方法信息
-type GoLinkInstruct struct {
-	ModulePath string
-	// 定义的goLink方法名
-	AliasName string
-	// 文件路径
-	FilePath string
-	// 方法名
-	MethodName string
-	// go-link的方法入参，列表
-	RequestParamList []SimpleParamInfo
-	// go-link的方法出参，列表
-	ResponseParamList []SimpleParamInfo
 }
 
 // SimpleParamInfo 简单的参数关系
@@ -130,6 +115,15 @@ type ResponseDetail struct {
 	IsEllipsis bool
 }
 
+func (rd ResponseDetail) GenerateResponseContent() string {
+	// 1. 使用 stringBuilder 解析请求名称 + 请求类型
+	var stringBuilder strings.Builder
+	stringBuilder.WriteString(rd.ParamName)
+	stringBuilder.WriteString(" ")
+	stringBuilder.WriteString(rd.ParamType)
+	return stringBuilder.String()
+}
+
 type RequestDetail struct {
 	// 请求名称
 	RequestName string
@@ -141,7 +135,7 @@ type RequestDetail struct {
 	IsEllipsis bool
 }
 
-func (rd RequestDetail) generateRequestContent() string {
+func (rd RequestDetail) GenerateRequestContent() string {
 	// 1. 使用 stringBuilder 解析请求名称 + 请求类型
 	var stringBuilder strings.Builder
 	stringBuilder.WriteString(rd.RequestName)
@@ -159,7 +153,6 @@ func GenFile(data GenMeta) {
 	importList := make([]string, 0, 10)
 	importList = append(importList, "\"testing\"")
 
-	modulePath := utils.GetModulePath()
 	for _, cd := range caseDetails {
 		// 如果是内部方法，那么跳过处理
 		// 将字符串转换为rune类型
@@ -189,7 +182,6 @@ func GenFile(data GenMeta) {
 		}
 	})
 	mockInstructs := make([]*MockInstruct, 0, 10)
-	goLinkInstructs := make([]*GoLinkInstruct, 0, 10)
 
 	// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
 	// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
@@ -227,15 +219,6 @@ func GenFile(data GenMeta) {
 				MockFunctionResult: v.MockFunctionResult,
 			}
 
-			gli := GoLinkInstruct{
-				ModulePath:        modulePath,
-				AliasName:         "",
-				FilePath:          "",
-				MethodName:        "",
-				RequestParamList:  nil,
-				ResponseParamList: nil,
-			}
-			goLinkInstructs = append(goLinkInstructs, &gli)
 			mockInstructs = append(mockInstructs, &mi)
 		}
 		data.MockList = mockInstructs
