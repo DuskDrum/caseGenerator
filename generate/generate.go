@@ -141,6 +141,15 @@ type RequestDetail struct {
 	IsEllipsis bool
 }
 
+func (rd RequestDetail) generateRequestContent() string {
+	// 1. 使用 stringBuilder 解析请求名称 + 请求类型
+	var stringBuilder strings.Builder
+	stringBuilder.WriteString(rd.RequestName)
+	stringBuilder.WriteString(" ")
+	stringBuilder.WriteString(rd.RequestType)
+	return stringBuilder.String()
+}
+
 func GenFile(data GenMeta) {
 	var buf bytes.Buffer
 

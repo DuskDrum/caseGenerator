@@ -236,15 +236,41 @@ func extractPrivateFile(filename string) (err error) {
 }
 
 type FunctionParam struct {
-	requestList  []generate.RequestDetail
-	responseList []generate.ResponseDetail
-	funcName     string
+	requestList   []generate.RequestDetail
+	responseList  []generate.ResponseDetail
+	aliasFuncName string
+	funcName      string
+	moduleName    string
+	filepath      string
 	// 需要依赖的import
 	ImportPkgPaths []string
 }
 
-func (FunctionParam) generateMockGoLinked() string {
+// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
+// //go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
+// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
+func (fp FunctionParam) generateMockGoLinked() string {
+	// 1. 使用 stringBuilder 解析go linkname
+	var stringBuilder strings.Builder
+	stringBuilder.WriteString("//go:linkname ")
+	stringBuilder.WriteString(fp.aliasFuncName)
+	stringBuilder.WriteString(" ")
+	stringBuilder.WriteString(fp.moduleName)
+	stringBuilder.WriteString("/")
+	stringBuilder.WriteString(fp.filepath)
+	stringBuilder.WriteString(".")
+	stringBuilder.WriteString(fp.funcName)
+	stringBuilder.WriteString("\n")
+	// 2. 组装内部方法对应的结构
+	stringBuilder.WriteString("func ")
+	stringBuilder.WriteString(fp.aliasFuncName)
+	stringBuilder.WriteString("(")
+	// 2.1 解析内部方法的请求
 
+	// 2.2 解析内部方法的响应
+	stringBuilder.WriteString(")")
+
+	return stringBuilder.String()
 	return ""
 }
 
