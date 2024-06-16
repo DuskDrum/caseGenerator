@@ -370,7 +370,7 @@ type MockReturnParam struct {
 	Value string
 }
 
-func (mp MockParam) GenerateMockInfo() string {
+func (mp MockParam) GenerateMockString() string {
 	var stringBuilder strings.Builder
 	// 1. 判断是不是需要返回参数
 	if len(mp.ReturnList) > 0 {
@@ -381,12 +381,21 @@ func (mp MockParam) GenerateMockInfo() string {
 			stringBuilder.WriteString("\n")
 		}
 	}
-	// 1. 使用 stringBuilder 解析go linkname
-	stringBuilder.WriteString("mockey.Mock(")
+	// 2. 使用 stringBuilder 解析 mockey
+	stringBuilder.WriteString("mockey.Mock((")
 	stringBuilder.WriteString(mp.Caller)
-	stringBuilder.WriteString(").Return(")
-	// 2. 组装内部方法对应的结构
+	stringBuilder.WriteString(").")
 	stringBuilder.WriteString(mp.CallFunctionName)
+	stringBuilder.WriteString(").Return(")
+	// 3. 解析返回值
+	if len(mp.ReturnList) > 0 {
+		for i, v := range mp.ReturnList {
+			stringBuilder.WriteString(v.Name)
+			if i != len(mp.ReturnList)-1 {
+				stringBuilder.WriteString(",")
+			}
+		}
+	}
 	stringBuilder.WriteString(").Build()\n")
 	return stringBuilder.String()
 }
