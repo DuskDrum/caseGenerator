@@ -281,8 +281,6 @@ type FunctionParam struct {
 	ImportPkgPaths []string
 }
 
-// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
-
 // GenerateMockGoLinked 根据解析出来的方法信息，生成go-linked记录
 // //go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
 // func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
@@ -354,4 +352,41 @@ func extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam
 	}
 
 	return
+}
+
+// clearingRecords := append(records, &record)
+// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingRecords).Build()
+// 解析出mockey的方法，首先是调用方，然后是返回值
+type MockParam struct {
+	Caller           string
+	CallFunctionName string
+	ReturnList       []MockReturnParam
+}
+
+// MockReturnParam mock的返回值
+// 首先是返回值的类型，然后是返回值的值(要mock的值)
+type MockReturnParam struct {
+	Name  string
+	Value string
+}
+
+func (mp MockParam) GenerateMockInfo() string {
+	var stringBuilder strings.Builder
+	// 1. 判断是不是需要返回参数
+	if len(mp.ReturnList) > 0 {
+		for _, v := range mp.ReturnList {
+			stringBuilder.WriteString(v.Name)
+			stringBuilder.WriteString(" := ")
+			stringBuilder.WriteString(v.Value)
+			stringBuilder.WriteString("\n")
+		}
+	}
+	// 1. 使用 stringBuilder 解析go linkname
+	stringBuilder.WriteString("mockey.Mock(")
+	stringBuilder.WriteString(mp.Caller)
+	stringBuilder.WriteString(").Return(")
+	// 2. 组装内部方法对应的结构
+	stringBuilder.WriteString(mp.CallFunctionName)
+	stringBuilder.WriteString(").Build()\n")
+	return stringBuilder.String()
 }
