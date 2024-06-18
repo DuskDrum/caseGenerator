@@ -56,9 +56,11 @@ quickly generate test cases
 - [x] 解析request
 - [x] 解析receiver
 - [x] 解析response
-- [ ] 解析类型断言
-- [ ] 解析赋值
+- [x] 解析类型断言
+- [x] 解析赋值
 - [ ] 解析condition
-- [ ] 完成所有的特殊情况的example
+- [x] 完成所有的特殊情况的example
 - [ ] 完善readme
 - [ ] 打tag包，进行远程调用使用
+- [ ] 怎么更加可拓展
+- [ ] 怎么远程调用

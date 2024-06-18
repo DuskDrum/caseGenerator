@@ -141,6 +141,14 @@ OuterLoop:
 		list := bo.GetAssignmentDetailInfoList()
 		for _, v := range list {
 			bo.AppendImportList("bytedanceMockey \"github.com/bytedance/mockey\"")
+			// 组装mock信息
+			mp := MockParam{
+				// 判断是哪个类的方法，是指针还是值
+				Caller:           v.RightType.Code,
+				CallFunctionName: v.RightType.Desc,
+				ReturnList:       v.LeftName,
+			}
+
 			bo.AppendMockInfoList(generate.MockInstruct{
 				MockResponseParam:  v.LeftName,
 				MockFunction:       v.RightFormula,

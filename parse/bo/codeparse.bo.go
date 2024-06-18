@@ -2,8 +2,6 @@ package bo
 
 import (
 	"caseGenerator/generate"
-	"go/ast"
-	"strings"
 	"sync"
 )
 
@@ -90,51 +88,6 @@ func GetImportInfo() []string {
 	mu.RLock()
 	defer mu.RUnlock()
 	return ImportList
-}
-
-func InitImport(af *ast.File) {
-	mu.Lock()
-	defer mu.Unlock()
-	initImportList = make([]string, 0, 10)
-	initAliasImportMap = make(map[string]string, 10)
-	for _, importSpec := range af.Imports {
-		if importSpec.Name == nil {
-			appendInitImportList(importSpec.Path.Value)
-		} else {
-			appendInitAliasImport(importSpec.Name.Name, importSpec.Path.Value)
-		}
-	}
-}
-
-func AppendImportList(item string) {
-	mu.Lock()
-	defer mu.Unlock()
-	ImportList = append(ImportList, item)
-}
-
-func appendInitImportList(item string) {
-	initImportList = append(initImportList, item)
-}
-
-func appendInitAliasImport(key string, value string) {
-	initAliasImportMap[key] = value
-}
-
-func GetImportPathFromAliasMap(name string) string {
-	s, ok := initAliasImportMap[name]
-	if ok {
-		result := strings.ReplaceAll(s, "\"", "")
-		result = name + " \"" + result + "\""
-		return result
-	}
-	for _, info := range initImportList {
-		xx := strings.ReplaceAll(info, "\"", "")
-		if strings.HasSuffix(xx, name) {
-			result := "\"" + xx + "\""
-			return result
-		}
-	}
-	return name
 }
 
 func AddParamNeedToMapDetail(paramName string, p Param) {
