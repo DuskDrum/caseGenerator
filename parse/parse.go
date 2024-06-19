@@ -3,9 +3,7 @@ package parse
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
-	"caseGenerator/parse/visitor_v2"
 	"caseGenerator/parse/vistitor"
-	"caseGenerator/utils"
 	"errors"
 	"fmt"
 	"go/ast"
@@ -16,7 +14,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"unicode"
 )
 
 func Extract(path string, excludedPaths ...string) error {
@@ -232,52 +229,6 @@ func (pfl PrivateFunctionLinked) AddLinkedInfo(key string, linkedInfo string) {
 	pfl.PrivateFunctionLinkedMap[key] = linkedInfo
 }
 
-// 遍历文件夹，找到所有私有方法的调用
-func extractPrivateFile(fileDir string) (PrivateFunctionLinked, error) {
-	privateFunctionLinked := PrivateFunctionLinked{}
-	// 1. 遍历解析文件夹
-	err := filepath.Walk(fileDir, func(path string, info os.FileInfo, err error) error {
-		// Process error
-		if err != nil {
-			return err
-		}
-
-		// Only process go files
-		if !info.IsDir() && filepath.Ext(path) == ".go" {
-			// Parse the file
-			fset := token.NewFileSet()
-			file, err := parser.ParseFile(fset, path, nil, parser.AllErrors)
-			if err != nil {
-				return err
-			}
-
-			// Traverse the AST
-			ast.Inspect(file, func(node ast.Node) bool {
-				// Check if the node is a function declaration
-				funcDecl, ok := node.(*ast.FuncDecl)
-				if !ok {
-					return true
-				}
-
-				// 判断是否是私有方法
-				if unicode.IsLower([]rune(funcDecl.Name.Name)[0]) {
-					param, err := extractFileFunction(funcDecl, path)
-					if err != nil {
-						return false
-					}
-					linkedStr := param.GenerateMockGoLinked()
-					// 组装map的key, key是每个方法的目录+funcName
-					key := privateFunctionLinked.GenerateKey(path, param.funcName)
-					privateFunctionLinked.AddLinkedInfo(key, linkedStr)
-				}
-				return true
-			})
-		}
-		return nil
-	})
-	return privateFunctionLinked, err
-}
-
 type FunctionParam struct {
 	requestList   []generate.RequestDetail
 	responseList  []generate.ResponseDetail
@@ -333,33 +284,6 @@ func (fp FunctionParam) GenerateMockGoLinked() string {
 	}
 
 	return stringBuilder.String()
-}
-
-func extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam FunctionParam, err error) {
-	defer func() {
-		if err := recover(); err != nil {
-			_ = fmt.Errorf("extractFile parse error: %s", err)
-		}
-	}()
-	// 1. 解析request列表
-	vReq := visitor_v2.Request{}
-	vReq.Parse(funcDecl.Type.Params)
-	// 2. 解析response列表
-	vResp := visitor_v2.Response{}
-	vResp.Parse(funcDecl.Type.Params)
-	// 3. 解析function name
-	funcName := funcDecl.Name
-
-	functionParam = FunctionParam{
-		requestList:    vReq.RequestList,
-		responseList:   vResp.ResponseList,
-		funcName:       funcName.Name,
-		moduleName:     utils.GetModulePath(),
-		filepath:       filepath,
-		ImportPkgPaths: nil,
-	}
-
-	return
 }
 
 // clearingRecords := append(records, &record)
