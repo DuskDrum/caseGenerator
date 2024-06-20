@@ -5,8 +5,8 @@
 package example
 
 import (
+	"caseGenerator/common/utils"
 	"caseGenerator/example/dict"
-	"caseGenerator/utils"
 	"context"
 	"testing"
 	"time"

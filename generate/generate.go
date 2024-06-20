@@ -2,7 +2,7 @@ package generate
 
 import (
 	"bytes"
-	"caseGenerator/utils"
+	"caseGenerator/common/utils"
 	"fmt"
 	"io"
 	"os"

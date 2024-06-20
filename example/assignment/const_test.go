@@ -5,8 +5,7 @@
 package assignment
 
 import (
-	"caseGenerator/example/dict"
-	"caseGenerator/utils"
+	"caseGenerator/common/utils"
 	"fmt"
 	bytedanceMockey "github.com/bytedance/mockey"
 	"testing"

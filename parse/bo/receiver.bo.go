@@ -1,7 +1,7 @@
 package bo
 
 import (
-	"caseGenerator/utils"
+	"caseGenerator/common/utils"
 	"encoding/json"
 	"fmt"
 )

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"caseGenerator/common/utils"
 	"caseGenerator/parse"
-	"caseGenerator/utils"
 	"fmt"
 )
 

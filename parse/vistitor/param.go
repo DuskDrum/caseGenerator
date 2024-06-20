@@ -1,8 +1,8 @@
 package vistitor
 
 import (
+	"caseGenerator/common/utils"
 	"caseGenerator/parse/bo"
-	"caseGenerator/utils"
 	"encoding/json"
 	"fmt"
 	"reflect"

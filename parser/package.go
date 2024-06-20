@@ -1,8 +1,8 @@
 package parser
 
 import (
+	"caseGenerator/common/utils"
 	"caseGenerator/parse/visitor_v2"
-	"caseGenerator/utils"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -27,12 +27,17 @@ type Package struct {
 func (p Package) ParsePackage(fileDir string) {
 	// 1. 遍历文件夹，找到所有私有方法的调用
 	// 2. 遍历文件夹，找到所有的私有变量的调用
+	// 3. 解析出module名
+	p.ModuleName = utils.GetModulePath()
+	// 4. 解析packageName
 
+	// 5. packagePath就是文件目录
+	p.PackagePath = fileDir
 }
 
 // 遍历文件夹，找到所有私有方法的调用
-func extractPrivateFile(fileDir string) (PrivateFunctionLinked, error) {
-	privateFunctionLinked := PrivateFunctionLinked{}
+func extractPrivateFile(fileDir string) (map[string]FunctionDeclare, error) {
+	funcMap := make(map[string]FunctionDeclare, 10)
 	// 1. 遍历解析文件夹
 	err := filepath.Walk(fileDir, func(path string, info os.FileInfo, err error) error {
 		// Process error

@@ -5,7 +5,7 @@
 package example
 
 import (
-	"caseGenerator/utils"
+	"caseGenerator/common/utils"
 	"testing"
 )
 

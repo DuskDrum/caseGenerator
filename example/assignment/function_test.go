@@ -5,8 +5,8 @@
 package assignment
 
 import (
+	"caseGenerator/common/utils"
 	"caseGenerator/example/dict"
-	"caseGenerator/utils"
 	"github.com/samber/lo"
 	"testing"
 )
