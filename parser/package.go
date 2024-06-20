@@ -36,7 +36,7 @@ func (p Package) ParsePackage(fileDir string) {
 }
 
 // 遍历文件夹，找到所有私有方法的调用
-func extractPrivateFile(fileDir string) (map[string]FunctionDeclare, error) {
+func (s *SourceInfo) extractPrivateFile(fileDir string) (map[string]FunctionDeclare, error) {
 	funcMap := make(map[string]FunctionDeclare, 10)
 	// 1. 遍历解析文件夹
 	err := filepath.Walk(fileDir, func(path string, info os.FileInfo, err error) error {
@@ -81,7 +81,7 @@ func extractPrivateFile(fileDir string) (map[string]FunctionDeclare, error) {
 	return privateFunctionLinked, err
 }
 
-func extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam FunctionParam, err error) {
+func (s *SourceInfo) extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam FunctionDeclare, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			_ = fmt.Errorf("extractFile parse error: %s", err)
@@ -92,12 +92,12 @@ func extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam
 	vReq.Parse(funcDecl.Type.Params)
 	// 2. 解析response列表
 	vResp := visitor_v2.Response{}
-	vResp.Parse(funcDecl.Type.Params)
+	vResp.Parse(funcDecl.Type.Results)
 	// 3. 解析function name
 	funcName := funcDecl.Name
 
-	functionParam = FunctionParam{
-		requestList:    vReq.RequestList,
+	functionParam = FunctionDeclare{
+		RequestList:    vReq.RequestList,
 		responseList:   vResp.ResponseList,
 		funcName:       funcName.Name,
 		moduleName:     utils.GetModulePath(),
