@@ -12,6 +12,6 @@ type FunctionBasic struct {
 type FunctionDeclare struct {
 	FunctionBasic
 	FunctionName string
-	RequestList  []Param
-	ResponseList []Param
+	RequestList  []*Param
+	ResponseList []*Param
 }

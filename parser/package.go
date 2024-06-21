@@ -2,13 +2,13 @@ package parser
 
 import (
 	"caseGenerator/common/utils"
-	"caseGenerator/parse/visitor_v2"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"os"
 	"path/filepath"
+	"strings"
 	"unicode"
 )
 
@@ -81,28 +81,44 @@ func (s *SourceInfo) extractPrivateFile(fileDir string) (map[string]FunctionDecl
 	return privateFunctionLinked, err
 }
 
+// extractFileFunction filepath 应该以 .go 后缀结尾
 func (s *SourceInfo) extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam FunctionDeclare, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			_ = fmt.Errorf("extractFile parse error: %s", err)
 		}
 	}()
-	// 1. 解析request列表
-	vReq := visitor_v2.Request{}
-	vReq.Parse(funcDecl.Type.Params)
-	// 2. 解析response列表
-	vResp := visitor_v2.Response{}
-	vResp.Parse(funcDecl.Type.Results)
-	// 3. 解析function name
-	funcName := funcDecl.Name
+	if !strings.HasSuffix(filepath, ".go") {
+		panic("filepath should be suffix with .go")
+	}
+	// 1. 解析request列表、response列表
+	reqList, respList := s.ParseFuncTypeParamParseResult(funcDecl.Type)
+	// 2. 解析泛型
+	// todo 注意私有方法的泛型调用
+
+	// 3. 解析receiver
+
+	// 4. 将filePath 转为.go文件和包名目录
+	var fileName, functionPath string
+	index := strings.LastIndex(filepath, "/")
+	if index > 0 {
+		fileName = filepath[index+1:]
+		functionPath = filepath[:index]
+	} else {
+		fileName = filepath
+		functionPath = ""
+	}
 
 	functionParam = FunctionDeclare{
-		RequestList:    vReq.RequestList,
-		responseList:   vResp.ResponseList,
-		funcName:       funcName.Name,
-		moduleName:     utils.GetModulePath(),
-		filepath:       filepath,
-		ImportPkgPaths: nil,
+		RequestList:  reqList,
+		ResponseList: respList,
+		FunctionName: funcDecl.Name.Name,
+		FunctionBasic: FunctionBasic{
+			FunctionPath: functionPath,
+			FileName:     fileName,
+			GenericsMap:  nil,
+			Receiver:     Param{},
+		},
 	}
 
 	return
