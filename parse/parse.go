@@ -79,8 +79,6 @@ func extractFile(filename string, privateFunctionLinkedMap PrivateFunctionLinked
 
 	// 1. 组装package、method信息
 	_ = bo.Package{PackagePath: "", PackageName: f.Name.Name}
-	// 2. 组装import信息
-	bo.InitImport(f)
 
 	// 组装所有方法
 	methods := make([]string, 0, 10)

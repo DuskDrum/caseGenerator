@@ -3,6 +3,7 @@ package parser
 import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parse/bo"
+	"github.com/samber/lo"
 	"go/ast"
 	"log"
 	"strings"
@@ -268,4 +269,82 @@ func GetRelationFromSelectorExpr(se *ast.SelectorExpr) string {
 		return GetRelationFromSelectorExpr(sse) + "." + se.Sel.Name
 	}
 	return se.Sel.Name
+}
+
+// ParseReceiver 解析receiver
+func (s *SourceInfo) ParseReceiver(funcDecl *ast.FuncDecl) *Param {
+	if funcDecl.Recv == nil {
+		return nil
+	}
+	if len(funcDecl.Recv.List) == 0 {
+		return nil
+	}
+	var recvName string
+	switch recvType := funcDecl.Recv.List[0].Type.(type) {
+	case *ast.StarExpr:
+		switch astStartExpr := recvType.X.(type) {
+		case *ast.Ident:
+			recvName = astStartExpr.Name
+		// 下标类型，实际上是泛型。泛型先不处理
+		case *ast.IndexExpr:
+			return nil
+		}
+	case *ast.Ident:
+		recvName = recvType.Name
+	default:
+		recvName = funcDecl.Recv.List[0].Names[0].Name
+	}
+	rec := Param{
+		Name: recvName,
+	}
+	switch typeType := funcDecl.Recv.List[0].Type.(type) {
+	case *ast.StarExpr:
+		switch astStartExpr := typeType.X.(type) {
+		case *ast.Ident:
+			rec.Type = astStartExpr.Name
+			rec.AstType = enum.PARAM_AST_TYPE_StarExpr
+		// 下标类型，实际上是泛型。泛型先不处理
+		case *ast.IndexExpr:
+			return nil
+		}
+	case *ast.Ident:
+		rec.Type = typeType.Name
+		rec.AstType = enum.PARAM_AST_TYPE_Ident
+	}
+	return &rec
+}
+
+func (s *SourceInfo) ParseGenericsMap(decl *ast.FuncDecl) map[string]*Param {
+	if decl.Type == nil {
+		return nil
+	}
+	if decl.Type.TypeParams == nil {
+		return nil
+	}
+	if len(decl.Type.TypeParams.List) == 0 {
+		return nil
+	}
+	// 1. 处理typeParam
+	typeParams := decl.Type.TypeParams
+	genericsMap := make(map[string]*Param, 10)
+
+	if typeParams != nil && len(typeParams.List) > 0 {
+		// 2. 一般只有一个
+		field := typeParams.List[0]
+		for _, v := range field.Names {
+			ident, ok := field.Type.(*ast.Ident)
+			if ok && ident.Name == "comparable" {
+				genericsMap[v.Name] = lo.ToPtr(Param{
+					Name:    ident.Name,
+					Type:    "string",
+					AstType: enum.PARAM_AST_TYPE_Ident,
+				})
+				continue
+			}
+			//v.Obj.Decl
+			init := s.ParamParse(field.Type)
+			genericsMap[v.Name] = init
+		}
+	}
+	return genericsMap
 }

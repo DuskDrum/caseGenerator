@@ -4,8 +4,8 @@ package parser
 type FunctionBasic struct {
 	FunctionPath string
 	FileName     string
-	GenericsMap  map[string]Param
-	Receiver     Param
+	GenericsMap  map[string]*Param
+	Receiver     *Param
 }
 
 // FunctionDeclare 函数的声明，请求列表，响应列表，也包含了基础信息
