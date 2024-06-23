@@ -74,7 +74,7 @@ func (s *SourceInfo) extractPrivateAssignment(fileDir string) (map[string]Assign
 			// Traverse the AST
 			ast.Inspect(file, func(node ast.Node) bool {
 				// Check if the node is a function declaration
-				funcDecl, ok := node.(*ast.FuncDecl)
+				funcDecl, ok := node.(*ast.AssignStmt)
 				if !ok {
 					return true
 				}

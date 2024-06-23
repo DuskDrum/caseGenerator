@@ -348,3 +348,99 @@ func (s *SourceInfo) ParseGenericsMap(decl *ast.FuncDecl) map[string]*Param {
 	}
 	return genericsMap
 }
+
+// ParseParamRequest 解析请求
+func (s *SourceInfo) ParseParamRequest(expr ast.Expr) []*Param {
+	genericsMapMap := s.GenericsMap
+	// "_" 这种不处理了
+	var db Param
+
+	switch dbType := expr.(type) {
+	case *ast.SelectorExpr:
+		expr := GetRelationFromSelectorExpr(dbType)
+		db.Type = expr
+		if strings.Contains(expr, ".") {
+			parts := strings.Split(expr, ".")
+			firstField := parts[0]
+			s.AppendImportList(s.GetImportPathFromAliasMap(firstField))
+		}
+		db.AstType = enum.PARAM_AST_TYPE_SelectorExpr
+	case *ast.Ident:
+		result, ok := genericsMapMap[dbType.Name]
+		if ok {
+			db.Type = result.Type
+		} else {
+			db.Type = dbType.Name
+		}
+		db.AstType = enum.PARAM_AST_TYPE_Ident
+		// 指针类型
+	case *ast.StarExpr:
+		param := s.ParamParse(dbType.X)
+		db.Type = "*" + param.Type
+		db.AstType = enum.PARAM_AST_TYPE_StarExpr
+	case *ast.FuncType:
+		paramType := s.parseFuncType(dbType)
+		db.Type = paramType
+		db.AstType = enum.PARAM_AST_TYPE_FuncType
+	case *ast.InterfaceType:
+		// 啥也不做
+		db.Type = "interface{}"
+		db.AstType = enum.PARAM_AST_TYPE_InterfaceType
+	case *ast.ArrayType:
+		requestType := s.parseParamArrayType(dbType)
+		db.Type = requestType
+		db.AstType = enum.PARAM_AST_TYPE_ArrayType
+	case *ast.MapType:
+		requestType := s.parseParamMapType(dbType)
+		db.Type = requestType
+		db.AstType = enum.PARAM_AST_TYPE_MapType
+	// 可变长度，省略号表达式
+	case *ast.Ellipsis:
+		// 处理Elt
+		param := s.ParamParse(dbType.Elt)
+		db.Type = "[]" + param.Type
+		db.AstType = enum.PARAM_AST_TYPE_Ellipsis
+	case *ast.ChanType:
+		// 处理value
+		param := s.ParamParse(dbType.Value)
+		if dbType.Dir == ast.RECV {
+			db.Type = "<-chan " + param.Type
+		} else {
+			db.Type = "chan<- " + param.Type
+		}
+		db.AstType = enum.PARAM_AST_TYPE_ChanType
+	case *ast.IndexExpr:
+		// 下标类型，一般是泛型，处理不了
+		db.AstType = enum.PARAM_AST_TYPE_IndexExpr
+		return nil
+	case *ast.BinaryExpr:
+		// 先直接取Y
+		param := s.ParamParse(dbType.Y)
+		db.Type = param.Type
+		db.AstType = enum.PARAM_AST_TYPE_BinaryExpr
+	case *ast.BasicLit:
+		db.Type = dbType.Kind.String()
+		db.AstType = enum.PARAM_AST_TYPE_BasicLit
+	case *ast.FuncLit:
+		funcType := s.parseFuncType(dbType.Type)
+		db.Type = funcType
+		db.AstType = enum.PARAM_AST_TYPE_FuncLit
+	case *ast.CompositeLit:
+		init := s.ParamParse(dbType.Type)
+		db.Type = init.Type
+		db.AstType = enum.PARAM_AST_TYPE_CompositeLit
+	case *ast.CallExpr:
+		args := dbType.Args
+		requests := make([]*Param, 0, 10)
+		for _, v := range args {
+			request := s.ParseParamRequest(v)
+			for _, s := range request {
+				requests = append(requests, s)
+			}
+		}
+		return requests
+	default:
+		log.Fatalf("未知类型...")
+	}
+	return []*Param{&db}
+}
