@@ -18,10 +18,10 @@ import (
 
 func Extract(path string, excludedPaths ...string) error {
 	// 解析出path下每个目录下的私有方法，落入map
-	privateFunctionLinkedMap, err := extractPrivateFile(path)
-	if err != nil {
-		return err
-	}
+	//privateFunctionLinkedMap, err := extractPrivateFile(path)
+	//if err != nil {
+	//	return err
+	//}
 
 	return filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		// Process error
@@ -55,7 +55,7 @@ func Extract(path string, excludedPaths ...string) error {
 			if hasSuffix {
 				return nil
 			}
-			if err = extractFile(path, privateFunctionLinkedMap); err != nil {
+			if err = extractFile(path); err != nil {
 				return err
 			}
 		}
@@ -63,7 +63,7 @@ func Extract(path string, excludedPaths ...string) error {
 	})
 }
 
-func extractFile(filename string, privateFunctionLinkedMap PrivateFunctionLinked) (err error) {
+func extractFile(filename string) (err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			_ = fmt.Errorf("extractFile parse error: %s", err)
@@ -135,14 +135,14 @@ OuterLoop:
 		// 8.1 遍历所有赋值和变量
 		list := bo.GetAssignmentDetailInfoList()
 		for _, v := range list {
-			bo.AppendImportList("bytedanceMockey \"github.com/bytedance/mockey\"")
-			// 组装mock信息
-			mp := MockParam{
-				// 判断是哪个类的方法，是指针还是值
-				Caller:           v.RightType.Code,
-				CallFunctionName: v.RightType.Desc,
-				ReturnList:       v.LeftName,
-			}
+			// bo.AppendImportList("bytedanceMockey \"github.com/bytedance/mockey\"")
+			//// 组装mock信息
+			//mp := MockParam{
+			//	// 判断是哪个类的方法，是指针还是值
+			//	Caller:           v.RightType.Code,
+			//	CallFunctionName: v.RightType.Desc,
+			//	ReturnList:       v.LeftName,
+			//}
 
 			bo.AppendMockInfoList(generate.MockInstruct{
 				MockResponseParam:  v.LeftName,
@@ -164,7 +164,7 @@ OuterLoop:
 		}
 		if bo.GetReceiverInfo() != nil {
 			cd.ReceiverType = "utils.Empty[" + bo.GetReceiverInfo().ReceiverValue.InvocationName + "]()"
-			bo.AppendImportList("\"caseGenerator/utils\"")
+			//bo.AppendImportList("\"caseGenerator/utils\"")
 		}
 		// 11. 开始处理mock
 

@@ -1,9 +1,9 @@
 package vistitor
 
 import (
+	"caseGenerator/common/enum"
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
-	"caseGenerator/parse/enum"
 	"fmt"
 	"go/ast"
 	"log"
@@ -97,7 +97,6 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			}
 			adi.RightFunctionParam = paramRequests
 
-			adi.RightType = enum.RIGHT_TYPE_COMPOSITE
 			adi.RightFormula = CompositeLitParse(nRhsType).ResultStructName
 			adi.LeftResultType = []string{"nil"}
 		case *ast.BasicLit:

@@ -40,3 +40,16 @@ func ConvFunctionTest2() {
 	}
 	fmt.Print("convert result is: 111")
 }
+
+// ConvFunctionTest3 调整
+func ConvFunctionTest3() {
+	str, str2, str3 := "111", "2222", 333333
+	_, err := strconv.Atoi(str)
+	if err != nil {
+		fmt.Print("get error")
+	}
+
+	fmt.Print("convert result is: 111")
+	fmt.Print("convert str2 is: " + str2)
+	fmt.Print("convert str3 is: " + strconv.Itoa(str3))
+}

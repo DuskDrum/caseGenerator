@@ -1,8 +1,8 @@
 package visitor_v2
 
 import (
+	"caseGenerator/common/enum"
 	"caseGenerator/parse/bo"
-	"caseGenerator/parse/enum"
 	"go/ast"
 	"log"
 	"strings"
@@ -19,20 +19,12 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 	case *ast.SelectorExpr:
 		expr := GetRelationFromSelectorExpr(dbType)
 		db.ParamType = expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
-		}
 		if expr == "context.Context" {
 			db.ParamInitValue = "context.Background()"
-			bo.AppendImportList("\"context\"")
 		} else if expr == "time.Time" {
 			db.ParamInitValue = "time.Now()"
-			bo.AppendImportList("\"time\"")
 		} else {
 			db.ParamInitValue = "utils.Empty[" + expr + "]()"
-			bo.AppendImportList("\"caseGenerator/utils\"")
 		}
 	case *ast.Ident:
 		result, ok := typeParamsMap[dbType.Name]
@@ -42,14 +34,12 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 			db.ParamType = dbType.Name
 		}
 		db.ParamInitValue = "utils.Empty[" + db.ParamType + "]()"
-		bo.AppendImportList("\"caseGenerator/utils\"")
 		// 指针类型
 	case *ast.StarExpr:
 		// todo typeParamMap
 		param := ParamParse(dbType.X, name)
 		db.ParamInitValue = "lo.ToPtr(" + param.ParamInitValue + ")"
 		db.ParamType = "*" + param.ParamType
-		bo.AppendImportList("\"github.com/samber/lo\"")
 	case *ast.FuncType:
 		paramType := parseFuncType(dbType)
 
@@ -73,7 +63,6 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 		param := ParamParse(dbType.Elt, name)
 		db.ParamType = "[]" + param.ParamType
 		db.ParamInitValue = "[]" + param.ParamType + "{utils.Empty[" + param.ParamType + "]()}"
-		bo.AppendImportList("\"caseGenerator/utils\"")
 
 		db.IsEllipsis = true
 	case *ast.ChanType:
@@ -102,11 +91,6 @@ func parseParamMapType(mpType *ast.MapType) string {
 	case *ast.SelectorExpr:
 		expr := GetRelationFromSelectorExpr(eltType)
 		keyInfo = expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
-		}
 	case *ast.Ident:
 		result, ok := typeParamsMap[eltType.Name]
 		if ok {
@@ -128,11 +112,6 @@ func parseParamMapType(mpType *ast.MapType) string {
 	case *ast.SelectorExpr:
 		expr := GetRelationFromSelectorExpr(eltType)
 		valueInfo = expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
-		}
 	case *ast.Ident:
 		result, ok := typeParamsMap[eltType.Name]
 		if ok {
@@ -162,11 +141,6 @@ func parseParamArrayType(dbType *ast.ArrayType) string {
 	case *ast.SelectorExpr:
 		expr := GetRelationFromSelectorExpr(eltType)
 		requestType = "[]" + expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
-		}
 	case *ast.Ident:
 		result, ok := paramTypeMap[eltType.Name]
 		if ok {
@@ -207,11 +181,6 @@ func ParseParamWithoutInit(expr ast.Expr, name string) *bo.ParamParseResult {
 	case *ast.SelectorExpr:
 		expr := GetRelationFromSelectorExpr(dbType)
 		db.ParamType = expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
-		}
 	case *ast.Ident:
 		result, ok := paramTypeMap[dbType.Name]
 		if ok {
@@ -272,11 +241,6 @@ func ParseParamRequest(expr ast.Expr) []*bo.ParamParseRequest {
 	case *ast.SelectorExpr:
 		expr := GetRelationFromSelectorExpr(dbType)
 		db.ParamType = expr
-		if strings.Contains(expr, ".") {
-			parts := strings.Split(expr, ".")
-			firstField := parts[0]
-			bo.AppendImportList(bo.GetImportPathFromAliasMap(firstField))
-		}
 	case *ast.Ident:
 		result, ok := paramTypeMap[dbType.Name]
 		if ok {

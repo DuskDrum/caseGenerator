@@ -121,7 +121,6 @@ var ALL_PARAM_AST_TYPE = map[string]ParamAstType{
 	PARAM_AST_TYPE_BadDecl.Name:         PARAM_AST_TYPE_BadDecl,
 	PARAM_AST_TYPE_GenDecl.Name:         PARAM_AST_TYPE_GenDecl,
 	PARAM_AST_TYPE_FuncDecl.Name:        PARAM_AST_TYPE_FuncDecl,
-	PARAM_AST_TYPE_CompositeLit.Name:    PARAM_AST_TYPE_CompositeLit,
 	PARAM_AST_TYPE_SelectorExpr.Name:    PARAM_AST_TYPE_SelectorExpr,
 	PARAM_AST_TYPE_IndexExpr.Name:       PARAM_AST_TYPE_IndexExpr,
 	PARAM_AST_TYPE_SliceExpr.Name:       PARAM_AST_TYPE_SliceExpr,

@@ -74,21 +74,21 @@ func (s *SourceInfo) extractPrivateAssignment(fileDir string) (map[string]Assign
 			// Traverse the AST
 			ast.Inspect(file, func(node ast.Node) bool {
 				// Check if the node is a function declaration
-				funcDecl, ok := node.(*ast.AssignStmt)
-				if !ok {
-					return true
-				}
+				//funcDecl, ok := node.(*ast.AssignStmt)
+				//if !ok {
+				//	return true
+				//}
 				// 判断是否是私有方法
-				if unicode.IsLower([]rune(funcDecl.Name.Name)[0]) {
-					// 1. 解析key， key 是 path + "." + funcDecl.Name.Name
-					key := path + "." + funcDecl.Name.Name
-
-					functionParam, err := s.extractPrivateAssignment(funcDecl, path)
-					if err != nil {
-						return false
-					}
-					funcMap[key] = functionParam
-				}
+				//if unicode.IsLower([]rune(funcDecl.Name.Name)[0]) {
+				//	// 1. 解析key， key 是 path + "." + funcDecl.Name.Name
+				//	key := path + "." + funcDecl.Name.Name
+				//
+				//	functionParam, err := s.extractPrivateAssignment(funcDecl, path)
+				//	if err != nil {
+				//		return false
+				//	}
+				//	funcMap[key] = functionParam
+				//}
 				return true
 			})
 		}
