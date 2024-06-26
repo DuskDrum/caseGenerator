@@ -4,7 +4,6 @@ import (
 	"caseGenerator/parse/bo"
 	"go/ast"
 	"go/token"
-	"log"
 	"sync"
 )
 
@@ -221,7 +220,7 @@ func CompositeLitParse(se *ast.CompositeLit) CompositeResult {
 					rpr.Y = &bo.CallUnary{CallValue: id.Name}
 				}
 			default:
-				log.Fatalf("未知类型...")
+				panic("未知类型...")
 			}
 		} else {
 			continue

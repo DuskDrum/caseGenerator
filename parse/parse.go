@@ -9,7 +9,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -180,7 +179,7 @@ OuterLoop:
 	lastIndex := strings.LastIndex(newFilename, "/")
 	// 如果找到了斜杠
 	if lastIndex == -1 {
-		log.Fatalf("路径存在问题")
+		panic("路径存在问题")
 	}
 	// 分割字符串
 	filePath := newFilename[:lastIndex+1]

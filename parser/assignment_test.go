@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -18,7 +19,52 @@ func TestParseAssignment_call(t *testing.T) {
 
 // TestParseAssignment 测试assignment的测试用例，构造类型
 func TestParseAssignment_composite(t *testing.T) {
-	parseFile("./example/assignment/conv_struct.go")
+	parseFile("../example/assignment/conv_struct.go")
+}
+
+// TestParseAssignment_anonymous_function
+func TestParseAssignment_anonymous_function(t *testing.T) {
+	parseFile("../example/assignment/anonymous_function.go")
+}
+
+// TestParseAssignment_built_in_function
+func TestParseAssignment_built_in_function(t *testing.T) {
+	parseFile("../example/assignment/built_in_function.go")
+}
+
+// TestParseAssignment_closure_function
+func TestParseAssignment_closure_function(t *testing.T) {
+	parseFile("../example/assignment/closure_function.go")
+}
+
+// TestParseAssignment_const
+func TestParseAssignment_const(t *testing.T) {
+	parseFile("../example/assignment/const.go")
+}
+
+// TestParseAssignment_function
+func TestParseAssignment_function(t *testing.T) {
+	parseFile("../example/assignment/function.go")
+}
+
+// TestParseAssignment_inner_function
+func TestParseAssignment_inner_function(t *testing.T) {
+	parseFile("../example/assignment/inner_function.go")
+}
+
+// TestParseAssignment_new
+func TestParseAssignment_new(t *testing.T) {
+	parseFile("../example/assignment/new.go")
+}
+
+// TestParseAssignment_receiver_function
+func TestParseAssignment_receiver_function(t *testing.T) {
+	parseFile("../example/assignment/receiver_function.go")
+}
+
+// TestParseAssignment_var
+func TestParseAssignment_var(t *testing.T) {
+	parseFile("../example/assignment/var.go")
 }
 
 // 解析文件
@@ -51,12 +97,23 @@ func parseFile(path string) {
 			// 组装所有方法
 			for _, cg := range f.Decls {
 				decl, ok := cg.(*ast.FuncDecl)
-				if !ok {
-					fmt.Print("不处理非 ast.FuncDecl 的内容")
-					continue
+				if ok {
+					AssignmentWalk := AssignmentWalk{}
+					ast.Walk(&AssignmentWalk, decl)
 				}
-				AssignmentWalk := AssignmentWalk{}
-				ast.Walk(&AssignmentWalk, decl)
+				genDecl, ok := cg.(*ast.GenDecl)
+				if ok {
+					si := SourceInfo{}
+					assignment := si.ParseAssignment(genDecl)
+					if assignment != nil {
+						marshal, err := json.Marshal(assignment)
+						if err != nil {
+							fmt.Print("AssignmentWalk walk err: " + err.Error() + "\n")
+						} else {
+							fmt.Print("AssignmentWalk walk: ", string(marshal)+"\n")
+						}
+					}
+				}
 			}
 		}
 		return nil
@@ -73,17 +130,30 @@ func (v *AssignmentWalk) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return v
 	}
+	var assignment []*Assignment
 	switch node := n.(type) {
 	case *ast.AssignStmt:
 		si := SourceInfo{}
-		si.ParseAssignment(node)
+		assignment = si.ParseAssignment(node)
 	case *ast.DeclStmt:
 		si := SourceInfo{}
-		si.ParseAssignment(node)
+		assignment = si.ParseAssignment(node)
+	case *ast.GenDecl:
+		si := SourceInfo{}
+		assignment = si.ParseAssignment(node)
 	// 这种是没有响应值的function
 	case *ast.ExprStmt:
 		si := SourceInfo{}
-		si.ParseAssignment(node)
+		assignment = si.ParseAssignment(node)
+	}
+	if assignment == nil {
+		return v
+	}
+	marshal, err := json.Marshal(assignment)
+	if err != nil {
+		fmt.Print("AssignmentWalk walk err: " + err.Error() + "\n")
+	} else {
+		fmt.Print("AssignmentWalk walk: ", string(marshal)+"\n")
 	}
 
 	return v

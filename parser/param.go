@@ -11,9 +11,9 @@ import (
 
 // Param 参数信息，请求参数、返回参数、类型断言参数、变量、常量等
 type Param struct {
-	Name    string
-	Type    string
-	AstType enum.ParamAstType
+	Name    string            `json:"name,omitempty"`
+	Type    string            `json:"type,omitempty"`
+	AstType enum.ParamAstType `json:"astType,omitempty"`
 }
 
 // ParamValue 带有参数值的参数
@@ -82,11 +82,23 @@ func (s *SourceInfo) ParamParse(expr ast.Expr) *Param {
 		}
 		paramInfo.AstType = enum.PARAM_AST_TYPE_ChanType
 	case *ast.IndexExpr:
-		// 下标类型，一般是泛型，处理不了
+		// 下标类型，一般是泛型
 		paramInfo.AstType = enum.PARAM_AST_TYPE_IndexExpr
-		return nil
+		// 先解析主体
+		param := s.ParamParse(dbType.X)
+		// 再解析下标结构
+		indexParam := s.ParamParseValue(dbType.Index)
+		var index string
+		if indexParam.Value == "" {
+			index = indexParam.Type
+		} else {
+			index = indexParam.Value
+		}
+		paramInfo.Type = param.Type + "[" + index + "]"
+	case *ast.CallExpr:
+		// 一般无需处理CallExpr
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return &paramInfo
 }
@@ -165,8 +177,12 @@ func (s *SourceInfo) ParamParseValue(expr ast.Expr) *ParamValue {
 		paramInfo.AstType = enum.PARAM_AST_TYPE_FuncLit
 		// CompositeLit 等待解析出内容值
 	case *ast.CompositeLit:
-		init := s.ParamParse(dbType.Type)
-		paramInfo.Type = init.Type
+		var clv CompositeLitValue
+		if dbType.Type != nil {
+			init := s.ParamParse(dbType.Type)
+			paramInfo.Type = init.Type
+			clv.Param = init
+		}
 		paramInfo.AstType = enum.PARAM_AST_TYPE_CompositeLit
 		// 如果Incomplete为true，那么这个类型是不完整的
 		if dbType.Incomplete {
@@ -178,12 +194,43 @@ func (s *SourceInfo) ParamParseValue(expr ast.Expr) *ParamValue {
 			paramValue := s.ParamParseValue(v)
 			values = append(values, *paramValue)
 		}
-		paramInfo.Value = CompositeLitValue{Param: init, Values: values}.ToString()
+		clv.Values = values
+		paramInfo.Value = clv.ToString()
 		// CallExpr 等待解析出内容值
 	case *ast.CallExpr:
+		// 没有响应值的function，没有响应信息
+		var paramType string
+		param := s.ParamParse(dbType.Fun)
+		paramType = param.Type + "("
+		for _, v := range dbType.Args {
+			reqInfos := s.ParseParamRequest(v)
+			for _, reqInfo := range reqInfos {
+				if reqInfo.Value != "" {
+					paramType += reqInfo.Value + ", "
+				} else if reqInfo.Type != "" {
+					paramType += reqInfo.Type + ", "
+				}
+			}
+		}
+		if len(dbType.Args) > 0 {
+			paramType = paramType[:len(paramType)-2]
+		}
+		paramType += ")"
 
+		paramInfo.Type = paramType
+		paramInfo.AstType = enum.PARAM_AST_TYPE_CallExpr
+	case *ast.KeyValueExpr:
+		key := s.ParamParse(dbType.Key)
+		value := s.ParamParseValue(dbType.Value)
+		paramInfo.Type = key.Type
+		paramInfo.AstType = enum.PARAM_AST_TYPE_KeyValueExp
+		if value.Value == "" {
+			paramInfo.Value = value.Type
+		} else {
+			paramInfo.Value = value.Value
+		}
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return &paramInfo
 }
@@ -214,7 +261,7 @@ func (s *SourceInfo) parseParamMapType(mpType *ast.MapType) string {
 	case *ast.InterfaceType:
 		keyInfo = "any"
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 
 	// 处理value
@@ -244,7 +291,7 @@ func (s *SourceInfo) parseParamMapType(mpType *ast.MapType) string {
 	case *ast.ArrayType:
 		valueInfo = s.parseParamArrayType(eltType)
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return "map[" + keyInfo + "]" + valueInfo
 }
@@ -282,9 +329,27 @@ func (s *SourceInfo) parseParamArrayType(dbType *ast.ArrayType) string {
 	case *ast.FuncType:
 		paramType := s.parseFuncType(eltType)
 		requestType = "[]" + paramType
+	case *ast.StructType:
+		requestType = "[]" + s.parseStructType(eltType)
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
+	return requestType
+}
+
+func (s *SourceInfo) parseStructType(dbType *ast.StructType) string {
+	var requestType = "struct{"
+	// 解析struct的字段
+	fields := dbType.Fields.List
+	for _, v := range fields {
+		typeParam := s.ParamParse(v.Type)
+		for _, name := range v.Names {
+			nameParam := s.ParamParse(name)
+			requestType = requestType + " \n " + nameParam.Type + " " + typeParam.Type
+		}
+	}
+	// 去掉最后一个逗号
+	requestType = requestType + "}"
 	return requestType
 }
 
@@ -518,6 +583,7 @@ func (s *SourceInfo) ParseParamRequest(expr ast.Expr) []*ParamValue {
 		return nil
 	case *ast.BinaryExpr:
 		// 先直接取Y
+		// todo 这里有个问题待解决， 	fmt.Print("convert str3 is: " + strconv.Itoa(str3))的解析会走到这里，这次先不处理后半部分的解析
 		param := s.ParamParse(dbType.Y)
 		db.Type = param.Type
 		db.AstType = enum.PARAM_AST_TYPE_BinaryExpr
@@ -544,7 +610,10 @@ func (s *SourceInfo) ParseParamRequest(expr ast.Expr) []*ParamValue {
 		}
 		return requests
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
+	}
+	if db.Name == "" && db.Type != "" {
+		db.Name = db.Type
 	}
 	return []*ParamValue{&db}
 }

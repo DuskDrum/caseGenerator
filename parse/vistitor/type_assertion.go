@@ -5,7 +5,6 @@ import (
 	"caseGenerator/parse/bo"
 	"github.com/samber/lo"
 	"go/ast"
-	"log"
 )
 
 type TypeAssertionVisitor struct {
@@ -37,7 +36,7 @@ func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
 	case *ast.TypeAssertExpr:
 		identName := node.X.(*ast.Ident)
 		if identName == nil {
-			log.Fatalf("未成功解析出节点的名称...")
+			panic("未成功解析出节点的名称...")
 		}
 		// 获取 typeParam
 		parse := ParamParse(node.Type, identName.Name)

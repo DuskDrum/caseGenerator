@@ -4,7 +4,6 @@ import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parse/bo"
 	"go/ast"
-	"log"
 	"strings"
 )
 
@@ -78,7 +77,7 @@ func ParamParse(expr ast.Expr, name string) *bo.ParamParseResult {
 		// 下标类型，一般是泛型，处理不了
 		return nil
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return &db
 }
@@ -104,7 +103,7 @@ func parseParamMapType(mpType *ast.MapType) string {
 	case *ast.InterfaceType:
 		keyInfo = "any"
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 
 	// 处理value
@@ -129,7 +128,7 @@ func parseParamMapType(mpType *ast.MapType) string {
 	case *ast.ArrayType:
 		valueInfo = parseParamArrayType(eltType)
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return "map[" + keyInfo + "]" + valueInfo
 }
@@ -164,7 +163,7 @@ func parseParamArrayType(dbType *ast.ArrayType) string {
 		paramType := parseFuncType(eltType)
 		requestType = "[]" + paramType
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return requestType
 }
@@ -226,7 +225,7 @@ func ParseParamWithoutInit(expr ast.Expr, name string) *bo.ParamParseResult {
 		param := ParamParse(dbType.Y, name)
 		db.ParamType = param.ParamType
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return &db
 }
@@ -290,9 +289,9 @@ func ParseParamRequest(expr ast.Expr) []*bo.ParamParseRequest {
 	case *ast.FuncLit:
 		funcType := parseFuncType(dbType.Type)
 		db.ParamVale = funcType
-		db.ParamType = enum.RIGHT_TYPE_FUNCTION.Code
+		db.ParamType = enum.ASSIGNMENT_TYPE_FUNCTION.Code
 	case *ast.CompositeLit:
-		db.ParamType = enum.RIGHT_TYPE_COMPOSITE.Code
+		db.ParamType = enum.ASSIGNMENT_TYPE_COMPOSITE.Code
 		init := ParseParamWithoutInit(dbType.Type, "")
 		db.ParamVale = init.ParamType
 	case *ast.CallExpr:
@@ -306,7 +305,7 @@ func ParseParamRequest(expr ast.Expr) []*bo.ParamParseRequest {
 		}
 		return requests
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 	}
 	return []*bo.ParamParseRequest{&db}
 }

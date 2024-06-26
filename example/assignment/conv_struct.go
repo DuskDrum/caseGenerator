@@ -21,9 +21,9 @@ func ConvStructTest2() {
 		merchantId string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name, name2 string
+		args        args
+		wantErr     bool
 	}{
 		{
 			name: "检查错误参数",

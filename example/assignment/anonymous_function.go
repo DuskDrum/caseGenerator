@@ -29,6 +29,8 @@ func AnonymousFunctionTest2() {
 			fmt.Println(i)
 		}
 	}
+	i := printers[0:1]
+	fmt.Print(i)
 	// 因为i在循环结束后变为5，所有闭包捕获的都是同一个变量i的最终值
 	for _, printer := range printers {
 		printer() // 输出: 5 5 5 5 5

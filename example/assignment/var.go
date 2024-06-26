@@ -8,12 +8,15 @@ import (
 // var的数据不处理
 
 var (
-	varConfigKey = "config.key"
-	varRd        = dict.ReceiverDict{}
 	// var定义的变量要考虑线程安全问题，如果发现在方法中出现赋值行为，可以使用todo告警或者使用多线程进行测试(使用todo告警)
 	varMap  = make(map[string]string, 10)
 	varList = make([]string, 0, 10)
+	//muLock  sync.Mutex
+	varConfigKey = "config.key"
+	varRd        = dict.ReceiverDict{}
 )
+
+//const name = "name"
 
 // VarAssignmentTest1 使用 var进行赋值
 func VarAssignmentTest1() {

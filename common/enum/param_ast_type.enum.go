@@ -1,5 +1,7 @@
 package enum
 
+import "encoding/json"
+
 type ParamAstType struct {
 	Name string
 	Desc string
@@ -135,4 +137,24 @@ var ALL_PARAM_AST_TYPE = map[string]ParamAstType{
 	PARAM_AST_TYPE_InvocationUnary.Name: PARAM_AST_TYPE_InvocationUnary,
 	PARAM_AST_TYPE_ParamUnary.Name:      PARAM_AST_TYPE_ParamUnary,
 	PARAM_AST_TYPE_CallUnary.Name:       PARAM_AST_TYPE_CallUnary,
+}
+
+func (at *ParamAstType) MarshalJSON() ([]byte, error) {
+	// 自定义序列化逻辑
+	return json.Marshal(at.Name)
+}
+
+func (at *ParamAstType) UnmarshalJSON(data []byte) error {
+	// 自定义序列化逻辑
+	var name string
+	err := json.Unmarshal(data, &name)
+	if err != nil {
+		return err
+	}
+	assignmentType, ok := ALL_PARAM_AST_TYPE[name]
+	if ok {
+		at.Name = assignmentType.Name
+		at.Desc = assignmentType.Desc
+	}
+	return nil
 }

@@ -6,7 +6,6 @@ import (
 	"caseGenerator/parse/bo"
 	"fmt"
 	"go/ast"
-	"log"
 	"sync"
 )
 
@@ -46,7 +45,7 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			// 解析call的方法的出参类型
 			switch callFunType := nRhsType.Fun.(type) {
 			case *ast.Ident:
-				adi.RightType = enum.RIGHT_TYPE_CALL
+				adi.RightType = enum.ASSIGNMENT_TYPE_CALL
 				adi.RightFormula = callFunType.Name
 				// 解析返回的类型
 				switch callDecl := callFunType.Obj.Decl.(type) {
@@ -61,11 +60,11 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 					}
 				}
 			case *ast.SelectorExpr:
-				adi.RightType = enum.RIGHT_TYPE_CALL
+				adi.RightType = enum.ASSIGNMENT_TYPE_CALL
 				adi.RightFormula = GetRelationFromSelectorExpr(callFunType)
 				// SelectorExpr类型解析不出类型，只有靠后面的逻辑猜测
 			default:
-				log.Fatalf("不支持此类型")
+				panic("不支持此类型")
 			}
 			// 类型断言可以是 a.(type) 也可以是A.B.C.(type)
 		case *ast.TypeAssertExpr:
@@ -79,12 +78,12 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			adi.RightFunctionParam = paramRequests
 
 			if se, ok := nRhsType.X.(*ast.CompositeLit); ok {
-				adi.RightType = enum.RIGHT_TYPE_COMPOSITE
+				adi.RightType = enum.ASSIGNMENT_TYPE_COMPOSITE
 				adi.RightFormula = CompositeLitParse(se).ResultStructName
 				adi.LeftResultType = []string{"nil"}
 			}
 			if ident, ok := nRhsType.X.(*ast.Ident); ok {
-				adi.RightType = enum.RIGHT_TYPE_COMPOSITE
+				adi.RightType = enum.ASSIGNMENT_TYPE_COMPOSITE
 				adi.RightFormula = ident.Name
 				adi.LeftResultType = []string{"nil"}
 			}
@@ -113,10 +112,10 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			paramType := parseFuncType(funcType)
 			adi.RightFormula = paramType
 			// 匿名函数
-			adi.RightType = enum.RIGHT_TYPE_FUNCTION
-			adi.LeftResultType = []string{enum.RIGHT_TYPE_FUNCTION.Code}
+			adi.RightType = enum.ASSIGNMENT_TYPE_FUNCTION
+			adi.LeftResultType = []string{enum.ASSIGNMENT_TYPE_FUNCTION.Code}
 		default:
-			log.Fatalf("不支持此类型")
+			panic("不支持此类型")
 		}
 		bo.AppendAssignmentDetailInfoToList(adi)
 	case *ast.DeclStmt:
@@ -143,7 +142,7 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 						case *ast.SelectorExpr:
 							ab.Y = &bo.ParamUnary{GetRelationFromSelectorExpr(vaType)}
 						default:
-							log.Fatalf("类型不支持")
+							panic("类型不支持")
 						}
 						bo.AddParamNeedToMapDetail(ab.X.ParamValue, &BinaryParam{
 							ParamName:   ab.X.ParamValue,
@@ -155,7 +154,7 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 				}
 			}
 		default:
-			log.Fatalf("不支持此类型")
+			panic("不支持此类型")
 		}
 		bo.AppendAssignmentDetailInfoToList(adi)
 	// 这种是没有响应值的function
@@ -175,10 +174,10 @@ func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
 			adi.RightFunctionParam = paramRequests
 			// 解析右边的方法
 			init := ParseParamWithoutInit(nd.Fun, "")
-			adi.RightType = enum.RIGHT_TYPE_CALL
+			adi.RightType = enum.ASSIGNMENT_TYPE_CALL
 			adi.RightFormula = init.ParamType
 		default:
-			log.Fatalf("不支持此类型")
+			panic("不支持此类型")
 		}
 		bo.AppendAssignmentDetailInfoToList(adi)
 	}

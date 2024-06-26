@@ -1,6 +1,7 @@
 package assignment
 
 import (
+	"caseGenerator/example"
 	"fmt"
 	"strconv"
 )
@@ -29,7 +30,17 @@ func ConvFunctionTest1() {
 
 // ConvFunctionTest2 调整
 func ConvFunctionTest2() {
-	intInfo := 111
+	intInfo, strngInfo, strngInfo2, strngInfo3 := 111, "222", "3333", "4444"
+	inad := strngInfo
+	inadx := &strngInfo
+	result := inad + strngInfo2 + strngInfo3
+	fmt.Print("convert result is not 111" + result)
+
+	fmt.Print("convert result is not 111" + inad + strngInfo2)
+	fmt.Print(inadx)
+
+	e := example.Example{}
+	fmt.Print(e)
 	itoaInt := strconv.Itoa(intInfo)
 	if itoaInt != "111" {
 		fmt.Print("convert result is not 111")

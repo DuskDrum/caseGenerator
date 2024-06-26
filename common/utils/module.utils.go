@@ -13,7 +13,7 @@ import (
 func findModFile() string {
 	dir, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("failed to get working directory: %v", err)
+		panic("failed to get working directory: " + err.Error())
 	}
 	for {
 		modPath := filepath.Join(dir, "go.mod")
@@ -35,12 +35,12 @@ func GetModulePath() string {
 	modPath := findModFile()
 	content, err := os.ReadFile(modPath)
 	if err != nil {
-		log.Fatalf("failed to read go.mod file: %v", err)
+		panic("failed to read go.mod file: " + err.Error())
 	}
 
 	modFile, err := modfile.Parse(modPath, content, nil)
 	if err != nil {
-		log.Fatalf("failed to parse go.mod file: %v", err)
+		panic("failed to parse go.mod file: " + err.Error())
 	}
 
 	modulePath := modFile.Module.Mod.Path

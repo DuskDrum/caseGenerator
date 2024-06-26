@@ -4,7 +4,6 @@ import (
 	"caseGenerator/parse/bo"
 	"go/ast"
 	"go/token"
-	"log"
 	"sync"
 )
 
@@ -221,7 +220,7 @@ func (v *ConditionVisitor) BinaryUnaryParse(expr ast.Expr, opPos token.Pos) bo.U
 			return &bo.CallUnary{CallValue: id.Name}
 		}
 	default:
-		log.Fatalf("未知类型...")
+		panic("未知类型...")
 		return nil
 	}
 	return nil
