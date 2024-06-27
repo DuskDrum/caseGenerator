@@ -19,3 +19,8 @@ type ExprNode struct {
 	Left     *ExprNode // Left child node
 	Right    *ExprNode // Right child node
 }
+
+// 解析条件语句
+func (s *SourceInfo) parseCondition() *ConditionNode {
+	return nil
+}
