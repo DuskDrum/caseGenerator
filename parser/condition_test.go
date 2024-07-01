@@ -61,19 +61,6 @@ func parseConditionFile(path string) {
 					ConditionWalk := ConditionWalk{}
 					ast.Walk(&ConditionWalk, decl)
 				}
-				genDecl, ok := cg.(*ast.GenDecl)
-				if ok {
-					si := SourceInfo{}
-					assignment := si.ParseAssignment(genDecl)
-					if assignment != nil {
-						marshal, err := json.Marshal(assignment)
-						if err != nil {
-							fmt.Print("ConditionWalk walk err: " + err.Error() + "\n")
-						} else {
-							fmt.Print("ConditionWalk walk: ", string(marshal)+"\n")
-						}
-					}
-				}
 			}
 		}
 		return nil
@@ -90,30 +77,30 @@ func (v *ConditionWalk) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return v
 	}
-	var assignment []*Assignment
+	var conditionNode *ConditionNode
 	switch node := n.(type) {
-	case *ast.AssignStmt:
+	case *ast.IfStmt:
 		si := SourceInfo{}
-		assignment = si.ParseAssignment(node)
+		conditionNode = si.parseCondition(node)
 	case *ast.DeclStmt:
 		si := SourceInfo{}
-		assignment = si.ParseAssignment(node)
+		conditionNode = si.parseCondition(node)
 	case *ast.GenDecl:
 		si := SourceInfo{}
-		assignment = si.ParseAssignment(node)
+		conditionNode = si.parseCondition(node)
 	// 这种是没有响应值的function
 	case *ast.ExprStmt:
 		si := SourceInfo{}
-		assignment = si.ParseAssignment(node)
+		conditionNode = si.parseCondition(node)
 	}
-	if assignment == nil {
+	if conditionNode == nil {
 		return v
 	}
-	marshal, err := json.Marshal(assignment)
+	marshal, err := json.Marshal(conditionNode)
 	if err != nil {
-		fmt.Print("AssignmentWalk walk err: " + err.Error() + "\n")
+		fmt.Print("ConditionWalk walk err: " + err.Error() + "\n")
 	} else {
-		fmt.Print("AssignmentWalk walk: ", string(marshal)+"\n")
+		fmt.Print("ConditionWalk walk: ", string(marshal)+"\n")
 	}
 
 	return v

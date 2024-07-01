@@ -1,6 +1,9 @@
 package parser
 
-import "caseGenerator/common/enum"
+import (
+	"caseGenerator/common/enum"
+	"go/ast"
+)
 
 // ConditionNode 条件语句，if、else if、else、switch、case、default等
 // 同时要处理if的嵌套
@@ -21,6 +24,22 @@ type ExprNode struct {
 }
 
 // 解析条件语句
-func (s *SourceInfo) parseCondition() *ConditionNode {
-	return nil
+func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
+	if n == nil {
+		return nil
+	}
+	conditionNode := &ConditionNode{}
+
+	switch a := n.(type) {
+	case *ast.IfStmt:
+		// 主要要解析init、cond、else。要注意if、else的嵌套，也要解析body中的if、else
+		_ = a.If
+	case *ast.GenDecl:
+	case *ast.DeclStmt:
+	// 这种是没有响应值的function
+	case *ast.ExprStmt:
+
+	}
+
+	return conditionNode
 }
