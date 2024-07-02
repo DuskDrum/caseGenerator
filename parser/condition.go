@@ -12,6 +12,7 @@ type ConditionNode struct {
 	NodeType  string
 	Condition ExprNode
 	Children  []*ConditionNode
+	InitInfo
 }
 
 // ExprNode 表达式节点，包括二元表达式、一元表达式、标识符、字面量等
@@ -21,6 +22,11 @@ type ExprNode struct {
 	ExprType enum.ConditionExprType
 	Left     *ExprNode // Left child node
 	Right    *ExprNode // Right child node
+}
+
+type InitInfo struct {
+	initType  string
+	initValue any
 }
 
 // 解析条件语句
@@ -33,7 +39,17 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 	switch a := n.(type) {
 	case *ast.IfStmt:
 		// 主要要解析init、cond、else。要注意if、else的嵌套，也要解析body中的if、else
-		_ = a.If
+		// 1. 解析init
+		initInfo := s.parseIfInit(a.Init)
+		conditionNode.InitInfo = initInfo
+		// 2. 解析cond
+		_ = a.Cond
+		// 3. 解析else
+		_ = a.Else
+
+		// 4. 解析body
+		_ = a.Body
+
 	case *ast.GenDecl:
 	case *ast.DeclStmt:
 	// 这种是没有响应值的function
@@ -42,4 +58,17 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 	}
 
 	return conditionNode
+}
+
+func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
+	var ifo InitInfo
+
+	switch a := n.(type) {
+	case *ast.AssignStmt:
+		assignment := s.ParseAssignment(a)
+		ifo.initType = ""
+		ifo.initValue = assignment
+	}
+
+	return ifo
 }
