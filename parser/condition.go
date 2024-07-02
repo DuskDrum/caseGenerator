@@ -72,3 +72,42 @@ func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
 
 	return ifo
 }
+
+func (s *SourceInfo) parseIfCond(n ast.Expr) InitInfo {
+	var ifo InitInfo
+
+	switch a := n.(type) {
+	case *ast.AssignStmt:
+		assignment := s.ParseAssignment(a)
+		ifo.initType = ""
+		ifo.initValue = assignment
+	}
+
+	return ifo
+}
+
+func (s *SourceInfo) parseIfElse(n ast.Stmt) InitInfo {
+	var ifo InitInfo
+
+	switch a := n.(type) {
+	case *ast.AssignStmt:
+		assignment := s.ParseAssignment(a)
+		ifo.initType = ""
+		ifo.initValue = assignment
+	}
+
+	return ifo
+}
+
+func (s *SourceInfo) parseIfBody(n ast.BlockStmt) InitInfo {
+	var ifo InitInfo
+
+	switch a := n.(type) {
+	case *ast.AssignStmt:
+		assignment := s.ParseAssignment(a)
+		ifo.initType = ""
+		ifo.initValue = assignment
+	}
+
+	return ifo
+}
