@@ -25,7 +25,7 @@ type ExprNode struct {
 }
 
 type InitInfo struct {
-	initType  string
+	initType  enum.ConditionInitType
 	initValue any
 }
 
@@ -40,8 +40,10 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 	case *ast.IfStmt:
 		// 主要要解析init、cond、else。要注意if、else的嵌套，也要解析body中的if、else
 		// 1. 解析init
-		initInfo := s.parseIfInit(a.Init)
-		conditionNode.InitInfo = initInfo
+		if a.Init != nil {
+			initInfo := s.parseIfInit(a.Init)
+			conditionNode.InitInfo = initInfo
+		}
 		// 2. 解析cond
 		_ = a.Cond
 		// 3. 解析else
@@ -66,8 +68,10 @@ func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
 	switch a := n.(type) {
 	case *ast.AssignStmt:
 		assignment := s.ParseAssignment(a)
-		ifo.initType = ""
+		ifo.initType = enum.CONDITION_INIT_TYPE_ASSIGNMENT
 		ifo.initValue = assignment
+	default:
+		panic("未找到可用类型")
 	}
 
 	return ifo
@@ -76,12 +80,12 @@ func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
 func (s *SourceInfo) parseIfCond(n ast.Expr) InitInfo {
 	var ifo InitInfo
 
-	switch a := n.(type) {
-	case *ast.AssignStmt:
-		assignment := s.ParseAssignment(a)
-		ifo.initType = ""
-		ifo.initValue = assignment
-	}
+	//switch a := n.(type) {
+	//case *ast.AssignStmt:
+	//	assignment := s.ParseAssignment(a)
+	//	ifo.initType = ""
+	//	ifo.initValue = assignment
+	//}
 
 	return ifo
 }
@@ -92,7 +96,7 @@ func (s *SourceInfo) parseIfElse(n ast.Stmt) InitInfo {
 	switch a := n.(type) {
 	case *ast.AssignStmt:
 		assignment := s.ParseAssignment(a)
-		ifo.initType = ""
+		//ifo.initType = ""
 		ifo.initValue = assignment
 	}
 
@@ -102,12 +106,12 @@ func (s *SourceInfo) parseIfElse(n ast.Stmt) InitInfo {
 func (s *SourceInfo) parseIfBody(n ast.BlockStmt) InitInfo {
 	var ifo InitInfo
 
-	switch a := n.(type) {
-	case *ast.AssignStmt:
-		assignment := s.ParseAssignment(a)
-		ifo.initType = ""
-		ifo.initValue = assignment
-	}
+	//switch a := n.(type) {
+	//case *ast.AssignStmt:
+	//	assignment := s.ParseAssignment(a)
+	//	ifo.initType = ""
+	//	ifo.initValue = assignment
+	//}
 
 	return ifo
 }

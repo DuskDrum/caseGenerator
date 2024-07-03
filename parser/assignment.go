@@ -70,6 +70,7 @@ type AssignmentSlice struct {
 // AssignmentUnaryNode 组装节点的赋值节点
 type AssignmentUnaryNode struct {
 	Param
+	// 如果是arrow36，代表了是chan的调用
 	Op token.Token
 }
 
