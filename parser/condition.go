@@ -12,7 +12,7 @@ type ConditionNode struct {
 	NodeType  string
 	Condition ExprNode
 	Children  []*ConditionNode
-	InitInfo
+	Init      *InitInfo
 }
 
 // ExprNode 表达式节点，包括二元表达式、一元表达式、标识符、字面量等
@@ -34,7 +34,7 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 	if n == nil {
 		return nil
 	}
-	conditionNode := &ConditionNode{}
+	var conditionNode *ConditionNode
 
 	switch a := n.(type) {
 	case *ast.IfStmt:
@@ -42,15 +42,22 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 		// 1. 解析init
 		if a.Init != nil {
 			initInfo := s.parseIfInit(a.Init)
-			conditionNode.InitInfo = initInfo
+			conditionNode = &ConditionNode{
+				Init: &initInfo,
+			}
 		}
 		// 2. 解析cond
-		_ = a.Cond
+		if a.Cond != nil {
+			s.parseIfCond(a.Cond)
+		}
 		// 3. 解析else
-		_ = a.Else
-
+		if a.Else != nil {
+			s.parseIfElse(a.Else)
+		}
 		// 4. 解析body
-		_ = a.Body
+		if a.Body != nil {
+			s.parseIfBody(a.Body)
+		}
 
 	case *ast.GenDecl:
 	case *ast.DeclStmt:
@@ -64,7 +71,6 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 
 func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
 	var ifo InitInfo
-
 	switch a := n.(type) {
 	case *ast.AssignStmt:
 		assignment := s.ParseAssignment(a)
@@ -73,7 +79,6 @@ func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
 	default:
 		panic("未找到可用类型")
 	}
-
 	return ifo
 }
 
@@ -103,7 +108,7 @@ func (s *SourceInfo) parseIfElse(n ast.Stmt) InitInfo {
 	return ifo
 }
 
-func (s *SourceInfo) parseIfBody(n ast.BlockStmt) InitInfo {
+func (s *SourceInfo) parseIfBody(n *ast.BlockStmt) InitInfo {
 	var ifo InitInfo
 
 	//switch a := n.(type) {
