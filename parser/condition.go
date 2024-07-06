@@ -60,10 +60,6 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 		}
 
 	case *ast.GenDecl:
-	case *ast.DeclStmt:
-	// 这种是没有响应值的function
-	case *ast.ExprStmt:
-
 	}
 
 	return conditionNode
