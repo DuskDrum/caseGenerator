@@ -3,6 +3,7 @@ package parser
 import (
 	"caseGenerator/common/enum"
 	"go/ast"
+	"go/token"
 )
 
 // ConditionNode 条件语句，if、else if、else、switch、case、default等
@@ -13,6 +14,8 @@ type ConditionNode struct {
 	Condition ExprNode
 	Children  []*ConditionNode
 	Init      *InitInfo
+	Cond      *CondInfo
+	IsElse    bool
 }
 
 // ExprNode 表达式节点，包括二元表达式、一元表达式、标识符、字面量等
@@ -29,43 +32,53 @@ type InitInfo struct {
 	initValue any
 }
 
+type CondInfo struct {
+	xParam *Param
+	yParam *ParamValue
+	op     token.Token
+}
+
 // 解析条件语句
 func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 	if n == nil {
 		return nil
 	}
-	var conditionNode *ConditionNode
+	var conditionNode = ConditionNode{}
 
 	switch a := n.(type) {
 	case *ast.IfStmt:
 		// 主要要解析init、cond、else。要注意if、else的嵌套，也要解析body中的if、else
 		// 1. 解析init
 		if a.Init != nil {
-			initInfo := s.parseIfInit(a.Init)
-			conditionNode = &ConditionNode{
-				Init: &initInfo,
-			}
+			conditionNode.Init = s.parseIfInit(a.Init)
 		}
 		// 2. 解析cond
 		if a.Cond != nil {
-			s.parseIfCond(a.Cond)
+			conditionNode.Cond = s.parseIfCond(a.Cond)
 		}
 		// 3. 解析else
 		if a.Else != nil {
-			s.parseIfElse(a.Else)
+			conditionNode.IsElse = true
 		}
-		// 4. 解析body
+		// 4. 解析body, 继续解析其中的if和switch
 		if a.Body != nil {
+			list := a.Body.List
+			for _, v := range list {
+				if ifNode, ok := v.(*ast.IfStmt); ok {
+
+				}
+
+			}
 			s.parseIfBody(a.Body)
 		}
 
 	case *ast.GenDecl:
 	}
 
-	return conditionNode
+	return &conditionNode
 }
 
-func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
+func (s *SourceInfo) parseIfInit(n ast.Stmt) *InitInfo {
 	var ifo InitInfo
 	switch a := n.(type) {
 	case *ast.AssignStmt:
@@ -75,33 +88,18 @@ func (s *SourceInfo) parseIfInit(n ast.Stmt) InitInfo {
 	default:
 		panic("未找到可用类型")
 	}
-	return ifo
+	return &ifo
 }
 
-func (s *SourceInfo) parseIfCond(n ast.Expr) InitInfo {
-	var ifo InitInfo
-
-	//switch a := n.(type) {
-	//case *ast.AssignStmt:
-	//	assignment := s.ParseAssignment(a)
-	//	ifo.initType = ""
-	//	ifo.initValue = assignment
-	//}
-
-	return ifo
-}
-
-func (s *SourceInfo) parseIfElse(n ast.Stmt) InitInfo {
-	var ifo InitInfo
-
+func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
+	var ifo CondInfo
 	switch a := n.(type) {
-	case *ast.AssignStmt:
-		assignment := s.ParseAssignment(a)
-		//ifo.initType = ""
-		ifo.initValue = assignment
+	case *ast.BinaryExpr:
+		ifo.xParam = s.ParamParse(a.X)
+		ifo.yParam = s.ParamParseValue(a.Y)
+		ifo.op = a.Op
 	}
-
-	return ifo
+	return &ifo
 }
 
 func (s *SourceInfo) parseIfBody(n *ast.BlockStmt) InitInfo {
