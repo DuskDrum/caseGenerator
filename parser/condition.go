@@ -63,13 +63,14 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 		// 4. 解析body, 继续解析其中的if和switch
 		if a.Body != nil {
 			list := a.Body.List
+			nodes := make([]*ConditionNode, 0, 10)
 			for _, v := range list {
 				if ifNode, ok := v.(*ast.IfStmt); ok {
-
+					condition := s.parseCondition(ifNode)
+					nodes = append(nodes, condition)
 				}
-
 			}
-			s.parseIfBody(a.Body)
+			conditionNode.Children = nodes
 		}
 
 	case *ast.GenDecl:
@@ -100,17 +101,4 @@ func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
 		ifo.op = a.Op
 	}
 	return &ifo
-}
-
-func (s *SourceInfo) parseIfBody(n *ast.BlockStmt) InitInfo {
-	var ifo InitInfo
-
-	//switch a := n.(type) {
-	//case *ast.AssignStmt:
-	//	assignment := s.ParseAssignment(a)
-	//	ifo.initType = ""
-	//	ifo.initValue = assignment
-	//}
-
-	return ifo
 }
