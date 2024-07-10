@@ -72,8 +72,6 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 			}
 			conditionNode.Children = nodes
 		}
-
-	case *ast.GenDecl:
 	}
 
 	return &conditionNode
