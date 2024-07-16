@@ -16,6 +16,7 @@ type ConditionNode struct {
 	Init      *InitInfo
 	Cond      *CondInfo
 	IsElse    bool
+	Else      *ConditionNode
 }
 
 // ExprNode 表达式节点，包括二元表达式、一元表达式、标识符、字面量等
@@ -56,9 +57,27 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 		if a.Cond != nil {
 			conditionNode.Cond = s.parseIfCond(a.Cond)
 		}
+		conditionNode.IsElse = false
+
 		// 3. 解析else
 		if a.Else != nil {
-			conditionNode.IsElse = true
+			var conditionElseNode = ConditionNode{}
+			conditionElseNode.IsElse = true
+			conditionElseNode.Cond = conditionNode.Cond
+			conditionElseNode.Init = conditionNode.Init
+			switch elseBodyList := a.Else.(type) {
+			case *ast.BlockStmt:
+				list := elseBodyList.List
+				nodes := make([]*ConditionNode, 0, 10)
+				for _, v := range list {
+					if ifNode, ok := v.(*ast.IfStmt); ok {
+						condition := s.parseCondition(ifNode)
+						nodes = append(nodes, condition)
+					}
+				}
+				conditionElseNode.Children = nodes
+			}
+			conditionNode.Else = &conditionElseNode
 		}
 		// 4. 解析body, 继续解析其中的if和switch
 		if a.Body != nil {
@@ -72,9 +91,10 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 			}
 			conditionNode.Children = nodes
 		}
+		return &conditionNode
 	}
 
-	return &conditionNode
+	return nil
 }
 
 func (s *SourceInfo) parseIfInit(n ast.Stmt) *InitInfo {
@@ -97,6 +117,8 @@ func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
 		ifo.xParam = s.ParamParse(a.X)
 		ifo.yParam = s.ParamParseValue(a.Y)
 		ifo.op = a.Op
+	default:
+		panic("未知的condition类型")
 	}
 	return &ifo
 }

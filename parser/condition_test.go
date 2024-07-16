@@ -17,6 +17,11 @@ func TestParseCondition_if(t *testing.T) {
 	parseConditionFile("../example/condition/if_condition.go")
 }
 
+// TestParseCondition_if 测试condition的测试用例，if
+func TestParseStructureCondition_if(t *testing.T) {
+	parseConditionFile("../example/condition/if_structure_condition.go")
+}
+
 // TestParseCondition_switch 测试condition的测试用例，wsitch
 func TestParseCondition_switch(t *testing.T) {
 	parseConditionFile("../example/condition/switch_condition.go")
@@ -80,16 +85,6 @@ func (v *ConditionWalk) Visit(n ast.Node) ast.Visitor {
 	var conditionNode *ConditionNode
 	switch node := n.(type) {
 	case *ast.IfStmt:
-		si := SourceInfo{}
-		conditionNode = si.parseCondition(node)
-	case *ast.DeclStmt:
-		si := SourceInfo{}
-		conditionNode = si.parseCondition(node)
-	case *ast.GenDecl:
-		si := SourceInfo{}
-		conditionNode = si.parseCondition(node)
-	// 这种是没有响应值的function
-	case *ast.ExprStmt:
 		si := SourceInfo{}
 		conditionNode = si.parseCondition(node)
 	}

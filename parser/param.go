@@ -229,6 +229,11 @@ func (s *SourceInfo) ParamParseValue(expr ast.Expr) *ParamValue {
 		} else {
 			paramInfo.Value = value.Value
 		}
+		// 如果是aa("","") + bb("","")的情况需要处理这个语法树
+	case *ast.UnaryExpr:
+		result := s.ParamParseValue(dbType.X)
+		paramInfo.Value = AssignmentUnaryNode{Param: result.Param, Op: dbType.Op}.ToString(result.Value)
+		paramInfo.Type = result.Type
 	default:
 		panic("未知类型...")
 	}

@@ -74,6 +74,14 @@ type AssignmentUnaryNode struct {
 	Op token.Token
 }
 
+func (a AssignmentUnaryNode) ToString(value string) string {
+	if a.Op == token.SUB {
+		return "-" + value
+	} else {
+		panic("未知的的Unary操作符")
+	}
+}
+
 // ParseAssignment 解析赋值语句
 // 存在问题： 无法从ast中推测出等式左边的参数是什么类型，只能通过上下文推测
 func (s *SourceInfo) ParseAssignment(n ast.Node) []*Assignment {
