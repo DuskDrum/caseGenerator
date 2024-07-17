@@ -63,8 +63,25 @@ func parseConditionFile(path string) {
 			for _, cg := range f.Decls {
 				decl, ok := cg.(*ast.FuncDecl)
 				if ok {
-					ConditionWalk := ConditionWalk{}
-					ast.Walk(&ConditionWalk, decl)
+					list := decl.Body.List
+					nodes := make([]*ConditionNode, 0, 10)
+					for _, stmt := range list {
+						switch node := stmt.(type) {
+						case *ast.IfStmt:
+							si := SourceInfo{}
+							conditionNode := si.parseCondition(node)
+							nodes = append(nodes, conditionNode)
+						}
+					}
+					if len(nodes) == 0 {
+						continue
+					}
+					marshal, err := json.Marshal(nodes)
+					if err != nil {
+						fmt.Print("ConditionWalk walk err: " + err.Error() + "\n")
+					} else {
+						fmt.Print("ConditionWalk walk: ", string(marshal)+"\n")
+					}
 				}
 			}
 		}
@@ -73,30 +90,4 @@ func parseConditionFile(path string) {
 	if err != nil {
 		return
 	}
-}
-
-type ConditionWalk struct {
-}
-
-func (v *ConditionWalk) Visit(n ast.Node) ast.Visitor {
-	if n == nil {
-		return v
-	}
-	var conditionNode *ConditionNode
-	switch node := n.(type) {
-	case *ast.IfStmt:
-		si := SourceInfo{}
-		conditionNode = si.parseCondition(node)
-	}
-	if conditionNode == nil {
-		return v
-	}
-	marshal, err := json.Marshal(conditionNode)
-	if err != nil {
-		fmt.Print("ConditionWalk walk err: " + err.Error() + "\n")
-	} else {
-		fmt.Print("ConditionWalk walk: ", string(marshal)+"\n")
-	}
-
-	return v
 }

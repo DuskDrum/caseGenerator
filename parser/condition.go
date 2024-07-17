@@ -10,13 +10,11 @@ import (
 // 同时要处理if的嵌套
 // 也要处理 if中逻辑与、逻辑或、逻辑非的符合结构
 type ConditionNode struct {
-	NodeType  string
-	Condition ExprNode
-	Children  []*ConditionNode
-	Init      *InitInfo
-	Cond      *CondInfo
-	IsElse    bool
-	Else      *ConditionNode
+	Children []*ConditionNode
+	Init     *InitInfo
+	Cond     *CondInfo
+	IsElse   bool
+	Else     *ConditionNode
 }
 
 // ExprNode 表达式节点，包括二元表达式、一元表达式、标识符、字面量等
@@ -29,14 +27,14 @@ type ExprNode struct {
 }
 
 type InitInfo struct {
-	initType  enum.ConditionInitType
-	initValue any
+	InitType  enum.ConditionInitType
+	InitValue any
 }
 
 type CondInfo struct {
-	xParam *Param
-	yParam *ParamValue
-	op     token.Token
+	XParam *Param
+	YParam *ParamValue
+	Op     token.Token
 }
 
 // 解析条件语句
@@ -72,10 +70,14 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 				for _, v := range list {
 					if ifNode, ok := v.(*ast.IfStmt); ok {
 						condition := s.parseCondition(ifNode)
-						nodes = append(nodes, condition)
+						if condition != nil {
+							nodes = append(nodes, condition)
+						}
 					}
 				}
 				conditionElseNode.Children = nodes
+			default:
+				panic("未找到的body类型")
 			}
 			conditionNode.Else = &conditionElseNode
 		}
@@ -86,7 +88,9 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 			for _, v := range list {
 				if ifNode, ok := v.(*ast.IfStmt); ok {
 					condition := s.parseCondition(ifNode)
-					nodes = append(nodes, condition)
+					if condition != nil {
+						nodes = append(nodes, condition)
+					}
 				}
 			}
 			conditionNode.Children = nodes
@@ -102,8 +106,8 @@ func (s *SourceInfo) parseIfInit(n ast.Stmt) *InitInfo {
 	switch a := n.(type) {
 	case *ast.AssignStmt:
 		assignment := s.ParseAssignment(a)
-		ifo.initType = enum.CONDITION_INIT_TYPE_ASSIGNMENT
-		ifo.initValue = assignment
+		ifo.InitType = enum.CONDITION_INIT_TYPE_ASSIGNMENT
+		ifo.InitValue = assignment
 	default:
 		panic("未找到可用类型")
 	}
@@ -114,9 +118,9 @@ func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
 	var ifo CondInfo
 	switch a := n.(type) {
 	case *ast.BinaryExpr:
-		ifo.xParam = s.ParamParse(a.X)
-		ifo.yParam = s.ParamParseValue(a.Y)
-		ifo.op = a.Op
+		ifo.XParam = s.ParamParse(a.X)
+		ifo.YParam = s.ParamParseValue(a.Y)
+		ifo.Op = a.Op
 	default:
 		panic("未知的condition类型")
 	}
