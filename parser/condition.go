@@ -96,6 +96,43 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 			conditionNode.Children = nodes
 		}
 		return &conditionNode
+	case *ast.SwitchStmt:
+		// 1. 解析init
+		if a.Init != nil {
+			conditionNode.Init = s.parseIfInit(a.Init)
+		}
+		// 2. 解析switch
+		var ifo CondInfo
+		//ifo.XParam = s.ParamParse(a.Switch)
+		ifo.YParam = s.ParamParseValue(a.Tag)
+		ifo.Op = token.EQL
+		conditionNode.Cond = &ifo
+
+		conditionNode.IsElse = false
+		// 3. 解析body, 继续解析其中的if和switch
+		if a.Body != nil {
+			list := a.Body.List
+			// 4. 先解析这个switch的case,每个case中可能包含if、switch
+			for _, v := range list {
+				if caseNode, ok := v.(*ast.CaseClause); ok {
+
+				}
+			}
+
+			nodes := make([]*ConditionNode, 0, 10)
+			for _, v := range list {
+				if ifNode, ok := v.(*ast.IfStmt); ok {
+					condition := s.parseCondition(ifNode)
+					if condition != nil {
+						nodes = append(nodes, condition)
+					}
+				}
+			}
+			conditionNode.Children = nodes
+		}
+		return &conditionNode
+	default:
+		panic("未找到可用类型")
 	}
 
 	return nil

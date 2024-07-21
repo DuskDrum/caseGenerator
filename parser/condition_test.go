@@ -71,6 +71,10 @@ func parseConditionFile(path string) {
 							si := SourceInfo{}
 							conditionNode := si.parseCondition(node)
 							nodes = append(nodes, conditionNode)
+						case *ast.SwitchStmt:
+							si := SourceInfo{}
+							conditionNode := si.parseCondition(node)
+							nodes = append(nodes, conditionNode)
 						}
 					}
 					if len(nodes) == 0 {
