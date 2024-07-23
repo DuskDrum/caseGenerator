@@ -46,6 +46,7 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 
 	switch a := n.(type) {
 	case *ast.IfStmt:
+
 		// 主要要解析init、cond、else。要注意if、else的嵌套，也要解析body中的if、else
 		// 1. 解析init
 		if a.Init != nil {
@@ -86,8 +87,9 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 			list := a.Body.List
 			nodes := make([]*ConditionNode, 0, 10)
 			for _, v := range list {
-				if ifNode, ok := v.(*ast.IfStmt); ok {
-					condition := s.parseCondition(ifNode)
+				switch caseBody := v.(type) {
+				case *ast.SwitchStmt, *ast.IfStmt:
+					condition := s.parseCondition(caseBody)
 					if condition != nil {
 						nodes = append(nodes, condition)
 					}
@@ -101,34 +103,54 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 		if a.Init != nil {
 			conditionNode.Init = s.parseIfInit(a.Init)
 		}
-		// 2. 解析switch
-		var ifo CondInfo
-		//ifo.XParam = s.ParamParse(a.Switch)
-		ifo.YParam = s.ParamParseValue(a.Tag)
-		ifo.Op = token.EQL
-		conditionNode.Cond = &ifo
-
-		conditionNode.IsElse = false
-		// 3. 解析body, 继续解析其中的if和switch
+		// 2. 解析body, 继续解析其中的if和switch
 		if a.Body != nil {
 			list := a.Body.List
+			elseNodes := make([]*ConditionNode, 0, 10)
 			// 4. 先解析这个switch的case,每个case中可能包含if、switch
+			// 这里就不考虑fallthrough了，保证所有的case和default都能走到即可
+			// 不区分第一个case，最外层是没有条件的，每个case都是最外层的child
 			for _, v := range list {
-				if caseNode, ok := v.(*ast.CaseClause); ok {
-
-				}
-			}
-
-			nodes := make([]*ConditionNode, 0, 10)
-			for _, v := range list {
-				if ifNode, ok := v.(*ast.IfStmt); ok {
-					condition := s.parseCondition(ifNode)
-					if condition != nil {
-						nodes = append(nodes, condition)
+				switch vType := v.(type) {
+				case *ast.CaseClause:
+					// 解析child， vType.Body
+					childNodes := make([]*ConditionNode, 0, 10)
+					for _, caseBodyList := range list {
+						switch caseBody := caseBodyList.(type) {
+						case *ast.SwitchStmt, *ast.IfStmt:
+							condition := s.parseCondition(caseBody)
+							if condition != nil {
+								childNodes = append(childNodes, condition)
+							}
+						}
 					}
+					// default 的  vType.List为nil
+					if len(vType.List) == 0 {
+						var conditionElseNode = ConditionNode{}
+						conditionElseNode.Init = conditionNode.Init
+						conditionElseNode.IsElse = true
+						conditionElseNode.Children = childNodes
+						elseNodes = append(elseNodes, &conditionElseNode)
+					} else {
+						// 其他的case，都是else if
+						for _, caseDetail := range vType.List {
+							var conditionElseNode = ConditionNode{}
+							conditionElseNode.Init = conditionNode.Init
+							var iefo CondInfo
+							iefo.XParam = s.ParamParse(a.Tag)
+							iefo.YParam = s.ParamParseValue(caseDetail)
+							iefo.Op = token.EQL
+							conditionElseNode.Cond = &iefo
+							conditionElseNode.IsElse = false
+							conditionElseNode.Children = childNodes
+							elseNodes = append(elseNodes, &conditionElseNode)
+						}
+					}
+				default:
+					panic("未知的case类型")
 				}
 			}
-			conditionNode.Children = nodes
+			conditionNode.Children = elseNodes
 		}
 		return &conditionNode
 	default:
