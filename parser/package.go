@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"unicode"
+
+	"github.com/samber/lo"
 )
 
 // Package 包相关信息，包含包中私有的方法、私有的变量、私有的常量等。也包含包的名称、路径、module名
@@ -24,21 +26,22 @@ type Package struct {
 }
 
 // ParsePackage 解析包的基础信息
-func (p Package) ParsePackage(si *SourceInfo, fileDir string) {
+func (s *SourceInfo) ParsePackage(fileDir string) Package {
+	var pe Package
 	// 1. 遍历文件夹，找到所有私有方法的调用
-	funcMap, err := si.extractPrivateFile(fileDir)
+	funcMap, err := s.extractPrivateFile(fileDir)
 	if err != nil {
 		panic("extract private file error!")
 	}
-	p.PrivateFunction = funcMap
+	pe.PrivateFunction = funcMap
 	// 2. 遍历文件夹，找到所有的私有变量的调用
-	assignmentMap, err := si.extractPrivateAssignment(fileDir)
+	assignmentMap, err := s.extractPrivateAssignment(fileDir)
 	if err != nil {
 		panic("extract private assignment error!")
 	}
-	p.PrivateParam = assignmentMap
+	pe.PrivateParam = assignmentMap
 	// 3. 解析出module名
-	p.ModuleName = utils.GetModulePath()
+	pe.ModuleName = utils.GetModulePath()
 	// 4. 解析packageName
 	var packageName string
 	index := strings.LastIndex(fileDir, "/")
@@ -47,9 +50,10 @@ func (p Package) ParsePackage(si *SourceInfo, fileDir string) {
 	} else {
 		packageName = ""
 	}
-	p.PackageName = packageName
+	pe.PackageName = packageName
 	// 5. packagePath就是文件目录
-	p.PackagePath = fileDir
+	pe.PackagePath = fileDir
+	return pe
 }
 
 // 遍历文件夹，找到所有私有变量的详情
@@ -101,7 +105,7 @@ func (s *SourceInfo) extractPrivateFile(fileDir string) (map[string]FunctionDecl
 			return err
 		}
 
-		// Only process go files
+		// Only process go files, 只处理go文件，而不会再去处理目录下的其他目录
 		if !info.IsDir() && filepath.Ext(path) == ".go" {
 			// Parse the file
 			fset := token.NewFileSet()
@@ -121,11 +125,11 @@ func (s *SourceInfo) extractPrivateFile(fileDir string) (map[string]FunctionDecl
 				if unicode.IsLower([]rune(funcDecl.Name.Name)[0]) {
 					// 1. 解析key， key 是 path + "." + funcDecl.Name.Name
 					key := path + "." + funcDecl.Name.Name
-					functionParam, err := s.extractFileFunction(funcDecl, path)
-					if err != nil {
+					functionParam := s.extractFileFunction(funcDecl, path)
+					if functionParam == nil {
 						return false
 					}
-					funcMap[key] = functionParam
+					funcMap[key] = lo.FromPtr(functionParam)
 				}
 				return true
 			})
@@ -136,10 +140,11 @@ func (s *SourceInfo) extractPrivateFile(fileDir string) (map[string]FunctionDecl
 }
 
 // extractFileFunction filepath 应该以 .go 后缀结尾
-func (s *SourceInfo) extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam FunctionDeclare, err error) {
+func (s *SourceInfo) extractFileFunction(funcDecl *ast.FuncDecl, filepath string) (functionParam *FunctionDeclare) {
 	defer func() {
 		if err := recover(); err != nil {
 			_ = fmt.Errorf("extractFile parse error: %s", err)
+			functionParam = nil
 		}
 	}()
 	if !strings.HasSuffix(filepath, ".go") {
@@ -148,7 +153,6 @@ func (s *SourceInfo) extractFileFunction(funcDecl *ast.FuncDecl, filepath string
 	// 1. 解析request列表、response列表
 	reqList, respList := s.ParseFuncTypeParamParseResult(funcDecl.Type)
 	// 2. 解析泛型
-	// todo 注意私有方法的泛型调用
 	genericsMap := s.ParseGenericsMap(funcDecl)
 	// 3. 解析receiver
 	receiver := s.ParseReceiver(funcDecl)
@@ -162,7 +166,7 @@ func (s *SourceInfo) extractFileFunction(funcDecl *ast.FuncDecl, filepath string
 		fileName = filepath
 		functionPath = ""
 	}
-	functionParam = FunctionDeclare{
+	functionParam = &FunctionDeclare{
 		RequestList:  reqList,
 		ResponseList: respList,
 		FunctionName: funcDecl.Name.Name,

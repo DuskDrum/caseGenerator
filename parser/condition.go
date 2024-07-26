@@ -153,8 +153,6 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 			conditionNode.Children = elseNodes
 		}
 		return &conditionNode
-	default:
-		panic("未找到可用类型")
 	}
 
 	return nil
