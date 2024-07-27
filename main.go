@@ -18,8 +18,8 @@ func main() {
 	// 1. 解析全部ast字节
 	sourceInfo := parser.SourceInfo{}
 	sourceInfo.ParseSource("")
-	// 2. 根据sourceInfo
+	// 2. 根据sourceInfo生成mock代码、go:link，入参(空的还是fake还是自己定义的)
 
-	// 3. 解析模板
+	// 3. 根据生成的mock代码+模板===> 生成最终的代码
 
 }

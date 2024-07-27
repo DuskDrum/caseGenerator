@@ -5,5 +5,5 @@ import (
 )
 
 type Response struct {
-	ResponseList []generate.ResponseDetail
+	ResponseList []generate.CaseResponse
 }

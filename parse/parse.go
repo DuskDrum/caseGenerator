@@ -227,8 +227,8 @@ func (pfl PrivateFunctionLinked) AddLinkedInfo(key string, linkedInfo string) {
 }
 
 type FunctionParam struct {
-	requestList   []generate.RequestDetail
-	responseList  []generate.ResponseDetail
+	requestList   []generate.CaseRequest
+	responseList  []generate.CaseResponse
 	aliasFuncName string
 	funcName      string
 	moduleName    string

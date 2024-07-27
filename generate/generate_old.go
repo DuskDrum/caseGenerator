@@ -13,10 +13,9 @@ import (
 	"github.com/samber/lo"
 )
 
-// StandardInfo 标准信息
-type StandardInfo struct {
+type GenMeta struct {
 	// 测试用例的包名
-	PackageName string
+	Package string
 	// 生成的文件名
 	FileName string
 	// 生成的文件路径
@@ -24,15 +23,16 @@ type StandardInfo struct {
 	// 需要依赖的import
 	ImportPkgPaths []string
 	// case列表
-	CaseDetailList []MethodCase
+	CaseDetailList []CaseDetail
 	// mock列表
 	MockList []*MockInstruct
 	// goLink 列表
 	GoLinkList []string
 }
 
-// MethodCase 方法层面的case，一个方法可能要根据条件、入参出参、mock方法生成多次
-type MethodCase struct {
+type CaseDetail struct {
+	// 生成的文件名
+	FileName string
 	// 方法名
 	MethodName string
 	// receive类型
@@ -40,26 +40,34 @@ type MethodCase struct {
 	// case名称
 	CaseName string
 	// mock列表
-	MockList []*CaseMockInfo
+	MockList []*MockInstruct
 	// 请求列表
-	RequestList []CaseRequest
+	RequestList []RequestDetail
 	// 把请求名按照tt.args.xx，并按照","分割，最后一位没有逗号
 	RequestNameString string
 	// goLink 列表
 	GoLinkList []string
 }
 
-type CaseMockInfo struct {
+type MockInstruct struct {
 	MockResponseParam []string
 	MockFunction      string
 	MockNumber        string
 	// mock 返回
 	MockReturns        string
-	MockFunctionParam  []MockParamInfo
-	MockFunctionResult []MockParamInfo
+	MockFunctionParam  []ParamParseResult
+	MockFunctionResult []ParamParseResult
 }
 
-type MockParamInfo struct {
+// SimpleParamInfo 简单的参数关系
+type SimpleParamInfo struct {
+	// 参数名
+	ParamName string
+	// 参数类型
+	ParamType string
+}
+
+type ParamParseResult struct {
 	// 参数名
 	ParamName string
 	// 参数类型
@@ -72,19 +80,30 @@ type MockParamInfo struct {
 	IsEllipsis bool
 }
 
+type MockDetail struct {
+	// 需要mock方法的包名和方法名
+	MockDealMethod    string
+	MockMethodPackage string
+	MockMethodName    string
+	// 依赖的包名
+	ImportPkgPath []string
+	// 需要go:linkedname关联的方法信息
+	InnerFuncList []InnerFunc
+}
+
 // CaseLinkedInfo 内部方法
-type CaseLinkedInfo struct {
+type InnerFunc struct {
 	// 请求信息
-	InnerFuncRequest []CaseRequest
+	InnerFuncRequest []RequestDetail
 	// 响应信息
-	InnerFuncResponse []CaseResponse
+	InnerFuncResponse []ResponseDetail
 	// 代名
 	InnerFuncMethodName string
 	// 代名关联的方法路径
 	InnerFuncLinkedName string
 }
 
-type CaseResponse struct {
+type ResponseDetail struct {
 	// 参数名
 	ParamName string
 	// 参数类型
@@ -97,7 +116,7 @@ type CaseResponse struct {
 	IsEllipsis bool
 }
 
-func (rd CaseResponse) GenerateResponseContent() string {
+func (rd ResponseDetail) GenerateResponseContent() string {
 	// 1. 使用 stringBuilder 解析请求名称 + 请求类型
 	var stringBuilder strings.Builder
 	stringBuilder.WriteString(rd.ParamName)
@@ -106,7 +125,7 @@ func (rd CaseResponse) GenerateResponseContent() string {
 	return stringBuilder.String()
 }
 
-type CaseRequest struct {
+type RequestDetail struct {
 	// 请求名称
 	RequestName string
 	// 请求类型
@@ -117,7 +136,7 @@ type CaseRequest struct {
 	IsEllipsis bool
 }
 
-func (rd CaseRequest) GenerateRequestContent() string {
+func (rd RequestDetail) GenerateRequestContent() string {
 	// 1. 使用 stringBuilder 解析请求名称 + 请求类型
 	var stringBuilder strings.Builder
 	stringBuilder.WriteString(rd.RequestName)
@@ -126,7 +145,7 @@ func (rd CaseRequest) GenerateRequestContent() string {
 	return stringBuilder.String()
 }
 
-func GenGenerateFile(data GenMeta) {
+func GenFile(data GenMeta) {
 	var buf bytes.Buffer
 
 	caseDetails := data.CaseDetailList
@@ -216,7 +235,7 @@ func GenGenerateFile(data GenMeta) {
 	uniqImportList := lo.Uniq(importList)
 	data.ImportPkgPaths = uniqImportList
 
-	err := genRender(template2.NotHaveReceiveModel, &buf, data)
+	err := render(template2.NotHaveReceiveModel, &buf, data)
 	if err != nil {
 		_ = fmt.Errorf("cannot format file: %w", err)
 	}
@@ -228,7 +247,7 @@ func GenGenerateFile(data GenMeta) {
 	}
 }
 
-func genRender(tmpl string, wr io.Writer, data interface{}) error {
+func render(tmpl string, wr io.Writer, data interface{}) error {
 	t, err := template.New(tmpl).Parse(tmpl)
 	if err != nil {
 		return err

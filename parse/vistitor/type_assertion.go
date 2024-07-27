@@ -3,8 +3,9 @@ package vistitor
 import (
 	"caseGenerator/generate"
 	"caseGenerator/parse/bo"
-	"github.com/samber/lo"
 	"go/ast"
+
+	"github.com/samber/lo"
 )
 
 type TypeAssertionVisitor struct {
@@ -47,20 +48,20 @@ func (v *TypeAssertionVisitor) Visit(n ast.Node) ast.Visitor {
 }
 
 // CombinationTypeAssertionRequest 排列组合所有类型断言的可能性
-func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest(reqList []generate.RequestDetail) [][]generate.RequestDetail {
+func (v *TypeAssertionVisitor) CombinationTypeAssertionRequest(reqList []generate.CaseRequest) [][]generate.CaseRequest {
 	// 1. 先按照key转为map<key,slice>
-	typeAssertionRequestDetail := lo.Map(v.TypeAssertionSlice, func(item TypeAssertionMapBo, index int) generate.RequestDetail {
-		return generate.RequestDetail{
+	typeAssertionRequestDetail := lo.Map(v.TypeAssertionSlice, func(item TypeAssertionMapBo, index int) generate.CaseRequest {
+		return generate.CaseRequest{
 			RequestName:  item.TypeAssertionContent.ParamName,
 			RequestType:  item.TypeAssertionContent.ParamType,
 			RequestValue: item.TypeAssertionContent.ParamInitValue,
 			IsEllipsis:   false,
 		}
 	})
-	combinations := make([][]generate.RequestDetail, 0, 10)
+	combinations := make([][]generate.CaseRequest, 0, 10)
 	// 2. 排列组合, 使用嵌套循环
 	for _, v := range typeAssertionRequestDetail {
-		detail := make([]generate.RequestDetail, 0, 10)
+		detail := make([]generate.CaseRequest, 0, 10)
 		for _, v2 := range reqList {
 			if v.RequestName == v2.RequestName {
 				detail = append(detail, v)

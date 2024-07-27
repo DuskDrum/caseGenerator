@@ -13,11 +13,11 @@ func ParseRequest(n ast.Node) {
 		return
 	}
 	if list, ok := n.(*ast.FieldList); ok {
-		dbs := make([]generate.RequestDetail, 0, 10)
+		dbs := make([]generate.CaseRequest, 0, 10)
 		// 1. 解析
 		for i, requestParam := range list.List {
 			// "_" 这种不处理了
-			var db generate.RequestDetail
+			var db generate.CaseRequest
 			if requestParam.Names == nil && requestParam.Type != nil {
 				db.RequestName = "param" + strconv.Itoa(i)
 				// todo typeParam

@@ -8,18 +8,18 @@ import (
 )
 
 type Request struct {
-	RequestList []generate.RequestDetail
+	RequestList []generate.CaseRequest
 }
 
 func (r Request) Parse(list *ast.FieldList) {
 	if list == nil {
 		return
 	}
-	dbs := make([]generate.RequestDetail, 0, 10)
+	dbs := make([]generate.CaseRequest, 0, 10)
 	// 1. 解析
 	for i, requestParam := range list.List {
 		// "_" 这种不处理了
-		var db generate.RequestDetail
+		var db generate.CaseRequest
 		if requestParam.Names == nil && requestParam.Type != nil {
 			db.RequestName = "param" + strconv.Itoa(i)
 			// todo typeParam

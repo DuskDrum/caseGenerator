@@ -20,7 +20,7 @@ var (
 	// receiverInfo receiver信息
 	receiverInfo *ReceiverInfo
 	// requestDetailList 请求详情列表
-	requestDetailList []generate.RequestDetail
+	requestDetailList []generate.CaseRequest
 	// assignmentInfoList  赋值list
 	assignmentInfoList []AssignmentDetailInfo
 	// mockInfoList mock数据列表
@@ -53,16 +53,16 @@ func GetAssignmentDetailInfoList() []AssignmentDetailInfo {
 	return assignmentInfoList
 }
 
-func AppendRequestDetailToList(gr generate.RequestDetail) {
+func AppendRequestDetailToList(gr generate.CaseRequest) {
 	mu.Lock()
 	defer mu.Unlock()
 	if len(requestDetailList) == 0 {
-		requestDetailList = make([]generate.RequestDetail, 0, 10)
+		requestDetailList = make([]generate.CaseRequest, 0, 10)
 	}
 	requestDetailList = append(requestDetailList, gr)
 }
 
-func GetRequestDetailList() []generate.RequestDetail {
+func GetRequestDetailList() []generate.CaseRequest {
 	mu.RLock()
 	defer mu.RUnlock()
 	return requestDetailList
@@ -108,5 +108,5 @@ func ClearBo() {
 	TypeParamMap = make(map[string]*ParamParseResult, 10)
 	ParamNeedToMap = sync.Map{}
 	receiverInfo = nil
-	requestDetailList = make([]generate.RequestDetail, 0, 10)
+	requestDetailList = make([]generate.CaseRequest, 0, 10)
 }

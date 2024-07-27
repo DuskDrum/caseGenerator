@@ -11,7 +11,7 @@ import (
 
 type AssignmentVisitor struct {
 	addMu         sync.Mutex
-	typeAssertMap map[string]generate.RequestDetail
+	typeAssertMap map[string]generate.CaseRequest
 }
 
 func (v *AssignmentVisitor) Visit(n ast.Node) ast.Visitor {
