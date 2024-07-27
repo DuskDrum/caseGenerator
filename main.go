@@ -1,6 +1,7 @@
 package main
 
 import (
+	"caseGenerator/generate"
 	"caseGenerator/parser"
 	"fmt"
 	"log"
@@ -19,7 +20,7 @@ func main() {
 	sourceInfo := parser.SourceInfo{}
 	sourceInfo.ParseSource("")
 	// 2. 根据sourceInfo生成mock代码、go:link，入参(空的还是fake还是自己定义的)
-
+	_ = generate.GenStandardInfo(&sourceInfo)
 	// 3. 根据生成的mock代码+模板===> 生成最终的代码
 
 }

@@ -3,6 +3,7 @@ package generate
 import (
 	"bytes"
 	"caseGenerator/common/utils"
+	"caseGenerator/parser"
 	template2 "caseGenerator/template"
 	"fmt"
 	"io"
@@ -124,6 +125,11 @@ func (rd CaseRequest) GenerateRequestContent() string {
 	stringBuilder.WriteString(" ")
 	stringBuilder.WriteString(rd.RequestType)
 	return stringBuilder.String()
+}
+
+// GenStandardInfo 将sourceInfo 源信息转为生成模板的标准信息
+func GenStandardInfo(sourceInfo *parser.SourceInfo) *StandardInfo {
+	return nil
 }
 
 func GenGenerateFile(data GenMeta) {
