@@ -1,17 +1,10 @@
 package generate
 
 import (
-	"bytes"
-	"caseGenerator/common/utils"
+	"caseGenerator/common/enum"
 	"caseGenerator/parser"
-	template2 "caseGenerator/template"
-	"fmt"
-	"io"
-	"os"
+	"strconv"
 	"strings"
-	"text/template"
-
-	"github.com/samber/lo"
 )
 
 // StandardInfo 标准信息
@@ -25,17 +18,15 @@ type StandardInfo struct {
 	// 需要依赖的import
 	ImportPkgPaths []string
 	// case列表
-	CaseDetailList []MethodCase
-	// mock列表
-	MockList []*MockInstruct
+	MethodDetailList []FunctionCase
 	// goLink 列表
 	GoLinkList []string
 }
 
-// MethodCase 方法层面的case，一个方法可能要根据条件、入参出参、mock方法生成多次
-type MethodCase struct {
+// FunctionCase 方法层面的case，一个方法可能要根据条件、入参出参、mock方法生成多次
+type FunctionCase struct {
 	// 方法名
-	MethodName string
+	FunctionName string
 	// receive类型
 	ReceiverType string
 	// case名称
@@ -46,8 +37,6 @@ type MethodCase struct {
 	RequestList []CaseRequest
 	// 把请求名按照tt.args.xx，并按照","分割，最后一位没有逗号
 	RequestNameString string
-	// goLink 列表
-	GoLinkList []string
 }
 
 type CaseMockInfo struct {
@@ -128,116 +117,95 @@ func (rd CaseRequest) GenerateRequestContent() string {
 }
 
 // GenStandardInfo 将sourceInfo 源信息转为生成模板的标准信息
-func GenStandardInfo(sourceInfo *parser.SourceInfo) *StandardInfo {
+func GenStandardInfo(sourceInfo *parser.SourceInfo) []*StandardInfo {
+	list := sourceInfo.FileInfoList
+	for i, info := range list {
+		var standardInfo StandardInfo
+		// 1. 组装基础信息
+		standardInfo.FilePath = info.FunctionPath
+		standardInfo.FileName = info.FileName
+		standardInfo.PackageName = sourceInfo.PackageName
+		// 2. 组装方法信息
+		methodList := make([]FunctionCase, 0, 10)
+		// 3. 组装goLink 信息
+		goLinkList := make([]string, 0, 10)
+		// 4. 组装import信息
+		importList := make([]string, 0, 10)
+
+	}
+
 	return nil
 }
 
-func GenGenerateFile(data GenMeta) {
-	var buf bytes.Buffer
-
-	caseDetails := data.CaseDetailList
-	// 设置RequestNameString字段
-	cdList := make([]CaseDetail, 0, 10)
-	importList := make([]string, 0, 10)
-	importList = append(importList, "\"testing\"")
-
-	for _, cd := range caseDetails {
-		// 如果是内部方法，那么跳过处理
-		// 将字符串转换为rune类型
-
-		cd.FileName = strings.ReplaceAll(data.FileName, ".", "")
-		if len(cd.RequestList) > 0 {
-			var requestNameString string
-			for _, r := range cd.RequestList {
-				if r.IsEllipsis {
-					requestNameString += "tt.args." + r.RequestName + "... , "
-				} else {
-					requestNameString += "tt.args." + r.RequestName + ", "
-				}
-			}
-			requestNameString = strings.TrimRight(requestNameString, ", ")
-			cd.RequestNameString = requestNameString
+// GenGoLink 根据解析出来的方法信息，生成go-linked记录, 组装go:link
+// //go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
+// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
+func GenGoLink(fileInfo *parser.FileInfo) []string {
+	// 1. 使用 stringBuilder 解析go linkname
+	var stringBuilder strings.Builder
+	stringBuilder.WriteString("//go:linkname ")
+	stringBuilder.WriteString(fp.aliasFuncName)
+	stringBuilder.WriteString(" ")
+	stringBuilder.WriteString(fp.moduleName)
+	stringBuilder.WriteString("/")
+	stringBuilder.WriteString(fp.filepath)
+	stringBuilder.WriteString(".")
+	stringBuilder.WriteString(fp.funcName)
+	stringBuilder.WriteString("\n")
+	// 2. 组装内部方法对应的结构
+	stringBuilder.WriteString("func ")
+	stringBuilder.WriteString(fp.aliasFuncName)
+	stringBuilder.WriteString("(")
+	// 2.1 解析内部方法的请求
+	requestStr := ""
+	for _, v := range fp.requestList {
+		content := v.GenerateRequestContent()
+		requestStr = requestStr + content + ", "
+	}
+	if len(requestStr) > 0 {
+		requestStr = requestStr[0 : len(requestStr)-2]
+	}
+	stringBuilder.WriteString(requestStr)
+	stringBuilder.WriteString(")")
+	// 2.2 解析内部方法的响应
+	if len(fp.responseList) > 0 {
+		stringBuilder.WriteString("(")
+		responseStr := ""
+		for _, v := range fp.responseList {
+			content := v.GenerateResponseContent()
+			responseStr = responseStr + content + ", "
 		}
-		cdList = append(cdList, cd)
-	}
-	data.CaseDetailList = cdList
-
-	data.MockList = lo.Filter(data.MockList, func(item *MockInstruct, index int) bool {
-		if item.MockFunction == "" {
-			return false
-		} else {
-			return true
-		}
-	})
-	mockInstructs := make([]*MockInstruct, 0, 10)
-
-	// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
-	// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
-	// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
-	if len(data.MockList) > 0 {
-		by := lo.SliceToMap(data.MockList, func(item *MockInstruct) (string, *MockInstruct) {
-			return item.MockFunction, item
-		})
-		for k, v := range by {
-			// 1. 组装mock的响应值
-			str := "[]any{"
-			for range v.MockResponseParam {
-				str += " nil,"
-			}
-			// 去掉最后一个逗号
-			lastCommaIndex := strings.LastIndex(str, ",")
-			if lastCommaIndex != -1 {
-				str = str[:lastCommaIndex]
-			}
-			str += "}"
-			mockReturns := str
-			// 2. 组装mock的返回
-			mockNumber := "mock" + k
-			// 3. 如果方法名是小写开头，且没有包名引用，说明需要go-linkname
-			if utils.IsLower(v.MockFunction) && !strings.Contains(v.MockFunction, ".") {
-
-			}
-
-			mi := MockInstruct{
-				MockResponseParam:  v.MockResponseParam,
-				MockFunction:       v.MockFunction,
-				MockNumber:         mockNumber,
-				MockReturns:        mockReturns,
-				MockFunctionParam:  v.MockFunctionParam,
-				MockFunctionResult: v.MockFunctionResult,
-			}
-
-			mockInstructs = append(mockInstructs, &mi)
-		}
-		data.MockList = mockInstructs
+		responseStr = responseStr[0 : len(responseStr)-2]
+		stringBuilder.WriteString(responseStr)
+		stringBuilder.WriteString(")")
 	}
 
-	if len(data.ImportPkgPaths) > 0 {
-		for _, v := range data.ImportPkgPaths {
-			if v != "" {
-				importList = append(importList, v)
-			}
-		}
-	}
-	uniqImportList := lo.Uniq(importList)
-	data.ImportPkgPaths = uniqImportList
-
-	err := genRender(template2.NotHaveReceiveModel, &buf, data)
-	if err != nil {
-		_ = fmt.Errorf("cannot format file: %w", err)
-	}
-	modelFile := data.FilePath + data.FileName + "_test" + ".go"
-	content := buf.Bytes()
-	err = os.WriteFile(modelFile, content, os.ModePerm)
-	if err != nil {
-		_ = fmt.Errorf("cannot format file: %w", err)
-	}
+	return stringBuilder.String()
 }
 
-func genRender(tmpl string, wr io.Writer, data interface{}) error {
-	t, err := template.New(tmpl).Parse(tmpl)
-	if err != nil {
-		return err
+// GenMethodInfo 方法组装
+func GenMethodInfo(fileInfo *parser.FileInfo, i int) []FunctionCase {
+	var mc FunctionCase
+	mockList := make([]CaseMockInfo, 0, 10)
+	requestList := make([]CaseRequest, 0, 10)
+	// 组装方法的信息
+	mc.FunctionName = fileInfo.FunctionName
+	mc.CaseName = fileInfo.FunctionName + strconv.Itoa(i)
+	if fileInfo.Receiver == nil {
+		mc.ReceiverType = fileInfo.Receiver.Type
 	}
-	return t.Execute(wr, data)
+	if len(fileInfo.RequestList) > 0 {
+		var requestNameString string
+		for _, r := range fileInfo.RequestList {
+			if r.AstType == enum.PARAM_AST_TYPE_Ellipsis {
+				requestNameString += "tt.args." + r.Name + "... , "
+			} else {
+				requestNameString += "tt.args." + r.Name + ", "
+			}
+		}
+		requestNameString = strings.TrimRight(requestNameString, ", ")
+		mc.RequestNameString = requestNameString
+	}
+	// 组装mock信息
+
 }
