@@ -12,16 +12,16 @@ import (
 	"github.com/samber/lo"
 )
 
-// SourceInfo 源信息
-type SourceInfo struct {
+// SourceInfoExt 源信息
+type SourceInfoExt struct {
 	// 包信息
 	Package
 	// 包中的文件信息
-	FileInfoList []*FileInfo
+	SourceInfo []*SourceInfo
 }
 
-// FileInfo 这是解析包里每个文件得到的信息
-type FileInfo struct {
+// SourceInfo 这是解析包里每个文件得到的信息
+type SourceInfo struct {
 	// 依赖信息
 	Import
 	// 方法信息
@@ -33,44 +33,45 @@ type FileInfo struct {
 }
 
 // ParseSource 主入口，根据func解析出所有内容，并返回出来
-func (s *SourceInfo) ParseSource(fileDir string) {
+func (s *SourceInfoExt) ParseSource(fileDir string) {
 	// 1. 解析package相关信息, 其中包含了整个包下面的私有方法和私有变量
-	s.Package = s.ParsePackage(fileDir)
 	// 2. 解析fileDir，遍历其中的文件，并解析文件中的方法列表
 	// 要保证这个fileDir是最底层的目录，这样才能保证其下文件中的包名是一样的
-	fileInfoList := make([]*FileInfo, 0, 10)
+	sourceInfoList := make([]*SourceInfo, 0, 10)
 	parseGoFile(fileDir, func(funcDecl *ast.FuncDecl, filepath string) {
-		var fileInfo FileInfo
+		var sourceInfo SourceInfo
+		s.Package = sourceInfo.ParsePackage(fileDir)
+
 		// 3. 解析方法信息，其中包含了方法的入参、响应列表、泛型、receiver等信息
 		// 会跳过"_test.go"的文件解析
 		// filepath 是以".go"结尾的全路径
-		functionDeclare := s.extractFileFunction(funcDecl, filepath)
+		functionDeclare := sourceInfo.extractFileFunction(funcDecl, filepath)
 		if functionDeclare != nil {
-			fileInfo.FunctionDeclare = lo.FromPtr(functionDeclare)
+			sourceInfo.FunctionDeclare = lo.FromPtr(functionDeclare)
 		}
 		conditionNodes := make([]*ConditionNode, 0, 10)
 		assignmentList := make([]*Assignment, 0, 10)
 		for _, body := range funcDecl.Body.List {
 			// 3. 遍历解析方法中所有赋值
-			assignment := s.ParseAssignment(body)
+			assignment := sourceInfo.ParseAssignment(body)
 			if len(assignment) > 0 {
 				assignmentList = append(assignmentList, assignment...)
 			}
 			// 4. 遍历解析方法中的所有条件
 			switch node := body.(type) {
 			case *ast.IfStmt, *ast.SwitchStmt:
-				conditionNode := s.parseCondition(node)
+				conditionNode := sourceInfo.parseCondition(node)
 				if conditionNode != nil {
 					conditionNodes = append(conditionNodes, conditionNode)
 				}
 			}
 		}
-		fileInfo.ConditionList = conditionNodes
-		fileInfo.AssignmentList = assignmentList
+		sourceInfo.ConditionList = conditionNodes
+		sourceInfo.AssignmentList = assignmentList
 
-		fileInfoList = append(fileInfoList, &fileInfo)
+		sourceInfoList = append(sourceInfoList, &sourceInfo)
 	})
-	s.FileInfoList = fileInfoList
+	s.SourceInfo = sourceInfoList
 }
 
 func parseGoFile(path string, funcDeclParse func(funcDecl *ast.FuncDecl, filename string), excludedPaths ...string) {
