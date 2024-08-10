@@ -2,6 +2,7 @@ package bo
 
 import (
 	"caseGenerator/generate"
+	"caseGenerator/generate_old"
 	"sync"
 )
 
@@ -24,19 +25,19 @@ var (
 	// assignmentInfoList  赋值list
 	assignmentInfoList []AssignmentDetailInfo
 	// mockInfoList mock数据列表
-	mockInfoList []*generate.MockInstruct
+	mockInfoList []*generate_old.MockInstruct
 )
 
-func AppendMockInfoList(item generate.MockInstruct) {
+func AppendMockInfoList(item generate_old.MockInstruct) {
 	mu.Lock()
 	defer mu.Unlock()
 	if mockInfoList == nil {
-		mockInfoList = make([]*generate.MockInstruct, 0, 10)
+		mockInfoList = make([]*generate_old.MockInstruct, 0, 10)
 	}
 	mockInfoList = append(mockInfoList, &item)
 }
 
-func GetMockInfoList() []*generate.MockInstruct {
+func GetMockInfoList() []*generate_old.MockInstruct {
 	return mockInfoList
 }
 

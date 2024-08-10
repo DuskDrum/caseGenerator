@@ -3,7 +3,7 @@ package template
 import (
 	"bytes"
 	"caseGenerator/common/utils"
-	"caseGenerator/generate"
+	"caseGenerator/generate_old"
 	"fmt"
 	"io"
 	"os"
@@ -87,12 +87,12 @@ func Test_{{.FileName}}{{.CaseName}}(t *testing.T) {
 
 `
 
-func GenGenerateFile(data generate.GenMeta) {
+func GenGenerateFile(data generate_old.GenMeta) {
 	var buf bytes.Buffer
 
 	caseDetails := data.CaseDetailList
 	// 设置RequestNameString字段
-	cdList := make([]generate.CaseDetail, 0, 10)
+	cdList := make([]generate_old.CaseDetail, 0, 10)
 	importList := make([]string, 0, 10)
 	importList = append(importList, "\"testing\"")
 
@@ -117,20 +117,20 @@ func GenGenerateFile(data generate.GenMeta) {
 	}
 	data.CaseDetailList = cdList
 
-	data.MockList = lo.Filter(data.MockList, func(item *generate.MockInstruct, index int) bool {
+	data.MockList = lo.Filter(data.MockList, func(item *generate_old.MockInstruct, index int) bool {
 		if item.MockFunction == "" {
 			return false
 		} else {
 			return true
 		}
 	})
-	mockInstructs := make([]*generate.MockInstruct, 0, 10)
+	mockInstructs := make([]*generate_old.MockInstruct, 0, 10)
 
 	// mockey.Mock((*repo.ClearingPipeConfigRepo).GetAllConfigs).Return(clearingPipeConfigs).Build()
 	// go:linkname awxCommonConvertSettlementReportAlgorithm slp/reconcile/core/message/standard.commonConvertSettlementReportAlgorithm
 	// func awxCommonConvertSettlementReportAlgorithm(transactionType enums.TransactionType, createdAt time.Time, ctx context.Context, dataBody dto.AwxSettlementReportDataBody) (result []service.OrderAlgorithmResult, err error)
 	if len(data.MockList) > 0 {
-		by := lo.SliceToMap(data.MockList, func(item *generate.MockInstruct) (string, *generate.MockInstruct) {
+		by := lo.SliceToMap(data.MockList, func(item *generate_old.MockInstruct) (string, *generate_old.MockInstruct) {
 			return item.MockFunction, item
 		})
 		for k, v := range by {
@@ -153,7 +153,7 @@ func GenGenerateFile(data generate.GenMeta) {
 
 			}
 
-			mi := generate.MockInstruct{
+			mi := generate_old.MockInstruct{
 				MockResponseParam:  v.MockResponseParam,
 				MockFunction:       v.MockFunction,
 				MockNumber:         mockNumber,

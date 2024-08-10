@@ -2,6 +2,7 @@ package parse
 
 import (
 	"caseGenerator/generate"
+	"caseGenerator/generate_old"
 	"caseGenerator/parse/bo"
 	"caseGenerator/parse/vistitor"
 	"errors"
@@ -81,7 +82,7 @@ func extractFile(filename string) (err error) {
 
 	// 组装所有方法
 	methods := make([]string, 0, 10)
-	caseDetailList := make([]generate.CaseDetail, 0, 10)
+	caseDetailList := make([]generate_old.CaseDetail, 0, 10)
 	// Loop in comment groups
 OuterLoop:
 	for _, cg := range f.Decls {
@@ -120,7 +121,7 @@ OuterLoop:
 		ast.Walk(&typeAssertVisitor, cg)
 		combinationSLice := typeAssertVisitor.CombinationTypeAssertionRequest(bo.GetRequestDetailList())
 		for i, v := range combinationSLice {
-			cd := generate.CaseDetail{
+			cd := generate_old.CaseDetail{
 				CaseName:    methodInfo.MethodName + strconv.Itoa(i),
 				MethodName:  methodInfo.MethodName,
 				RequestList: v,
@@ -143,7 +144,7 @@ OuterLoop:
 			//	ReturnList:       v.LeftName,
 			//}
 
-			bo.AppendMockInfoList(generate.MockInstruct{
+			bo.AppendMockInfoList(generate_old.MockInstruct{
 				MockResponseParam:  v.LeftName,
 				MockFunction:       v.RightFormula,
 				MockFunctionParam:  nil,
@@ -154,7 +155,7 @@ OuterLoop:
 		goLinkedList := make([]string, 0, 10)
 
 		// 10. 开始处理receiver
-		cd := generate.CaseDetail{
+		cd := generate_old.CaseDetail{
 			CaseName:    methodInfo.MethodName,
 			MethodName:  methodInfo.MethodName,
 			RequestList: bo.GetRequestDetailList(),
@@ -185,7 +186,7 @@ OuterLoop:
 	filePath := newFilename[:lastIndex+1]
 	fileName := newFilename[lastIndex+1:]
 
-	gm := generate.GenMeta{
+	gm := generate_old.GenMeta{
 		Package:        packageName,
 		FileName:       fileName,
 		FilePath:       filePath,
@@ -193,7 +194,7 @@ OuterLoop:
 		CaseDetailList: caseDetailList,
 	}
 
-	generate.GenFile(gm)
+	generate_old.GenFile(gm)
 
 	return
 }

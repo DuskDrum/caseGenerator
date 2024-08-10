@@ -1,4 +1,4 @@
-package generate
+package generate_old
 
 import (
 	"bytes"
