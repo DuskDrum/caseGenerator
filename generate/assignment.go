@@ -1,6 +1,6 @@
 package generate
 
-// Assignment 记录变量的信息
+// Assignment 记录变量的信息, 找关联关系()
 type Assignment struct {
 }
 

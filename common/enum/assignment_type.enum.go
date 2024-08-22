@@ -10,7 +10,7 @@ type AssignmentType struct {
 }
 
 var (
-	// ASSIGNMENT_TYPE_FUNCTION 匿名函数一般不需要处理
+	// ASSIGNMENT_TYPE_FUNCTION 匿名函数一般不需要处理，
 	ASSIGNMENT_TYPE_FUNCTION = AssignmentType{Code: "function", Desc: "匿名函数", ContentDesc: "string"}
 	// ASSIGNMENT_TYPE_COMPOSITE 构造类型，比如{1,2,3,4}
 	ASSIGNMENT_TYPE_COMPOSITE = AssignmentType{Code: "composite", Desc: "构造类型", ContentDesc: "CompositeLitValue"}
