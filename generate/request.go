@@ -30,8 +30,9 @@ type RequestDetail struct {
 	Value string
 }
 
-// 记录receiver，方法名，请求参数
-func (r *Request) generateRequest(si *parser.SourceInfo) {
+// GenerateRequest 记录receiver，方法名，请求参数
+func GenerateRequest(si *parser.SourceInfo) Request {
+	r := Request{}
 	// 1. 组装receiver
 	receiver := si.FunctionDeclare.Receiver
 	r.ReceiverName = constants.RECEIVER_NAME
@@ -77,4 +78,8 @@ func (r *Request) generateRequest(si *parser.SourceInfo) {
 	caseList := make([]RequestCase, 0, 10)
 	caseList = append(caseList, empty)
 	caseList = append(caseList, fakeit)
+
+	r.RequestCaseList = caseList
+
+	return r
 }
