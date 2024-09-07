@@ -257,7 +257,10 @@ func (s *SourceInfo) ParamParseValue(expr ast.Expr) *ParamValue {
 		paramInfo.Type = constants.SELF_TYPE
 	case *ast.ParenExpr:
 		// 括号表达式，直接解析里面的内容
-
+		param := s.parseParentParam(dbType)
+		paramInfo.Value = param
+		// 特殊的type，代表着需要解析
+		paramInfo.Type = constants.SELF_TYPE
 	default:
 		panic("未知类型...")
 	}
