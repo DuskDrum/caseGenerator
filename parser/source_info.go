@@ -60,7 +60,7 @@ func (s *SourceInfoExt) ParseSource(fileDir string) {
 			// 4. 遍历解析方法中的所有条件
 			switch node := body.(type) {
 			case *ast.IfStmt, *ast.SwitchStmt:
-				conditionNode := sourceInfo.parseCondition(node)
+				conditionNode := sourceInfo.ParseCondition(node)
 				if conditionNode != nil {
 					conditionNodes = append(conditionNodes, conditionNode)
 				}

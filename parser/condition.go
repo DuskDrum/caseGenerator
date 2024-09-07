@@ -11,10 +11,13 @@ import (
 // 也要处理 if中逻辑与、逻辑或、逻辑非的符合结构
 type ConditionNode struct {
 	Children []*ConditionNode
-	Init     *InitInfo
-	Cond     *CondInfo
-	IsElse   bool
-	Else     *ConditionNode
+	// Init不需要单独设置，assignment设置即可
+	Init *InitInfo
+	// CondInfo是核心逻辑，根据CondInfo判断等式两边的值
+	// 多个等式之间的 逻辑与、逻辑非、逻辑或排列组合，都需要处理
+	Cond   *CondInfo
+	IsElse bool
+	Else   *ConditionNode
 }
 
 // ExprNode 表达式节点，包括二元表达式、一元表达式、标识符、字面量等
@@ -32,13 +35,13 @@ type InitInfo struct {
 }
 
 type CondInfo struct {
-	XParam *Param
+	XParam *ParamValue
 	YParam *ParamValue
 	Op     token.Token
 }
 
-// 解析条件语句
-func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
+// ParseCondition 解析条件语句
+func (s *SourceInfo) ParseCondition(n ast.Node) *ConditionNode {
 	if n == nil {
 		return nil
 	}
@@ -70,7 +73,7 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 				nodes := make([]*ConditionNode, 0, 10)
 				for _, v := range list {
 					if ifNode, ok := v.(*ast.IfStmt); ok {
-						condition := s.parseCondition(ifNode)
+						condition := s.ParseCondition(ifNode)
 						if condition != nil {
 							nodes = append(nodes, condition)
 						}
@@ -89,7 +92,7 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 			for _, v := range list {
 				switch caseBody := v.(type) {
 				case *ast.SwitchStmt, *ast.IfStmt:
-					condition := s.parseCondition(caseBody)
+					condition := s.ParseCondition(caseBody)
 					if condition != nil {
 						nodes = append(nodes, condition)
 					}
@@ -118,7 +121,7 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 					for _, caseBodyList := range list {
 						switch caseBody := caseBodyList.(type) {
 						case *ast.SwitchStmt, *ast.IfStmt:
-							condition := s.parseCondition(caseBody)
+							condition := s.ParseCondition(caseBody)
 							if condition != nil {
 								childNodes = append(childNodes, condition)
 							}
@@ -137,7 +140,7 @@ func (s *SourceInfo) parseCondition(n ast.Node) *ConditionNode {
 							var conditionElseNode = ConditionNode{}
 							conditionElseNode.Init = conditionNode.Init
 							var iefo CondInfo
-							iefo.XParam = s.ParamParse(a.Tag)
+							iefo.XParam = s.ParamParseValue(a.Tag)
 							iefo.YParam = s.ParamParseValue(caseDetail)
 							iefo.Op = token.EQL
 							conditionElseNode.Cond = &iefo
@@ -175,7 +178,7 @@ func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
 	var ifo CondInfo
 	switch a := n.(type) {
 	case *ast.BinaryExpr:
-		ifo.XParam = s.ParamParse(a.X)
+		ifo.XParam = s.ParamParseValue(a.X)
 		ifo.YParam = s.ParamParseValue(a.Y)
 		ifo.Op = a.Op
 	default:

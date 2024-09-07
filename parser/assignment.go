@@ -4,14 +4,15 @@ import (
 	"caseGenerator/common/enum"
 	"encoding/json"
 	"fmt"
-	"github.com/samber/lo"
 	"go/ast"
 	"go/token"
 	"log"
+
+	"github.com/samber/lo"
 )
 
 type Assignment struct {
-	Param
+	ParamValue
 	// 赋值的位置
 	ParamIndex int `json:"paramIndex"`
 	// 赋值类型
@@ -22,7 +23,7 @@ type Assignment struct {
 
 type CompositeLitValue struct {
 	// 记录类型
-	*Param
+	*ParamValue
 	// 记录每个值
 	Values []ParamValue
 }
@@ -38,7 +39,7 @@ func (c CompositeLitValue) ToString() string {
 // CallLitValue x1, x2, x3 := aa.bb(cc,dd,ee)
 type CallLitValue struct {
 	// 记录方法的类型
-	*Param
+	*ParamValue
 	// 记录每个方法调用的值和类型
 	Values []*ParamValue
 }
@@ -51,25 +52,17 @@ func (c CallLitValue) ToString() string {
 	return string(marshal)
 }
 
-// AssignmentBinaryNode 组装节点的赋值节点
-type AssignmentBinaryNode struct {
-	// Param为Y节点的信息
-	Param
-	Op       token.Token
-	Children *AssignmentBinaryNode
-}
-
 // AssignmentSlice slice的存储
 type AssignmentSlice struct {
 	// Param为Y节点的信息
-	Param
+	ParamValue
 	LowIndex  string
 	HighIndex string
 }
 
 // AssignmentUnaryNode 组装节点的赋值节点
 type AssignmentUnaryNode struct {
-	Param
+	ParamValue
 	// 如果是arrow36，代表了是chan的调用
 	Op token.Token
 }
@@ -124,10 +117,10 @@ func (s *SourceInfo) ParseAssignment(n ast.Node) []*Assignment {
 					paramRequests = append(paramRequests, reqInfo)
 				}
 			}
-			param := s.ParamParse(nd.Fun)
+			param := s.ParamParseValue(nd.Fun)
 			as.StrategyFormulaValue = CallLitValue{
-				Param:  param,
-				Values: paramRequests,
+				ParamValue: param,
+				Values:     paramRequests,
 			}
 		default:
 			panic("不支持此类型")
@@ -170,13 +163,13 @@ func (s *SourceInfo) parseSingleRhsAssignment(node *ast.AssignStmt) []*Assignmen
 
 func (s *SourceInfo) parseAssignmentDetail(node *ast.AssignStmt, index int, rhsNode ast.Expr) *Assignment {
 	// 有一些赋值这一句无法判断出等式右边变量的类型，只能靠变量名上下文联系
-	parseResult := s.ParamParse(node.Lhs[index])
+	parseResult := s.ParamParseValue(node.Lhs[index])
 	if parseResult.Name == "" && parseResult.Type != "" {
 		parseResult.Name = parseResult.Type
 		parseResult.Type = ""
 	}
 	var as Assignment
-	as.Param = *parseResult
+	as.ParamValue = *parseResult
 	as.ParamIndex = index
 	// 解析对应下标右边的赋值
 	switch nRhsType := rhsNode.(type) {
@@ -190,21 +183,21 @@ func (s *SourceInfo) parseAssignmentDetail(node *ast.AssignStmt, index int, rhsN
 			}
 		}
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_CALL
-		param := s.ParamParse(nRhsType.Fun)
+		param := s.ParamParseValue(nRhsType.Fun)
 		as.StrategyFormulaValue = CallLitValue{
-			Param:  param,
-			Values: paramRequests,
+			ParamValue: param,
+			Values:     paramRequests,
 		}
 		// 类型断言可以是 a.(type) 也可以是A.B.C.(type)
 	case *ast.TypeAssertExpr:
 		// 类型断言已在上面处理了
 	// 如果是aa("","") + bb("","")的情况需要处理这个语法树
 	case *ast.UnaryExpr:
-		result := s.ParamParse(nRhsType.X)
-		as.StrategyFormulaValue = AssignmentUnaryNode{Param: *result, Op: nRhsType.Op}
+		result := s.ParamParseValue(nRhsType.X)
+		as.StrategyFormulaValue = AssignmentUnaryNode{ParamValue: *result, Op: nRhsType.Op}
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_UNARY
 	case *ast.BinaryExpr:
-		result := s.parseBinaryAssignment(nRhsType)
+		result := s.parseBinaryParam(nRhsType)
 		as.StrategyFormulaValue = result
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_BINARY
 	// 构造类型
@@ -214,14 +207,14 @@ func (s *SourceInfo) parseAssignmentDetail(node *ast.AssignStmt, index int, rhsN
 			log.Fatal("compositeLit is Incomplete")
 		}
 		// 构造的type是param， 构造里面的内容共同生成了它的值
-		compositeType := s.ParamParse(nRhsType.Type)
+		compositeType := s.ParamParseValue(nRhsType.Type)
 		// 解析composite的内容
 		values := make([]ParamValue, 0, 10)
 		for _, v := range nRhsType.Elts {
 			paramValue := s.ParamParseValue(v)
 			values = append(values, *paramValue)
 		}
-		as.StrategyFormulaValue = CompositeLitValue{Param: compositeType, Values: values}
+		as.StrategyFormulaValue = CompositeLitValue{ParamValue: compositeType, Values: values}
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_COMPOSITE
 	case *ast.BasicLit:
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_BASICLIT
@@ -235,55 +228,37 @@ func (s *SourceInfo) parseAssignmentDetail(node *ast.AssignStmt, index int, rhsN
 		as.StrategyFormulaValue = nRhsType.Name
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_IDENT
 	case *ast.StarExpr:
-		param := s.ParamParse(nRhsType)
+		param := s.ParamParseValue(nRhsType)
 		as.Type = param.Type
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_STAR
 	case *ast.SelectorExpr:
-		param := s.ParamParse(nRhsType)
+		param := s.ParamParseValue(nRhsType)
 		as.Type = param.Type
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_SELECTOR
 	case *ast.SliceExpr:
 		// pinter[1:2]这种格式
 		as.AssignmentType = enum.ASSIGNMENT_TYPE_SLICE
 		// 主体解析
-		param := s.ParamParse(nRhsType.X)
+		param := s.ParamParseValue(nRhsType.X)
 		low := s.ParamParseValue(nRhsType.Low)
 		high := s.ParamParseValue(nRhsType.High)
 		as.StrategyFormulaValue = AssignmentSlice{
-			Param: *param,
+			ParamValue: *param,
 			LowIndex: lo.TernaryF(low.Value == "", func() string {
 				return low.Type
 			}, func() string {
-				return low.Value
+				return fmt.Sprint(low.Value)
 			}),
 			HighIndex: lo.TernaryF(high.Value == "", func() string {
 				return high.Type
 			}, func() string {
-				return high.Value
+				return fmt.Sprint(high.Value)
 			}),
 		}
 	default:
 		panic("不支持此类型")
 	}
 	return &as
-}
-
-func (s *SourceInfo) parseBinaryAssignment(node *ast.BinaryExpr) *AssignmentBinaryNode {
-	var ab AssignmentBinaryNode
-	ab.Op = node.Op
-	parse := s.ParamParse(node.Y)
-	ab.Param = *parse
-	// 如果左边是一个二元表达式，那么继续解析
-	if xNode, ok := node.X.(*ast.BinaryExpr); ok {
-		ab.Children = s.parseBinaryAssignment(xNode)
-	} else {
-		param := s.ParamParse(node.X)
-		ab.Children = &AssignmentBinaryNode{
-			Param:    *param,
-			Children: nil,
-		}
-	}
-	return &ab
 }
 
 func (s *SourceInfo) parseGenDeclAssignment(node *ast.GenDecl) []*Assignment {
@@ -299,7 +274,7 @@ func (s *SourceInfo) parseGenDeclAssignment(node *ast.GenDecl) []*Assignment {
 				}
 				for i := range npVa.Names {
 					var as Assignment
-					as.Param = *s.ParamParse(npVa.Names[i])
+					as.ParamValue = *s.ParamParseValue(npVa.Names[i])
 					as.ParamIndex = i
 					as.AssignmentType = enum.ASSIGNMENT_TYPE_VALUESPEC
 					as.StrategyFormulaValue = s.ParamParseValue(npVa.Values[i])
@@ -308,7 +283,7 @@ func (s *SourceInfo) parseGenDeclAssignment(node *ast.GenDecl) []*Assignment {
 			} else if len(npVa.Values) == 1 {
 				for i := range npVa.Names {
 					var as Assignment
-					as.Param = *s.ParamParse(npVa.Names[i])
+					as.ParamValue = *s.ParamParseValue(npVa.Names[i])
 					as.ParamIndex = i
 					as.AssignmentType = enum.ASSIGNMENT_TYPE_VALUESPEC
 					as.StrategyFormulaValue = s.ParamParseValue(npVa.Values[0])
@@ -319,7 +294,7 @@ func (s *SourceInfo) parseGenDeclAssignment(node *ast.GenDecl) []*Assignment {
 				if npVa.Type != nil {
 					for i := range npVa.Names {
 						var as Assignment
-						as.Param = *s.ParamParse(npVa.Names[i])
+						as.ParamValue = *s.ParamParseValue(npVa.Names[i])
 						as.ParamIndex = i
 						as.AssignmentType = enum.ASSIGNMENT_TYPE_VALUESPEC
 						as.StrategyFormulaValue = s.ParamParseValue(npVa.Type)
