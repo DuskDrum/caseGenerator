@@ -35,6 +35,8 @@ type AssignmentParam struct {
 
 // ParentParam 带有括号的节点
 type ParentParam struct {
+	Child *ParentParam
+	Op    token.Token
 	AssignmentParam
 }
 
