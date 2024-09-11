@@ -181,6 +181,24 @@ func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
 		ifo.XParam = s.ParamParseValue(a.X)
 		ifo.YParam = s.ParamParseValue(a.Y)
 		ifo.Op = a.Op
+	// 直接是callExpr，说明这个函数的结果是bool类型
+	// 直接是变量名，说明是bool类型
+	case *ast.CallExpr, *ast.Ident:
+		ifo.XParam = s.ParamParseValue(a)
+		ifo.YParam = &ParamValue{
+			Param: Param{
+				Type:    "bool",
+				AstType: enum.PARAM_AST_TYPE_BasicLit,
+			},
+			Value: true,
+		}
+		ifo.Op = token.EQL
+	// 是包装后侧一元表达式，代表的是取反等 ！，也直接是bool
+	case *ast.UnaryExpr:
+		result := s.parseIfCond(a.X)
+		ifo.XParam = result.XParam
+		ifo.YParam = result.YParam
+		ifo.Op = a.Op
 	default:
 		panic("未知的condition类型")
 	}

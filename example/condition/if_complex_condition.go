@@ -34,3 +34,11 @@ func IfComplexBoolConditionTest() {
 		fmt.Println("isSuccess is true")
 	}
 }
+
+// IfReverseComplexBoolConditionTest 直接判断布尔类型
+func IfReverseComplexBoolConditionTest() {
+	isSuccess := true
+	if !isSuccess {
+		fmt.Println("isSuccess is true")
+	}
+}
