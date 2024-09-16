@@ -1,6 +1,11 @@
 package generate
 
-import "caseGenerator/parser"
+import (
+	"caseGenerator/parser"
+	"go/token"
+
+	"github.com/samber/lo"
+)
 
 // Condition 判断条件
 type Condition struct {
@@ -14,8 +19,19 @@ type Condition struct {
 //
 //		方法 a() ==> Mock
 //	 参数 a.A ==> Assignment: 1. 赋值里面也是方法：Mock 2. 赋值里面是属性：Request/变量/常量  3. 处理不了
-func GenerateCondition(si *parser.ConditionNode) Condition {
-	c := Condition{}
+func GenerateCondition(si *parser.ConditionNode) {
+	// 1. 判断Cond
+	if si.Cond == nil {
+		panic("condition's Cond can't be nil")
+	}
+	condInfo := lo.FromPtr(si.Cond)
+	// 逻辑与，需要继续执行
+	if condInfo.Op == token.LAND {
 
-	return c
+		// 逻辑或，直接跳过处理
+	} else if condInfo.Op == token.LOR {
+		// 逻辑否，认为是false即可(其实不会有逻辑否，上层会处理成equal false)
+	} else if condInfo.Op == token.NOT {
+
+	}
 }

@@ -1,5 +1,7 @@
 package generate
 
+import "caseGenerator/parser"
+
 // Mock 记录mock的信息
 type Mock struct {
 	// request相关
@@ -16,12 +18,12 @@ type Response struct {
 	// assert 返回值
 	AssertList []Assert
 	// 参数
-	ParamList []Param
+	ParamList []parser.ParamValue
 }
 
 type Assert struct {
 	// assert的参数
-	Param Param
+	Param parser.ParamValue
 	// assert的值
 	Value string
 }
