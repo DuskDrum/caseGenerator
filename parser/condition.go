@@ -35,9 +35,12 @@ type InitInfo struct {
 }
 
 type CondInfo struct {
-	XParam *ParamValue
-	YParam *ParamValue
-	Op     token.Token
+	XParam     *CondInfo
+	YParam     *CondInfo
+	ParentTag  bool
+	ValueTag   bool
+	ParamValue *ParamValue
+	Op         token.Token
 }
 
 // ParseCondition 解析条件语句
@@ -140,8 +143,12 @@ func (s *SourceInfo) ParseCondition(n ast.Node) *ConditionNode {
 							var conditionElseNode = ConditionNode{}
 							conditionElseNode.Init = conditionNode.Init
 							var iefo CondInfo
-							iefo.XParam = s.ParamParseValue(a.Tag)
-							iefo.YParam = s.ParamParseValue(caseDetail)
+							iefo.XParam = &CondInfo{
+								ParamValue: s.ParamParseValue(a.Tag),
+							}
+							iefo.YParam = &CondInfo{
+								ParamValue: s.ParamParseValue(caseDetail),
+							}
 							iefo.Op = token.EQL
 							conditionElseNode.Cond = &iefo
 							conditionElseNode.IsElse = false
@@ -178,29 +185,25 @@ func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
 	var ifo CondInfo
 	switch a := n.(type) {
 	case *ast.BinaryExpr:
-		ifo.XParam = s.ParamParseValue(a.X)
-		ifo.YParam = s.ParamParseValue(a.Y)
+		ifo.XParam = s.parseIfCond(a.X)
+		ifo.YParam = s.parseIfCond(a.Y)
 		ifo.Op = a.Op
-	// 直接是callExpr，说明这个函数的结果是bool类型
-	// 直接是变量名，说明是bool类型
-	case *ast.CallExpr, *ast.Ident:
-		ifo.XParam = s.ParamParseValue(a)
-		ifo.YParam = &ParamValue{
-			Param: Param{
-				Type:    "bool",
-				AstType: enum.PARAM_AST_TYPE_BasicLit,
-			},
-			Value: true,
-		}
-		ifo.Op = token.EQL
 	// 是包装后侧一元表达式，代表的是取反等 ！，也直接是bool
 	case *ast.UnaryExpr:
 		result := s.parseIfCond(a.X)
 		ifo.XParam = result.XParam
 		ifo.YParam = result.YParam
 		ifo.Op = a.Op
+	// 这是括号， 里面的逻辑要一起满足
+	case *ast.ParenExpr:
+		result := s.parseIfCond(a.X)
+		ifo.XParam = result.XParam
+		ifo.YParam = result.YParam
+		ifo.Op = result.Op
+		ifo.ParentTag = true
 	default:
-		panic("未知的condition类型")
+		ifo.ParamValue = s.ParamParseValue(a)
+		ifo.ValueTag = true
 	}
 	return &ifo
 }
