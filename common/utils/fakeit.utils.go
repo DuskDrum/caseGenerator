@@ -12,6 +12,8 @@ import (
 //	NEQ      // !=
 //	LEQ      // <=
 //	GEQ      // >=
+//	LSS    // <
+//	GTR    // >
 func FakeItByOp(op token.Token, targetValue string) string {
 	if op == token.EQL {
 		return targetValue
@@ -27,6 +29,12 @@ func FakeItByOp(op token.Token, targetValue string) string {
 
 }
 
+// 不等于某个值的fake
+// <= 某个值的fake
+// >= 某个值的fake
+// > 某个值 的fake
+// < 某个值的fake
 func FakeNeqTarget(targetValue string) string {
-	gofakeit.RandomString()
+	faker := gofakeit.New(int64(len(targetValue) + 1))
+	return faker.Letter()
 }

@@ -39,6 +39,8 @@ type Assert struct {
 //	NEQ      // !=
 //	LEQ      // <=
 //	GEQ      // >=
+//	LSS    // <
+//	GTR    // >
 
 // MockInstruct 根据符号左边和右边，组装mock指令
 func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *token.Token, funcInstructList []MockFuncInstruct, paramInstructList []MockParamInstruct) {
@@ -47,7 +49,7 @@ func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *toke
 		return
 	}
 	opPt := lo.FromPtr(op)
-	if opPt != token.EQL && opPt != token.NEQ && opPt != token.LEQ && opPt != token.GEQ {
+	if opPt != token.EQL && opPt != token.NEQ && opPt != token.LEQ && opPt != token.GEQ && opPt != token.LSS && opPt != token.GTR {
 		panic("MockInstruct don't support this Op: " + op.String())
 	}
 	// 1. 第一场景， xParam是定量BasicLit， yParam是变量Ident(x、y交换同理)
