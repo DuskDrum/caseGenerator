@@ -142,6 +142,7 @@ func (s *SourceInfo) ParamParseValue(expr ast.Expr) *ParamValue {
 			paramInfo.Type = result.Type
 		} else {
 			paramInfo.Type = dbType.Name
+			paramInfo.Name = dbType.Name
 		}
 		paramInfo.AstType = enum.PARAM_AST_TYPE_Ident
 		// 指针类型

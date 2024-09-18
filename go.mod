@@ -3,6 +3,7 @@ module caseGenerator
 go 1.21
 
 require (
+	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/bytedance/mockey v1.2.10
 	github.com/samber/lo v1.39.0
 	golang.org/x/mod v0.6.0-dev.0.20211013180041-c96bc1413d57

@@ -1,6 +1,12 @@
 package generate
 
-import "caseGenerator/parser"
+import (
+	"caseGenerator/common/enum"
+	"caseGenerator/parser"
+	"go/token"
+
+	"github.com/samber/lo"
+)
 
 // Mock 记录mock的信息
 type Mock struct {
@@ -29,3 +35,23 @@ type Assert struct {
 }
 
 // 找到方法receiver、值的列表、request列表、go:linkedname关联的方法
+// 	EQL    // ==
+//	NEQ      // !=
+//	LEQ      // <=
+//	GEQ      // >=
+
+// MockInstruct 根据符号左边和右边，组装mock指令
+func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *token.Token, funcInstructList []MockFuncInstruct, paramInstructList []MockParamInstruct) {
+	// 校验参数
+	if xParam == nil || yParam == nil || op == nil {
+		return
+	}
+	opPt := lo.FromPtr(op)
+	if opPt != token.EQL && opPt != token.NEQ && opPt != token.LEQ && opPt != token.GEQ {
+		panic("MockInstruct don't support this Op: " + op.String())
+	}
+	// 1. 第一场景， xParam是定量BasicLit， yParam是变量Ident(x、y交换同理)
+	if xParam.AstType == enum.PARAM_AST_TYPE_BasicLit {
+
+	}
+}

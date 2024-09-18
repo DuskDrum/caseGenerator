@@ -193,6 +193,8 @@ func (s *SourceInfo) parseIfCond(n ast.Expr) *CondInfo {
 		result := s.parseIfCond(a.X)
 		ifo.XParam = result.XParam
 		ifo.YParam = result.YParam
+		ifo.ValueTag = result.ValueTag
+		ifo.ParamValue = result.ParamValue
 		ifo.Op = a.Op
 	// 这是括号， 里面的逻辑要一起满足
 	case *ast.ParenExpr:

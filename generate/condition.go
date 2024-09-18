@@ -25,13 +25,57 @@ func GenerateCondition(si *parser.ConditionNode) {
 		panic("condition's Cond can't be nil")
 	}
 	condInfo := lo.FromPtr(si.Cond)
-	// 逻辑与，需要继续执行
-	if condInfo.Op == token.LAND {
+
+}
+
+// MockFuncInstruct func mock指令
+type MockFuncInstruct struct {
+	// MockFunctionName mock方法名
+	MockFunctionName string
+	// MockReceiverType mock方法对应的Receiver类型。
+	// build4 := Mock((*repo.XXXRepo).XXMethod).Return(A, B).Build()
+	MockReceiverType string
+	// MockReturnList mock对应的响应列表
+	MockReturnList []string
+}
+
+// MockParamInstruct 参数 mock指令
+type MockParamInstruct struct {
+	// MockParamName mock参数名
+	MockParamName string
+	// MockParamValue mock对应的参数值
+	MockParamValue string
+}
+
+// 解析condition, 得到mock方法指令、mock参数指令
+func generateConditionInfo(info *parser.CondInfo, funcInstructList []MockFuncInstruct, paramInstructList []MockParamInstruct) {
+	// 说明到底了， paramValue必有值
+	if info.XParam.ValueTag == true {
+		// x有值了， y还没有值。暂时处理不了
+		if info.YParam.ValueTag != true {
+			panic("xparam has value but yParam don't has value")
+		}
+		xp := info.XParam.ParamValue
+		yp := info.YParam.ParamValue
+		op := info.Op
+		//
+
+	}
+	// 如果是parentTag，一般来说只有把几个或当成与的场景会加括号，暂定不考虑括号
+	// 逻辑与，需要继续执行。还在处理逻辑，所以需要递归执行
+	if info.Op == token.LAND {
+		// 逻辑与代表了左右两边都需要执行
+		generateConditionInfo(info.XParam)
+		generateConditionInfo(info.YParam)
 
 		// 逻辑或，直接跳过处理
-	} else if condInfo.Op == token.LOR {
-		// 逻辑否，认为是false即可(其实不会有逻辑否，上层会处理成equal false)
-	} else if condInfo.Op == token.NOT {
+	} else if info.Op == token.LOR {
+		// 逻辑否，一般逻辑否只会有paramValue，代表的含义是paramValue == false
+	} else if info.Op == token.NOT {
+		if info.ParamValue == nil {
+			panic("token.Not paramValue should not be nil")
+		}
+		notValue := info.ParamValue
 
 	}
 }
