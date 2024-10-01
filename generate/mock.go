@@ -45,6 +45,7 @@ type Assert struct {
 // MockInstruct 根据符号左边和右边，组装mock指令。
 // 约束求解器， SMT（Satisfiability Modulo Theories，可满足性模理论）
 // 2-CNF可满足性问题 和 3-CNF可满足性问题
+// NP完全性
 func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *token.Token, funcInstructList []MockFuncInstruct, paramInstructList []MockParamInstruct) {
 	// 校验参数
 	if xParam == nil || yParam == nil || op == nil {
