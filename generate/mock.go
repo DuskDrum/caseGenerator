@@ -4,7 +4,10 @@ import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parser"
 	"go/token"
+	"math"
+	"time"
 
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/samber/lo"
 )
 
@@ -46,6 +49,7 @@ type Assert struct {
 // 约束求解器， SMT（Satisfiability Modulo Theories，可满足性模理论）
 // 2-CNF可满足性问题 和 3-CNF可满足性问题
 // NP完全性
+// 电路可满足性问题
 func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *token.Token, funcInstructList []MockFuncInstruct, paramInstructList []MockParamInstruct) {
 	// 校验参数
 	if xParam == nil || yParam == nil || op == nil {
@@ -59,4 +63,104 @@ func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *toke
 	if xParam.AstType == enum.PARAM_AST_TYPE_BasicLit {
 
 	}
+}
+
+func MockMinInt(min int) int {
+	return intRange(min, math.MaxInt)
+}
+
+func MockMaxInt(max int) int {
+	return intRange(math.MinInt, max)
+}
+
+func MockRangeInt(min, max int) int {
+	return intRange(min, max)
+}
+
+// intRange intRange
+func intRange(min, max int) int {
+	// 调整整数范围
+	randomNumber := gofakeit.Number(min, max)
+	return randomNumber
+}
+
+func MockMinUint(min uint) uint {
+	return uintRange(min, math.MaxUint)
+}
+
+func MockMaxUint(max uint) uint {
+	return uintRange(math.MinInt, max)
+}
+
+func MockRangeUint(min, max uint) uint {
+	return uintRange(min, max)
+}
+
+// mockInt uint
+func uintRange(min, max uint) uint {
+	// 调整整数范围
+	randomNumber := gofakeit.UintRange(min, max)
+	return randomNumber
+}
+
+func MockMinFloat32(min float32) float32 {
+	return float32Range(min, math.MaxFloat32)
+}
+
+func MockMaxFloat32(max float32) float32 {
+	return float32Range(math.MinInt, max)
+}
+
+func MockRangeFloat32(min, max float32) float32 {
+	return float32Range(min, max)
+}
+
+// float32Range uint
+func float32Range(min, max float32) float32 {
+	// 调整整数范围
+	randomNumber := gofakeit.Float32Range(min, max)
+	return randomNumber
+}
+
+func MockMinFloat64(min float64) float64 {
+	return float64Range(min, math.MaxFloat64)
+}
+
+func MockMaxFloat64(max float64) float64 {
+	return float64Range(math.MinInt, max)
+}
+
+func MockRangeFloat64(min, max float64) float64 {
+	return float64Range(min, max)
+}
+
+// float64Range float64
+func float64Range(min, max float64) float64 {
+	// 调整整数范围
+	randomNumber := gofakeit.Float64Range(min, max)
+	return randomNumber
+}
+
+// MockMinDate date
+func MockMinDate(min time.Time) time.Time {
+	// 调整时间范围
+	return dateRange(min, time.Date(2099, 12, 31, 23, 59, 59, 0, time.UTC))
+}
+
+// MockMaxDate date
+func MockMaxDate(max time.Time) time.Time {
+	// 调整时间范围
+	return dateRange(time.Time{}, max)
+}
+
+// MockRangeDate date
+func MockRangeDate(min, max time.Time) time.Time {
+	// 调整时间范围
+	return dateRange(min, max)
+}
+
+// dateRange date
+func dateRange(min, max time.Time) time.Time {
+	// 调整时间范围
+	return gofakeit.DateRange(min, max)
 }
