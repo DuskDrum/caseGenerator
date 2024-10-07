@@ -164,3 +164,30 @@ func dateRange(min, max time.Time) time.Time {
 	// 调整时间范围
 	return gofakeit.DateRange(min, max)
 }
+
+// MockSizeSlice 根据尺寸随机生成切片
+func MockSizeSlice(size int64, slicePtr any) {
+	faker := gofakeit.New(size)
+	faker.Slice(slicePtr)
+}
+
+// MockSlice 随机生成切片
+func MockSlice(slicePtr any) {
+	gofakeit.Slice(slicePtr)
+}
+
+func MockSizeString(size uint) string {
+	return gofakeit.LetterN(size)
+}
+func MockString() string {
+	return gofakeit.Letter()
+}
+
+func MockSizeStruct(size int64, v any) error {
+	faker := gofakeit.New(size)
+	return faker.Struct(v)
+}
+
+func MockStruct(v any) error {
+	return gofakeit.Struct(v)
+}
