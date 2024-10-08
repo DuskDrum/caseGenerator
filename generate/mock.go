@@ -4,6 +4,7 @@ import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parser"
 	"go/token"
+	"reflect"
 
 	"github.com/samber/lo"
 )
@@ -57,7 +58,62 @@ func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *toke
 		panic("MockInstruct don't support this Op: " + op.String())
 	}
 	// 1. 第一场景， xParam是定量BasicLit， yParam是变量Ident(x、y交换同理)
-	if xParam.AstType == enum.PARAM_AST_TYPE_BasicLit {
+	if xParam.AstType == enum.PARAM_AST_TYPE_BasicLit && yParam.AstType == enum.PARAM_AST_TYPE_Ident {
 
 	}
+
+	if yParam.AstType == enum.PARAM_AST_TYPE_BasicLit && xParam.AstType == enum.PARAM_AST_TYPE_Ident {
+
+	}
+}
+
+// MockMatchConditionValue 根据指定的value 和 比较运算符token 得到符合条件对应的值
+func MockMatchConditionValue(op *token.Token, value any) any {
+	switch *op {
+	case token.EQL:
+		return value
+	case token.NEQ:
+		fallthrough
+	case token.LEQ:
+	case token.GEQ:
+	case token.LSS:
+	case token.GTR:
+
+	}
+	return nil
+}
+
+func ProcessLessValue(value any) any {
+	switch a := reflect.TypeOf(value); a.Kind() {
+	case reflect.Bool:
+		return value
+	case reflect.Int:
+	case reflect.Int8:
+	case reflect.Int16:
+	case reflect.Int32:
+	case reflect.Int64:
+	case reflect.Uint:
+	case reflect.Uint8:
+	case reflect.Uint16:
+	case reflect.Uint32:
+	case reflect.Uint64:
+	case reflect.Uintptr:
+	case reflect.Float32:
+	case reflect.Float64:
+	case reflect.Complex64:
+	case reflect.Complex128:
+	case reflect.Array:
+	case reflect.Chan:
+	case reflect.Func:
+	case reflect.Interface:
+	case reflect.Map:
+	case reflect.Pointer:
+	case reflect.Slice:
+	case reflect.String:
+	case reflect.Struct:
+	case reflect.UnsafePointer:
+	default:
+		return value
+	}
+
 }

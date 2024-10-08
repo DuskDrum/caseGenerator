@@ -58,8 +58,8 @@ func generateConditionInfo(info *parser.CondInfo, funcInstructList []MockFuncIns
 		xp := info.XParam.ParamValue
 		yp := info.YParam.ParamValue
 		op := info.Op
-		//
-
+		// mock值或者mock方法
+		MockInstruct(xp, yp, lo.ToPtr(op), funcInstructList, paramInstructList)
 	}
 	// 如果是parentTag，一般来说只有把几个或当成与的场景会加括号，暂定不考虑括号
 	// 逻辑与，需要继续执行。还在处理逻辑，所以需要递归执行
