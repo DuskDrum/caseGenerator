@@ -44,7 +44,7 @@ type MockParamInstruct struct {
 	// MockParamName mock参数名
 	MockParamName string
 	// MockParamValue mock对应的参数值
-	MockParamValue string
+	MockParamValue any
 }
 
 // 解析condition, 得到mock方法指令、mock参数指令
