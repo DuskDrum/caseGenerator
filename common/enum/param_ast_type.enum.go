@@ -1,6 +1,10 @@
 package enum
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/samber/lo"
+)
 
 type ParamAstType struct {
 	Name string
@@ -157,4 +161,9 @@ func (at *ParamAstType) UnmarshalJSON(data []byte) error {
 		at.Desc = assignmentType.Desc
 	}
 	return nil
+}
+
+func (at *ParamAstType) IsFunction() bool {
+	atPtr := lo.FromPtr(at)
+	return atPtr == PARAM_AST_TYPE_FuncLit || atPtr == PARAM_AST_TYPE_FuncType || atPtr == PARAM_AST_TYPE_FuncDecl || atPtr == PARAM_AST_TYPE_CallExpr || atPtr == PARAM_AST_TYPE_CallUnary
 }

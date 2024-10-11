@@ -19,6 +19,7 @@ type Param struct {
 	AstType enum.ParamAstType `json:"astType,omitempty"`
 }
 
+// todo 再标准化结构
 // ParamValue 带有参数值的参数
 type ParamValue struct {
 	Param
@@ -39,87 +40,6 @@ type ParentParam struct {
 	Op    token.Token
 	AssignmentParam
 }
-
-// ParamParse 处理参数：expr待处理的节点， name：节点名， typeParams 泛型关系
-//func (s *SourceInfo) ParamParse(expr ast.Expr) *Param {
-//	//genericsMap := s.GenericsMap
-//	var paramInfo Param
-//
-//	switch _ := expr.(type) {
-//case *ast.SelectorExpr:
-//	expr := GetRelationFromSelectorExpr(dbType)
-//	paramInfo.Type = expr
-//	if strings.Contains(expr, ".") {
-//		parts := strings.Split(expr, ".")
-//		firstField := parts[0]
-//		s.AppendImportList(s.GetImportPathFromAliasMap(firstField))
-//	}
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_SelectStmt
-//case *ast.Ident:
-//	result, ok := genericsMap[dbType.Name]
-//	if ok {
-//		paramInfo.Type = result.Type
-//	} else {
-//		paramInfo.Type = dbType.Name
-//	}
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_Ident
-// 指针类型
-//case *ast.StarExpr:
-//	param := s.ParamParse(dbType.X)
-//	paramInfo.Type = "*" + param.Type
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_StarExpr
-//case *ast.FuncType:
-//	paramType := s.parseFuncType(dbType)
-//	paramInfo.Type = paramType
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_FuncType
-//case *ast.InterfaceType:
-//	// 啥也不做
-//	paramInfo.Type = "interface{}"
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_InterfaceType
-//case *ast.ArrayType:
-//	requestType := s.parseParamArrayType(dbType)
-//	paramInfo.Type = requestType
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_ArrayType
-//case *ast.MapType:
-//	requestType := s.parseParamMapType(dbType)
-//	paramInfo.Type = requestType
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_MapType
-//// 可变长度，省略号表达式
-//case *ast.Ellipsis:
-//	// 处理Elt
-//	param := s.ParamParse(dbType.Elt)
-//	paramInfo.Type = "[]" + param.Type
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_Ellipsis
-//case *ast.ChanType:
-//	// 处理value
-//	param := s.ParamParse(dbType.Value)
-//	if dbType.Dir == ast.RECV {
-//		paramInfo.Type = "<-chan " + param.Type
-//	} else {
-//		paramInfo.Type = "chan<- " + param.Type
-//	}
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_ChanType
-//case *ast.IndexExpr:
-//	// 下标类型，一般是泛型
-//	paramInfo.AstType = enum.PARAM_AST_TYPE_IndexExpr
-//	// 先解析主体
-//	param := s.ParamParse(dbType.X)
-//	// 再解析下标结构
-//	indexParam := s.ParamParseValue(dbType.Index)
-//	var index string
-//	if indexParam.Value == "" {
-//		index = indexParam.Type
-//	} else {
-//		index = indexParam.Value
-//	}
-//	paramInfo.Type = param.Type + "[" + index + "]"
-//	case *ast.CallExpr:
-//		// 一般无需处理CallExpr
-//	default:
-//		panic("未知类型...")
-//	}
-//	return &paramInfo
-//}
 
 // ParamParseValue 同时处理几种可能存在值的类型，如BasicLit、FuncLit、CompositeLit、CallExpr
 func (s *SourceInfo) ParamParseValue(expr ast.Expr) *ParamValue {

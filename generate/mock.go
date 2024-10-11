@@ -80,7 +80,7 @@ func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *toke
 		paramInstructList = append(paramInstructList, mockParam)
 	}
 	// 2. 第二场景，如果等式左边是变量，右边是 function， function 的结果必定为一个。这个时候 mock function 为零值，再去 mock变量
-	if xParam.AstType == enum.PARAM_AST_TYPE_Ident {
+	if xParam.AstType == enum.PARAM_AST_TYPE_Ident && yParam.AstType.IsFunction() {
 
 	}
 
