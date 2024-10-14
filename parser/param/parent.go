@@ -5,7 +5,7 @@ import (
 )
 
 type Parent struct {
-	Param
+	BasicParam
 }
 
 func (s *Parent) GetType() enum.ParameterType {

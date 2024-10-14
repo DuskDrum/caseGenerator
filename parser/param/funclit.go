@@ -5,6 +5,7 @@ import (
 )
 
 type FuncLit struct {
+	BasicParam
 }
 
 func (s *FuncLit) GetType() enum.ParameterType {

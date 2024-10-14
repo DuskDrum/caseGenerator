@@ -5,6 +5,7 @@ import (
 )
 
 type Binary struct {
+	BasicParam
 }
 
 func (s *Binary) GetType() enum.ParameterType {

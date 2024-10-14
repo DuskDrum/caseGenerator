@@ -5,6 +5,7 @@ import (
 )
 
 type Call struct {
+	BasicParam
 }
 
 func (s *Call) GetType() enum.ParameterType {

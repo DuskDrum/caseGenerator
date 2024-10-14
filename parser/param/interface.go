@@ -5,6 +5,8 @@ import (
 )
 
 type Interface struct {
+	BasicParam
+	BasicValue
 }
 
 func (s *Interface) GetType() enum.ParameterType {
@@ -16,9 +18,10 @@ func (s *Interface) GetInstance() Parameter {
 }
 
 func (s *Interface) GetZeroValue() Parameter {
-	panic("implement me")
+	s.Value = nil
+	return s
 }
 
 func (s *Interface) GetFormula() string {
-	panic("implement me")
+	return "interface{}"
 }

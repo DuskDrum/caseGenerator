@@ -5,6 +5,7 @@ import (
 )
 
 type KeyValue struct {
+	BasicParam
 }
 
 func (s *KeyValue) GetType() enum.ParameterType {

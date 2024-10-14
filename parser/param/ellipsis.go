@@ -5,6 +5,7 @@ import (
 )
 
 type Ellipsis struct {
+	BasicParam
 }
 
 func (s *Ellipsis) GetType() enum.ParameterType {

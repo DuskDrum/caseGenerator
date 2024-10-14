@@ -5,6 +5,7 @@ import (
 )
 
 type Chan struct {
+	BasicParam
 }
 
 func (s *Chan) GetType() enum.ParameterType {

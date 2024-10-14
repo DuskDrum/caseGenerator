@@ -5,6 +5,8 @@ import (
 )
 
 type Array struct {
+	RecursionParam
+	BasicValue
 }
 
 func (s *Array) GetType() enum.ParameterType {
@@ -16,9 +18,11 @@ func (s *Array) GetInstance() Parameter {
 }
 
 func (s *Array) GetZeroValue() Parameter {
-	panic("implement me")
+	s.Value = nil
+	return s
 }
 
 func (s *Array) GetFormula() string {
-	panic("implement me")
+	childFormula := s.Parameter.GetFormula()
+	return "[]" + childFormula
 }

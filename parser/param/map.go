@@ -5,6 +5,7 @@ import (
 )
 
 type Map struct {
+	BasicParam
 }
 
 func (s *Map) GetType() enum.ParameterType {

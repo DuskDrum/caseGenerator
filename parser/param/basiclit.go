@@ -5,6 +5,8 @@ import (
 )
 
 type BasicLit struct {
+	BasicParam
+	BasicValue
 }
 
 func (s *BasicLit) GetType() enum.ParameterType {

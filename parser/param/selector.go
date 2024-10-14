@@ -4,7 +4,10 @@ import (
 	"caseGenerator/common/enum"
 )
 
+// Selector 选择类型，用来表示 a.b这种特殊类型。其中的 Child 用来表示对应的子类
 type Selector struct {
+	BasicParam
+	Child *Selector `json:"child,omitempty"`
 }
 
 func (s *Selector) GetType() enum.ParameterType {

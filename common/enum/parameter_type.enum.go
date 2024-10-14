@@ -60,7 +60,7 @@ func (at *ParameterType) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	assignmentType, ok := ALL_PARAM_AST_TYPE[name]
+	assignmentType, ok := ALL_PARAMETER_TYPE[name]
 	if ok {
 		at.Name = assignmentType.Name
 		at.Desc = assignmentType.Desc

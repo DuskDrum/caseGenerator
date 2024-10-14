@@ -5,6 +5,7 @@ import (
 )
 
 type Unary struct {
+	BasicParam
 }
 
 func (s *Unary) GetType() enum.ParameterType {

@@ -5,6 +5,7 @@ import (
 )
 
 type CompositeLit struct {
+	BasicParam
 }
 
 func (s *CompositeLit) GetType() enum.ParameterType {
