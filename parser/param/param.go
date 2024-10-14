@@ -13,3 +13,8 @@ type Parameter interface {
 	// GetFormula 获取公式，用于展示
 	GetFormula() string
 }
+
+type Param struct {
+	Type enum.ParameterType
+	Name string
+}
