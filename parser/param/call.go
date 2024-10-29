@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type Call struct {
@@ -22,4 +23,9 @@ func (s *Call) GetZeroValue() Parameter {
 
 func (s *Call) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseCall 解析ast
+func ParseCall(expr *ast.CallExpr, name string) *Call {
+	return nil
 }

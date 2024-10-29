@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type Map struct {
@@ -22,4 +23,9 @@ func (s *Map) GetZeroValue() Parameter {
 
 func (s *Map) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseMap 解析ast
+func ParseMap(expr *ast.MapType, name string) *Map {
+	return nil
 }

@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type Chan struct {
@@ -22,4 +23,9 @@ func (s *Chan) GetZeroValue() Parameter {
 
 func (s *Chan) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseChan 解析ast
+func ParseChan(expr *ast.ChanType, name string) *Chan {
+	return nil
 }

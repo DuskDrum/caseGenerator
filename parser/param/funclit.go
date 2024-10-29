@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type FuncLit struct {
@@ -22,4 +23,9 @@ func (s *FuncLit) GetZeroValue() Parameter {
 
 func (s *FuncLit) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseFuncLit 解析ast
+func ParseFuncLit(expr *ast.FuncLit, name string) *FuncLit {
+	return nil
 }

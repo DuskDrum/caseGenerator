@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 
 	"github.com/samber/lo"
 )
@@ -36,4 +37,9 @@ func (s *Star) GetFormula() string {
 		return "*" + fromPtr.GetFormula()
 	}
 	return ""
+}
+
+// ParseStar 解析ast
+func ParseStar(expr *ast.StarExpr, name string) *Star {
+	return nil
 }

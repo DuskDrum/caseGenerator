@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 
 	"github.com/samber/lo"
 )
@@ -48,4 +49,14 @@ func GetFormulaFromReference(reference IndexReference) string {
 		childFormula := GetFormulaFromReference(lo.FromPtr(reference.Child))
 		return reference.IndexType + "." + childFormula
 	}
+}
+
+// ParseIndex 解析ast
+func ParseIndex(expr *ast.IndexExpr, name string) *Index {
+	return nil
+}
+
+// ParseIndexList 解析ast
+func ParseIndexList(expr *ast.IndexListExpr, name string) *Index {
+	return nil
 }

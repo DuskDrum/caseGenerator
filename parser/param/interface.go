@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type Interface struct {
@@ -24,4 +25,9 @@ func (s *Interface) GetZeroValue() Parameter {
 
 func (s *Interface) GetFormula() string {
 	return "interface{}"
+}
+
+// ParseInterface 解析ast
+func ParseInterface(expr *ast.InterfaceType, name string) *Interface {
+	return nil
 }

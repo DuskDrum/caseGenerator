@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type Parent struct {
@@ -22,4 +23,9 @@ func (s *Parent) GetZeroValue() Parameter {
 
 func (s *Parent) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseParent 解析ast
+func ParseParent(expr *ast.ParenExpr, name string) *Parent {
+	return nil
 }

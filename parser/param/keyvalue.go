@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type KeyValue struct {
@@ -22,4 +23,9 @@ func (s *KeyValue) GetZeroValue() Parameter {
 
 func (s *KeyValue) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseKeyValue 解析ast
+func ParseKeyValue(expr *ast.KeyValueExpr, name string) *KeyValue {
+	return nil
 }

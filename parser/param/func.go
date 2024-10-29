@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 	"strings"
 )
 
@@ -58,4 +59,14 @@ func (s *Func) GetFormula() string {
 		paramType = paramType + ")"
 	}
 	return paramType
+}
+
+// ParseFuncDecl 解析ast
+func ParseFuncDecl(expr *ast.FuncDecl, name string) *Func {
+	return nil
+}
+
+// ParseFuncType 解析ast
+func ParseFuncType(expr *ast.FuncType, name string) *Func {
+	return nil
 }

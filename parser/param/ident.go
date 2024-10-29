@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 // Ident 基本的变量类型，结构简单，只需要 name、type、value
@@ -28,4 +29,9 @@ func (s *Ident) GetZeroValue() Parameter {
 
 func (s *Ident) GetFormula() string {
 	return s.GetName()
+}
+
+// ParseIdent 解析ast
+func ParseIdent(expr *ast.Ident, name string) *Ident {
+	return nil
 }

@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type Ellipsis struct {
@@ -22,4 +23,9 @@ func (s *Ellipsis) GetZeroValue() Parameter {
 
 func (s *Ellipsis) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseEllipsis 解析ast
+func ParseEllipsis(expr *ast.Ellipsis, name string) *Ellipsis {
+	return nil
 }

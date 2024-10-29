@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 // Selector 选择类型，用来表示 a.b这种特殊类型。其中的 Child 用来表示对应的子类
@@ -24,4 +25,9 @@ func (s *Selector) GetZeroValue() Parameter {
 
 func (s *Selector) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseSelector 解析ast
+func ParseSelector(expr *ast.SelectorExpr, name string) *Selector {
+	return nil
 }

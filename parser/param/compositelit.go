@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type CompositeLit struct {
@@ -22,4 +23,9 @@ func (s *CompositeLit) GetZeroValue() Parameter {
 
 func (s *CompositeLit) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseCompositeLit 解析ast
+func ParseCompositeLit(expr *ast.CompositeLit, name string) *CompositeLit {
+	return nil
 }

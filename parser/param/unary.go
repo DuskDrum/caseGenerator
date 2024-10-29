@@ -2,6 +2,7 @@ package param
 
 import (
 	"caseGenerator/common/enum"
+	"go/ast"
 )
 
 type Unary struct {
@@ -22,4 +23,9 @@ func (s *Unary) GetZeroValue() Parameter {
 
 func (s *Unary) GetFormula() string {
 	panic("implement me")
+}
+
+// ParseUnary 解析ast
+func ParseUnary(expr *ast.UnaryExpr, name string) *Unary {
+	return nil
 }
