@@ -25,6 +25,7 @@ var (
 	PARAMETER_TYPE_UNARY        = ParameterType{Name: "Unary", Desc: "一元表达式"}
 	PARAMETER_TYPE_BINARY       = ParameterType{Name: "Binary", Desc: "二元表达式"}
 	PARAMETER_TYPE_PARENT       = ParameterType{Name: "Parent", Desc: "括号表达式"}
+	PARAMETER_TYPE_VALUE_SPEC   = ParameterType{Name: "ValueSpec", Desc: "常量声明"}
 )
 
 var ALL_PARAMETER_TYPE = map[string]ParameterType{

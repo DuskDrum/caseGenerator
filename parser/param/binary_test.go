@@ -36,6 +36,7 @@ func TestBinaryFuncCall(t *testing.T) {
 	src := "5 + 3 + aa()"
 
 	// 使用 parser.ParseExpr 来解析表达式
+	// parser.ParseExpr函数用于解析单个表达式。适合解析像"myVariable + 5"、"3 * 4"或者"funcCall(arg1, arg2)"这样的表达式
 	expr, err := parser.ParseExpr(src)
 	if err != nil {
 		fmt.Println("Error:", err)
