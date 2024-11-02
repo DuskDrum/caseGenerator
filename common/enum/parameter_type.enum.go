@@ -10,7 +10,8 @@ var (
 	PARAMETER_TYPE_SELECTOR     = ParameterType{Name: "Selector", Desc: "选择结构,类似于a.b的结构"}
 	PARAMETER_TYPE_IDENT        = ParameterType{Name: "Ident", Desc: "比如报名,函数名,变量名"}
 	PARAMETER_TYPE_STAR         = ParameterType{Name: "Star", Desc: "指针类型"}
-	PARAMETER_TYPE_FUNC         = ParameterType{Name: "Func", Desc: "函数类型"}
+	PARAMETER_TYPE_FUNC_DECL    = ParameterType{Name: "FuncDecl", Desc: "函数类型"}
+	PARAMETER_TYPE_FUNC_TYPE    = ParameterType{Name: "FuncType", Desc: "函数类型"}
 	PARAMETER_TYPE_INTERFACE    = ParameterType{Name: "Interface", Desc: "接口类型"}
 	PARAMETER_TYPE_ARRAY        = ParameterType{Name: "Array", Desc: "数组类型"}
 	PARAMETER_TYPE_MAP          = ParameterType{Name: "Map", Desc: "Map 类型"}
@@ -26,6 +27,7 @@ var (
 	PARAMETER_TYPE_BINARY       = ParameterType{Name: "Binary", Desc: "二元表达式"}
 	PARAMETER_TYPE_PARENT       = ParameterType{Name: "Parent", Desc: "括号表达式"}
 	PARAMETER_TYPE_VALUE_SPEC   = ParameterType{Name: "ValueSpec", Desc: "常量声明"}
+	PARAMETER_TYPE_FIELD        = ParameterType{Name: "field", Desc: "常量声明"}
 )
 
 var ALL_PARAMETER_TYPE = map[string]ParameterType{

@@ -41,5 +41,11 @@ func (s *Star) GetFormula() string {
 
 // ParseStar 解析ast
 func ParseStar(expr *ast.StarExpr, name string) *Star {
-	return nil
+	return &Star{
+		BasicParam: BasicParam{
+			ParameterType: enum.PARAMETER_TYPE_STAR,
+			Name:          name,
+		},
+		Child: lo.ToPtr(ParseParameter(expr)),
+	}
 }

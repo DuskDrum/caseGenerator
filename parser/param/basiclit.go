@@ -44,6 +44,6 @@ func (s *BasicLit) GetFormula() string {
 }
 
 // ParseBasicLit 解析ast
-func ParseBasicLit(expr *ast.BasicLit, name string) *Array {
+func ParseBasicLit(expr *ast.BasicLit, name string) *BasicLit {
 	return nil
 }
