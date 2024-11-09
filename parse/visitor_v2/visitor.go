@@ -338,7 +338,7 @@ func parseFuncType(dbType *ast.FuncType) string {
 					paramType = paramType + param.ParamType + ", "
 				}
 			} else if v.Type != nil {
-				param := ParseParamWithoutInit(v.Type, "param")
+				param := ParseParamWithoutInit(v.Type, "expr")
 				paramType = paramType + param.ParamType + ", "
 			}
 
@@ -378,7 +378,7 @@ func ParseFuncTypeParamParseResult(dbType *ast.FuncType) ([]bo.ParamParseResult,
 					results = append(results, *param)
 				}
 			} else if v.Type != nil {
-				param := ParseParamWithoutInit(v.Type, "param")
+				param := ParseParamWithoutInit(v.Type, "expr")
 				results = append(results, *param)
 			}
 		}

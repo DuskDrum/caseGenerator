@@ -19,7 +19,7 @@ func ParseRequest(n ast.Node) {
 			// "_" 这种不处理了
 			var db generate.CaseRequest
 			if requestParam.Names == nil && requestParam.Type != nil {
-				db.RequestName = "param" + strconv.Itoa(i)
+				db.RequestName = "expr" + strconv.Itoa(i)
 				// todo typeParam
 				result := ParamParse(requestParam.Type, db.RequestName)
 				if result == nil {
@@ -35,7 +35,7 @@ func ParseRequest(n ast.Node) {
 			names := requestParam.Names
 			for j, name := range names {
 				if name.Name == "_" {
-					db.RequestName = "param" + strconv.Itoa(i) + strconv.Itoa(j)
+					db.RequestName = "expr" + strconv.Itoa(i) + strconv.Itoa(j)
 				} else {
 					db.RequestName = name.Name
 				}

@@ -10,10 +10,13 @@ var (
 	PARAMETER_TYPE_SELECTOR     = ParameterType{Name: "Selector", Desc: "选择结构,类似于a.b的结构"}
 	PARAMETER_TYPE_IDENT        = ParameterType{Name: "Ident", Desc: "比如报名,函数名,变量名"}
 	PARAMETER_TYPE_STAR         = ParameterType{Name: "Star", Desc: "指针类型"}
+	PARAMETER_TYPE_STRUCT       = ParameterType{Name: "Struct", Desc: "结构体类型"}
 	PARAMETER_TYPE_FUNC_DECL    = ParameterType{Name: "FuncDecl", Desc: "函数类型"}
 	PARAMETER_TYPE_FUNC_TYPE    = ParameterType{Name: "FuncType", Desc: "函数类型"}
 	PARAMETER_TYPE_INTERFACE    = ParameterType{Name: "Interface", Desc: "接口类型"}
 	PARAMETER_TYPE_ARRAY        = ParameterType{Name: "Array", Desc: "数组类型"}
+	PARAMETER_TYPE_SLICE        = ParameterType{Name: "Slice", Desc: "切片类型"}
+	PARAMETER_TYPE_TYPE_ASSERT  = ParameterType{Name: "TypeAssert", Desc: "类型断言类型"}
 	PARAMETER_TYPE_MAP          = ParameterType{Name: "Map", Desc: "Map 类型"}
 	PARAMETER_TYPE_ELLIPSIS     = ParameterType{Name: "Ellipsis", Desc: "省略号表达式,比如参数列表的最后一个可以写成arg..."}
 	PARAMETER_TYPE_CHAN         = ParameterType{Name: "Chan", Desc: "管道类型"}
@@ -32,9 +35,11 @@ var (
 
 var ALL_PARAMETER_TYPE = map[string]ParameterType{
 	PARAMETER_TYPE_SELECTOR.Name:     PARAMETER_TYPE_SELECTOR,
+	PARAMETER_TYPE_TYPE_ASSERT.Name:  PARAMETER_TYPE_TYPE_ASSERT,
 	PARAMETER_TYPE_IDENT.Name:        PARAMETER_TYPE_IDENT,
 	PARAMETER_TYPE_STAR.Name:         PARAMETER_TYPE_STAR,
-	PARAMETER_TYPE_FUNC.Name:         PARAMETER_TYPE_FUNC,
+	PARAMETER_TYPE_FUNC_DECL.Name:    PARAMETER_TYPE_FUNC_DECL,
+	PARAMETER_TYPE_FUNC_TYPE.Name:    PARAMETER_TYPE_FUNC_TYPE,
 	PARAMETER_TYPE_INTERFACE.Name:    PARAMETER_TYPE_INTERFACE,
 	PARAMETER_TYPE_ARRAY.Name:        PARAMETER_TYPE_ARRAY,
 	PARAMETER_TYPE_MAP.Name:          PARAMETER_TYPE_MAP,
