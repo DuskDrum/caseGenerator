@@ -3,6 +3,7 @@ package expr
 import (
 	"caseGenerator/common/enum"
 	"go/ast"
+	"strings"
 
 	"github.com/samber/lo"
 )
@@ -33,6 +34,7 @@ func (s *Selector) GetFormula() string {
 			current = lo.FromPtr(current.Child)
 		}
 	}
+	formula, _ = strings.CutSuffix(formula, ".")
 	return formula
 }
 
@@ -53,8 +55,11 @@ func GetRelationFromSelectorExpr(se *ast.SelectorExpr) *SelectorParam {
 		return sp
 	}
 	if sse, ok := se.X.(*ast.SelectorExpr); ok {
-		sp.Child = GetRelationFromSelectorExpr(sse)
-		sp.Ident = ParseIdent(sse.Sel)
+		var childSp = &SelectorParam{}
+		childSp.Child = GetRelationFromSelectorExpr(sse)
+		childSp.Ident = ParseIdent(sse.Sel)
+		sp.Child = childSp
+		sp.Ident = ParseIdent(se.Sel)
 		return sp
 	}
 	return sp

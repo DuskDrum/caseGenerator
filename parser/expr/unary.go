@@ -29,3 +29,15 @@ func ParseUnary(expr *ast.UnaryExpr) *Unary {
 	u.Content = ParseParameter(expr.X)
 	return u
 }
+
+// MockUnary UnaryParam
+//func MockUnary(param *Unary) []Mock {
+//	//mockList := make([]Mock, 0, 10)
+//	// 如果类型是||逻辑或，剪枝只处理X
+//	if param.Op == token.NOT {
+//		return MockExpr(param.Content)
+//		// 如果类型是&&逻辑与，处理X和Y
+//	}
+//
+//	return nil
+//}

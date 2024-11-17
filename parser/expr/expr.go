@@ -76,7 +76,3 @@ func ParseRecursionValue(expr ast.Expr) *_struct.RecursionParam {
 	}
 	return ap
 }
-
-func Mock(mockType string) any {
-	return nil
-}
