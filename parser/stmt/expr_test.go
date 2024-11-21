@@ -12,8 +12,9 @@ func TestExprCase(t *testing.T) {
 	sourceCode := `
     package main
     func main() {
-        a := 10
-        fmt.Println(a)
+        x = 5
+		x ++ 
+        fmt.Println(x)
     }
     `
 	fset := token.NewFileSet()
@@ -28,9 +29,9 @@ func TestExprCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.ExprStmt); ok {
 			fmt.Println("找到 ExprStmt")
-
+			expr := ParseExpr(stmt)
 			// 被断言的对象
-			fmt.Printf("接口对象: %v\n", stmt)
+			fmt.Printf("接口对象: %v\n", expr)
 		}
 		return true
 	})

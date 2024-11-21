@@ -13,9 +13,13 @@ type Defer struct {
 	Call expr.Call
 }
 
+func (d *Defer) Express() []StatementExpression {
+	return nil
+}
+
 // ParseDefer 解析ast
-func ParseDefer(stmt *ast.DeferStmt) Defer {
-	d := Defer{}
+func ParseDefer(stmt *ast.DeferStmt) *Defer {
+	d := &Defer{}
 	call := expr.ParseCall(stmt.Call)
 	if call != nil {
 		d.Call = lo.FromPtr(call)

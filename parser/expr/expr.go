@@ -8,6 +8,9 @@ import (
 // ParseParameter 同时处理几种可能存在值的类型，如BasicLit、FuncLit、CompositeLit、CallExpr
 // 得放在这个包中，不然会导致循环依赖
 func ParseParameter(expr ast.Expr) _struct.Parameter {
+	if expr == nil {
+		return nil
+	}
 	switch exprType := expr.(type) {
 	case *ast.SelectorExpr:
 		return ParseSelector(exprType)
@@ -55,6 +58,8 @@ func ParseParameter(expr ast.Expr) _struct.Parameter {
 		return ParseStruct(exprType)
 	case *ast.SliceExpr:
 		return ParseSlice(exprType)
+	case *ast.TypeAssertExpr:
+		return ParseTypeAssert(exprType)
 	//case *ast.FuncDecl:
 	//	return ParseFuncDecl(exprType)
 	default:

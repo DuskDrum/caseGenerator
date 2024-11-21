@@ -16,7 +16,7 @@ import (
 type Field struct {
 	FiledNames []Ident
 	Type       _struct.Parameter
-	Tag        BasicLit
+	Tag        *BasicLit
 }
 
 func (s *Field) GetType() enum.ParameterType {
@@ -53,10 +53,12 @@ func ParseField(expr *ast.Field) *Field {
 		FiledNames: identList,
 		Type:       ParseParameter(expr.Type),
 	}
-	tag := ParseBasicLit(expr.Tag)
+	if expr.Tag != nil {
+		tag := ParseBasicLit(expr.Tag)
 
-	if tag != nil {
-		filed.Tag = lo.FromPtr(tag)
+		if tag != nil {
+			filed.Tag = tag
+		}
 	}
 
 	return filed

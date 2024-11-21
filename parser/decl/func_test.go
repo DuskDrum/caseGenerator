@@ -13,6 +13,9 @@ func TestArrayCase(t *testing.T) {
 	src := `
 	package main
 	func add(x, y int) int { 
+		x = x +2
+        y -= 1
+		y--
 		return x + y 
 	}
 `
@@ -29,14 +32,10 @@ func TestArrayCase(t *testing.T) {
 
 	// 遍历 AST，查找数组类型
 	ast.Inspect(file, func(n ast.Node) bool {
-		// 判断节点是否为 *ast.ArrayType
-		if arrayType, ok := n.(*ast.ArrayType); ok {
-			if arrayType.Len != nil {
-				fmt.Printf("Array with length: %v\n", arrayType.Len)
-			} else {
-				fmt.Println("Slice type detected")
-			}
-			fmt.Printf("Element type: %v\n", arrayType.Elt)
+		// 判断节点是否为 *ast.FuncDecl
+		if funcDecl, ok := n.(*ast.FuncDecl); ok {
+			funcDetail := ParseFunc(funcDecl)
+			fmt.Printf("funcDecl type: %v\n", funcDetail)
 		}
 		return true
 	})

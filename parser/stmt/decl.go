@@ -13,8 +13,14 @@ type Decl struct {
 	expr.ValueSpec
 }
 
-func ParseDecl(stmt *ast.DeclStmt) Decl {
-	decl := Decl{}
+func (d *Decl) Express() []StatementExpression {
+	//TODO 待补充
+
+	return nil
+}
+
+func ParseDecl(stmt *ast.DeclStmt) *Decl {
+	decl := &Decl{}
 	switch declType := stmt.Decl.(type) {
 	case *ast.GenDecl:
 		for _, s := range declType.Specs {

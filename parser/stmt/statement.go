@@ -1,55 +1,92 @@
 package stmt
 
 import (
+	"caseGenerator/common/enum"
+	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 )
 
+// Stmt 参数接口类型，将参数需要的方法定义出来
+type Stmt interface {
+	// Express 生成表达式.
+	Express() []StatementExpression
+}
+
+// Condition 条件类型: if、switch、typeSwitch
+type Condition interface {
+	CalculateCondition([]StatementExpression) []ConditionResult
+}
+
+type ConditionResult struct {
+	IdentMap    map[string]IdentConditionResult
+	CallMap     map[string]CallConditionResult
+	SelectorMap map[string]SelectorConditionResult
+}
+
+type IdentConditionResult struct {
+}
+type CallConditionResult struct {
+}
+type SelectorConditionResult struct {
+}
+
+// StatementExpression stmt的表达式，记录了参数的变动, 参数也可以直接重新赋值
+type StatementExpression struct {
+	Name      string
+	InitParam *_struct.Parameter
+	Type      enum.StmtType
+	// 参数变动列表
+	expr.Expression
+}
+
 // ParseStmt 完整的执行单元
-func ParseStmt(expr ast.Stmt) _struct.Stmt {
+func ParseStmt(expr ast.Stmt) Stmt {
+	if expr == nil {
+		return nil
+	}
 	switch stmtType := expr.(type) {
 	case *ast.DeclStmt:
-		ParseDecl(stmtType)
+		return ParseDecl(stmtType)
 	case *ast.EmptyStmt:
-		ParseEmpty(stmtType)
+		return ParseEmpty(stmtType)
 	case *ast.LabeledStmt:
-		ParseLabeled(stmtType)
+		return ParseLabeled(stmtType)
 	case *ast.ExprStmt:
-		ParseExpr(stmtType)
+		return ParseExpr(stmtType)
 	case *ast.SendStmt:
-		ParseSend(stmtType)
+		return ParseSend(stmtType)
 	case *ast.IncDecStmt:
-		ParseIncDec(stmtType)
+		return ParseIncDec(stmtType)
 	case *ast.AssignStmt:
-		ParseAssign(stmtType)
+		return ParseAssign(stmtType)
 	case *ast.GoStmt:
-		ParseGo(stmtType)
+		return ParseGo(stmtType)
 	case *ast.DeferStmt:
-		ParseDefer(stmtType)
+		return ParseDefer(stmtType)
 	case *ast.ReturnStmt:
-		ParseReturn(stmtType)
+		return ParseReturn(stmtType)
 	case *ast.BranchStmt:
-		ParseBranch(stmtType)
+		return ParseBranch(stmtType)
 	case *ast.BlockStmt:
-		ParseBlock(stmtType)
+		return ParseBlock(stmtType)
 	case *ast.IfStmt:
-		ParseIf(stmtType)
+		return ParseIf(stmtType)
 	case *ast.CaseClause:
-		ParseCaseClause(stmtType)
+		return ParseCaseClause(stmtType)
 	case *ast.SwitchStmt:
-		ParseSwitch(stmtType)
+		return ParseSwitch(stmtType)
 	case *ast.TypeSwitchStmt:
-		ParseTypeSwitch(stmtType)
+		return ParseTypeSwitch(stmtType)
 	case *ast.CommClause:
-		ParseCommClause(stmtType)
+		return ParseCommClause(stmtType)
 	case *ast.SelectStmt:
-		ParseSelect(stmtType)
+		return ParseSelect(stmtType)
 	case *ast.ForStmt:
-		ParseFor(stmtType)
+		return ParseFor(stmtType)
 	case *ast.RangeStmt:
-		ParseRange(stmtType)
+		return ParseRange(stmtType)
 	default:
 		panic("未知类型...")
 	}
-	return nil
 }

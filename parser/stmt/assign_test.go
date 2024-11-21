@@ -13,8 +13,11 @@ func TestAssignCase(t *testing.T) {
     package main
     func main() {
         x, y := 1, 2
-        z := 3
+        z.b = 3
+		i := j
         x = y + z
+		x += 1
+		x -=10
     }
     `
 	fset := token.NewFileSet()
@@ -29,9 +32,9 @@ func TestAssignCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.AssignStmt); ok {
 			fmt.Println("找到 AssignStmt")
-
+			assign := ParseAssign(stmt)
 			// 被断言的对象
-			fmt.Printf("接口对象: %v\n", stmt)
+			fmt.Printf("接口对象: %v\n", assign)
 		}
 		return true
 	})

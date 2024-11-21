@@ -12,15 +12,18 @@ func TestSwitchCase(t *testing.T) {
 	sourceCode := `
        package main
     func main() {
-        num := 2
-        switch num {
-        case 1:
-            fmt.Println("The number is 1")
-        case 2:
-            fmt.Println("The number is 2")
-        default:
-            fmt.Println("The number is something else")
-        }
+        x := 2
+    // 使用初始化表达式
+    switch y := x * 2; y {
+    case 2:
+        fmt.Println("y is 2")
+    case 4:
+        fmt.Println("y is 4")
+    case 6:
+        fmt.Println("y is 6")
+    default:
+        fmt.Println("y is some other value")
+    }
     }
     `
 	fset := token.NewFileSet()
@@ -35,9 +38,9 @@ func TestSwitchCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.SwitchStmt); ok {
 			fmt.Println("找到 SwitchStmt")
-
+			parseSwitch := ParseSwitch(stmt)
 			// 被断言的对象
-			fmt.Printf("接口对象: %v\n", stmt)
+			fmt.Printf("接口对象: %v\n", parseSwitch)
 		}
 		return true
 	})

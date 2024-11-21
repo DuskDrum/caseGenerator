@@ -15,9 +15,13 @@ type Send struct {
 	Arrow token.Pos         // 通道的方向 token.Arrow
 }
 
+func (s *Send) Express() []StatementExpression {
+	return nil
+}
+
 // ParseSend 解析ast
-func ParseSend(stmt *ast.SendStmt) Send {
-	send := Send{}
+func ParseSend(stmt *ast.SendStmt) *Send {
+	send := &Send{}
 	if stmt.Chan != nil {
 		cp := expr.ParseParameter(stmt.Chan)
 		if cp != nil {

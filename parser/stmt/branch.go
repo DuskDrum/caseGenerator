@@ -15,9 +15,13 @@ type Branch struct {
 	Token token.Token // 标签的类型，是 token.BREAK、token.CONTINUE、token.GOTO等
 }
 
+func (b *Branch) Express() []StatementExpression {
+	return nil
+}
+
 // ParseBranch 解析ast
-func ParseBranch(stmt *ast.BranchStmt) Branch {
-	branch := Branch{}
+func ParseBranch(stmt *ast.BranchStmt) *Branch {
+	branch := &Branch{}
 	if stmt.Label != nil {
 		label := expr.ParseIdent(stmt.Label)
 		if label != nil {

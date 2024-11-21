@@ -12,9 +12,13 @@ type Return struct {
 	ReturnList []_struct.Parameter
 }
 
+func (r *Return) Express() []StatementExpression {
+	return nil
+}
+
 // ParseReturn 解析ast
-func ParseReturn(stmt *ast.ReturnStmt) Return {
-	r := Return{}
+func ParseReturn(stmt *ast.ReturnStmt) *Return {
+	r := &Return{}
 	resultList := make([]_struct.Parameter, 0, 10)
 	for _, v := range stmt.Results {
 		result := expr.ParseParameter(v)

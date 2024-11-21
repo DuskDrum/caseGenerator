@@ -35,9 +35,10 @@ func TestCaseClauseCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.CaseClause); ok {
 			fmt.Println("找到 CaseClause")
+			clause := ParseCaseClause(stmt)
 
 			// 被断言的对象
-			fmt.Printf("接口对象: %v\n", stmt)
+			fmt.Printf("接口对象: %v\n", clause)
 		}
 		return true
 	})

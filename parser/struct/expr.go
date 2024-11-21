@@ -25,6 +25,11 @@ type ValueAble interface {
 	GetZeroValue() Parameter
 }
 
+type ZeroAble interface {
+	// GetZeroValueFormula 返回对应的零值公式
+	GetZeroValueFormula() string
+}
+
 // BasicValue 具体的值
 type BasicValue struct {
 	ValueAble

@@ -14,12 +14,16 @@ type Range struct {
 	Value   _struct.Parameter // 有可能为空，为_
 	Token   token.Token       // token.ASSIGN, token.DEFINE
 	Content _struct.Parameter // range后跟着的部分，比如说range []int{}。 这个就代表了[]int{}
-	Body    Block
+	Body    *Block
+}
+
+func (r *Range) Express() []StatementExpression {
+	return nil
 }
 
 // ParseRange 解析ast
-func ParseRange(stmt *ast.RangeStmt) Range {
-	r := Range{}
+func ParseRange(stmt *ast.RangeStmt) *Range {
+	r := &Range{}
 	if stmt.Key != nil {
 		r.Key = expr.ParseParameter(stmt.Key)
 	}

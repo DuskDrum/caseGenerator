@@ -12,12 +12,13 @@ func TestIfCase(t *testing.T) {
 	sourceCode := `
     package main
     func main() {
-        a := 5
-        if a > 3 {
-            fmt.Println("a is greater than 3")
-        } else {
-            fmt.Println("a is less than or equal to 3")
-        }
+        if a := 5; a > 3 {
+			fmt.Println("a is greater than 3")
+		} else if a < 0 {
+			fmt.Println("a is less than or equal to 0")
+		} else {
+			fmt.Println("a is other probably")
+		}
     }
     `
 	fset := token.NewFileSet()
@@ -32,9 +33,9 @@ func TestIfCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.IfStmt); ok {
 			fmt.Println("找到 IfStmt")
-
+			parseIf := ParseIf(stmt)
 			// 被断言的对象
-			fmt.Printf("接口对象: %v\n", stmt)
+			fmt.Printf("接口对象: %v\n", parseIf)
 		}
 		return true
 	})

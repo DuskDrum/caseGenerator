@@ -34,16 +34,9 @@ func main() {
 		// 查找 *ast.TypeAssertExpr 节点
 		if typeAssert, ok := n.(*ast.TypeAssertExpr); ok {
 			fmt.Println("找到类型断言表达式:")
-
+			assert := ParseTypeAssert(typeAssert)
 			// 被断言的对象
-			fmt.Printf("接口对象: %v\n", typeAssert.X)
-
-			// 断言的类型
-			if typeAssert.Type != nil {
-				fmt.Printf("断言的类型: %v\n", typeAssert.Type)
-			} else {
-				fmt.Println("断言的类型: 无（switch 中的 .(type) 用法）")
-			}
+			fmt.Printf("接口对象: %v\n", assert)
 		}
 		return true
 	})

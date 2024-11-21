@@ -13,9 +13,13 @@ type Go struct {
 	Call expr.Call
 }
 
+func (g *Go) Express() []StatementExpression {
+	return nil
+}
+
 // ParseGo 解析ast
-func ParseGo(stmt *ast.GoStmt) Go {
-	g := Go{}
+func ParseGo(stmt *ast.GoStmt) *Go {
+	g := &Go{}
 
 	call := expr.ParseCall(stmt.Call)
 	if call != nil {

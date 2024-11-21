@@ -3,6 +3,7 @@ package expr
 import (
 	"caseGenerator/common/enum"
 	_struct "caseGenerator/parser/struct"
+	"fmt"
 	"go/token"
 	"strings"
 
@@ -47,9 +48,9 @@ func ParseExpressionParam(param _struct.Parameter) []*Expression {
 		}
 		return []*Expression{expression}
 	case *Selector:
-		elementList := []string{param.GetFormula()}
 		key := strings.ReplaceAll(param.GetFormula(), ".", "_")
 		selectorMap := map[string]*Selector{"astSelector_" + key: exprType}
+		elementList := []string{"astSelector_" + key}
 
 		expression := &Expression{
 			ElementList: elementList,
@@ -58,12 +59,14 @@ func ParseExpressionParam(param _struct.Parameter) []*Expression {
 		}
 		return []*Expression{expression}
 	case *Call:
-		elementList := []string{param.GetFormula()}
 		key := strings.ReplaceAll(param.GetFormula(), ".", "_")
 		key = strings.ReplaceAll(key, "(", "_")
 		key = strings.ReplaceAll(key, ")", "")
+		key = strings.ReplaceAll(key, " ", "")
 
 		callMap := map[string]*Call{"astCall_" + key: exprType}
+
+		elementList := []string{"astCall_" + key}
 
 		expression := &Expression{
 			ElementList: elementList,
@@ -305,18 +308,71 @@ func (c *CallMockResult) GetMockValue() any {
 //     如果是 nil， 可能是==或者!=。 nil是属于 Ident 里的
 //
 // 2. 如果两边都没有靶子，那么将其中一边设置为零值，再继续用第一步的流程(ident 不知道变量类型，所以没办法处理)
-func MockExpression(expression *Expression) MockResult {
+func MockExpression(expression *Expression) []MockResult {
 	// 1. 如果有 basicLit，那么按照 govalue进行解析试算得到最终结果
 	if len(expression.BasicList) > 0 {
 		return MockBasicExpression(expression)
 	}
 	// 2. 如果有nil，那么将其他属性都变成 nil
+	resultList := make([]MockResult, 0, 10)
 	if len(expression.IdentMap) > 0 {
+		var nilTag bool
 		for _, v := range expression.IdentMap {
 			if strings.EqualFold(v.IdentName, "nil") {
-
+				nilTag = true
 			}
 		}
+		if nilTag {
+			for _, v := range expression.IdentMap {
+				if v.IdentName == "nil" {
+					continue
+				}
+				if lo.Contains(expression.ElementList, "!=") {
+					result := &IdentMockResult{
+						Ident:     *v,
+						MockValue: "ZERO",
+					}
+					resultList = append(resultList, result)
+				} else {
+					result := &IdentMockResult{
+						Ident:     *v,
+						MockValue: nil,
+					}
+					resultList = append(resultList, result)
+				}
+			}
+			for _, v := range expression.CallMap {
+				if lo.Contains(expression.ElementList, "!=") {
+					result := &CallMockResult{
+						Call:      *v,
+						MockValue: "ZERO",
+					}
+					resultList = append(resultList, result)
+				} else {
+					result := &CallMockResult{
+						Call:      *v,
+						MockValue: nil,
+					}
+					resultList = append(resultList, result)
+				}
+			}
+			for _, v := range expression.SelectorMap {
+				if lo.Contains(expression.ElementList, "!=") {
+					result := &SelectorMockResult{
+						Selector:  *v,
+						MockValue: "ZERO",
+					}
+					resultList = append(resultList, result)
+				} else {
+					result := &SelectorMockResult{
+						Selector:  *v,
+						MockValue: nil,
+					}
+					resultList = append(resultList, result)
+				}
+			}
+		}
+		return resultList
 	}
 	// 3. 如果没有 basic 也没有 nil，那么先不处理
 
@@ -324,7 +380,7 @@ func MockExpression(expression *Expression) MockResult {
 }
 
 // MockBasicExpression mock 有 basic 的表达式
-func MockBasicExpression(expression *Expression) MockResult {
+func MockBasicExpression(expression *Expression) []MockResult {
 	// todo 这种多个basicLit 的类型一般是一样的，不一样就告警出去
 	var specificType *enum.SpecificType
 	basicValueList := make([]any, 0, 10)
@@ -348,7 +404,7 @@ func MockBasicExpression(expression *Expression) MockResult {
 }
 
 // MockBasicIntExpression mock int basic 的表达式
-func MockBasicIntExpression(expression *Expression, basicValueList []any) MockResult {
+func MockBasicIntExpression(expression *Expression, basicValueList []any) []MockResult {
 	// 如果类型是 int
 	var inList []int
 	for _, v := range basicValueList {
@@ -360,23 +416,63 @@ func MockBasicIntExpression(expression *Expression, basicValueList []any) MockRe
 			panic("element is not an int")
 		}
 	}
+	// todo 取列表里的最大最小值，判断怎么快速得到取值范围
 	minValue := lo.Min(inList)
 	maxValue := lo.Max(inList)
+	if minValue == maxValue {
+		minValue = minValue - 100
+		maxValue = maxValue + 100
+	}
 
-	params := []string{"a", "b", "c"} // 参数名称
+	params := make([]string, 0, len(expression.IdentMap))
+	resultList := make([]MockResult, 0, 10)
+
+	// 参数名称, 取 ident
+	for key := range expression.IdentMap {
+		params = append(params, key)
+	}
+	// 参数名称，取call
+	for key := range expression.CallMap {
+		params = append(params, key)
+	}
+	// 参数名称，取SelectorMap
+	for key := range expression.SelectorMap {
+		params = append(params, key)
+	}
 
 	current := make([]int, len(params))
-
 	result := ComposeInt(params, current, 0, minValue, maxValue, expression.Expr)
 	if result != nil {
 		// 参数一一对应的值
+		for i, param := range params {
+			if ident, ok := expression.IdentMap[param]; ok {
+				imr := &IdentMockResult{
+					Ident:     *ident,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, imr)
+			}
+			if call, ok := expression.CallMap[param]; ok {
+				cmr := &CallMockResult{
+					Call:      *call,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, cmr)
+			}
+			if selector, ok := expression.SelectorMap[param]; ok {
+				smr := &SelectorMockResult{
+					Selector:  *selector,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, smr)
+			}
+		}
 	}
-
-	return nil
+	return resultList
 }
 
 // MockBasicFloatExpression mock float basic 的表达式
-func MockBasicFloatExpression(expression *Expression, basicValueList []any) MockResult {
+func MockBasicFloatExpression(expression *Expression, basicValueList []any) []MockResult {
 	// 如果类型是 float
 	var inList []float64
 	for _, v := range basicValueList {
@@ -390,23 +486,62 @@ func MockBasicFloatExpression(expression *Expression, basicValueList []any) Mock
 			panic("element is not an float")
 		}
 	}
+	// todo 取列表里的最大最小值，判断怎么快速得到取值范围
 	minValue := lo.Min(inList)
 	maxValue := lo.Max(inList)
-
-	params := []string{"a", "b", "c"} // 参数名称
+	if minValue == maxValue {
+		minValue = minValue - 100
+		maxValue = maxValue + 100
+	}
+	// 参数名称
+	params := make([]string, 0, len(expression.IdentMap))
+	resultList := make([]MockResult, 0, 10)
+	// 参数名称, 取 ident
+	for key := range expression.IdentMap {
+		params = append(params, key)
+	}
+	// 参数名称，取call
+	for key := range expression.CallMap {
+		params = append(params, key)
+	}
+	// 参数名称，取SelectorMap
+	for key := range expression.SelectorMap {
+		params = append(params, key)
+	}
 
 	current := make([]float64, len(params))
-
 	result := ComposeFloat(params, current, 0, minValue, maxValue, expression.Expr)
 	if result != nil {
 		// 参数一一对应的值
+		for i, param := range params {
+			if ident, ok := expression.IdentMap[param]; ok {
+				imr := &IdentMockResult{
+					Ident:     *ident,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, imr)
+			}
+			if call, ok := expression.CallMap[param]; ok {
+				cmr := &CallMockResult{
+					Call:      *call,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, cmr)
+			}
+			if selector, ok := expression.SelectorMap[param]; ok {
+				smr := &SelectorMockResult{
+					Selector:  *selector,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, smr)
+			}
+		}
 	}
-
-	return nil
+	return resultList
 }
 
 // MockBasicStringExpression mock string basic 的表达式
-func MockBasicStringExpression(expression *Expression, basicValueList []any) MockResult {
+func MockBasicStringExpression(expression *Expression, basicValueList []any) []MockResult {
 	// 如果类型是 string
 	var strList []string
 	strList = append(strList, "")
@@ -420,15 +555,52 @@ func MockBasicStringExpression(expression *Expression, basicValueList []any) Moc
 			panic("element is not an string")
 		}
 	}
-	params := []string{"a", "b", "c"} // 参数名称
+
+	// 参数名称
+	params := make([]string, 0, len(expression.IdentMap))
+	resultList := make([]MockResult, 0, 10)
+
+	for key := range expression.IdentMap {
+		params = append(params, key)
+	}
+	// 参数名称，取call
+	for key := range expression.CallMap {
+		params = append(params, key)
+	}
+	// 参数名称，取SelectorMap
+	for key := range expression.SelectorMap {
+		params = append(params, key)
+	}
 
 	current := make([]string, len(params))
-
 	result := ComposeString(params, strList, current, 0, expression.Expr)
 	if result != nil {
 		// 参数一一对应的值
+		for i, param := range params {
+			if ident, ok := expression.IdentMap[param]; ok {
+				imr := &IdentMockResult{
+					Ident:     *ident,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, imr)
+			}
+			if call, ok := expression.CallMap[param]; ok {
+				cmr := &CallMockResult{
+					Call:      *call,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, cmr)
+			}
+			if selector, ok := expression.SelectorMap[param]; ok {
+				smr := &SelectorMockResult{
+					Selector:  *selector,
+					MockValue: result[i],
+				}
+				resultList = append(resultList, smr)
+			}
+		}
 	}
-	return nil
+	return resultList
 }
 
 // ComposeInt 组合int
@@ -552,4 +724,34 @@ func ComposeString(params []string, values []string, current []string, index int
 		}
 	}
 	return nil
+}
+
+// MockByResult 根据 mockResult来组装 mock，比如说 IdentMockResult，那么要去找到对应的 ident 是怎么来的，是怎么被赋值的，对应的去做mock
+// 变量可以进行 mock， 指定方法的请求参数
+// 不变量不能 mock，这个不变量需要想办法解析出来
+// 方法调用需要mock，mock 时要考虑私有方法
+// selector 一般都是变量，可以想办法用 json 去组装和类型转化
+func MockByResult(mockResultList []MockResult) {
+	for _, v := range mockResultList {
+		switch x := v.(type) {
+		case *IdentMockResult:
+			// 1. 根据 ident 的 name 找到他对应的类型：是变量还是不变量，是从方法入参进来，还是调用其他方法得到
+			fmt.Print(x)
+			// 2. 如果是赋值而来，就去找其对应的关系
+
+			// 3. 如果是方法调用得到，那么就去mock 那个方法
+
+		case *CallMockResult:
+			// 1. 根据 call 的 信息去mock：直接mock公共方法，或者 go:linkname去mock私有方法
+		case *SelectorMockResult:
+			// 1. 根据 selector 的 name 找到他对应的类型：是变量还是不变量，是从方法入参进来，还是调用其他方法得到
+
+			// 2. 根据要selector的结构得到要 mock 的值
+
+			// 3. 如果是赋值而来，就去找其对应的关系
+
+			// 4. 如果是方法调用得到，那么就去mock 那个方法
+		}
+
+	}
 }

@@ -114,6 +114,12 @@ func TestBinaryCondition(t *testing.T) {
 			// 解析出所有要对比的列表
 			expressionList := ParseExpression(param)
 			fmt.Printf("expression: %v\n", expressionList)
+			for _, v := range expressionList {
+				mockList := MockExpression(v)
+				if len(mockList) > 0 {
+					fmt.Printf("mock结果列表: %v\n", mockList)
+				}
+			}
 		}
 		return true
 	})
