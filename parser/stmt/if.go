@@ -2,7 +2,9 @@ package stmt
 
 import (
 	"caseGenerator/parser/expr"
+	"caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
+	"fmt"
 	"go/ast"
 )
 
@@ -23,10 +25,16 @@ func (i *If) Express() []StatementExpression {
 	return nil
 }
 
-func (i *If) CalculateCondition([]StatementExpression) []ConditionResult {
+func (i *If) CalculateCondition(seList []StatementExpression) []ConditionResult {
 	// 1. 先拿到 Condition的表达式
-	_ = expr.ParseExpression(i.Condition)
-	// 2. 找表达式中的变量
+	conditionExpressionList := expression.Express(i.Condition)
+	// 2. 找表达式中的变量,去遍历找表达式中的变化记录
+	for _, v := range conditionExpressionList {
+		mockList := expression.MockExpression(v, seList)
+		if len(mockList) > 0 {
+			fmt.Printf("mock结果列表: %v\n", mockList)
+		}
+	}
 
 	return nil
 }

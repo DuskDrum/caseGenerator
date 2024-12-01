@@ -21,19 +21,5 @@ type RecursionParam struct {
 // ValueAble 可以直接取值的类型
 type ValueAble interface {
 	GetValue() any
-	// GetZeroValue 返回对应的零值
-	GetZeroValue() Parameter
-}
-
-type ZeroAble interface {
-	// GetZeroValueFormula 返回对应的零值公式
-	GetZeroValueFormula() string
-}
-
-// BasicValue 具体的值
-type BasicValue struct {
-	ValueAble
-	// 这是具体的值
-	Value        any
-	SpecificType enum.SpecificType
+	SetValue(value any)
 }

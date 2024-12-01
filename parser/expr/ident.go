@@ -11,12 +11,12 @@ type Ident struct {
 	IdentName string
 }
 
-func (s *Ident) GetType() enum.ParameterType {
+func (i *Ident) GetType() enum.ParameterType {
 	return enum.PARAMETER_TYPE_IDENT
 }
 
-func (s *Ident) GetFormula() string {
-	return s.IdentName
+func (i *Ident) GetFormula() string {
+	return i.IdentName
 }
 
 // ParseIdent 解析ast

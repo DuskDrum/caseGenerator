@@ -2,44 +2,30 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
-	"caseGenerator/parser/struct"
 	"fmt"
 	"go/ast"
 	"go/token"
 	"strconv"
-
-	"github.com/samber/lo"
 )
 
 // BasicLit 基本字面量（literal），表示源代码中的基本类型常量
 // 比如数字、字符串和布尔值
 type BasicLit struct {
-	_struct.BasicValue
-	Kind token.Token
-}
-
-func (s *BasicLit) GetType() enum.ParameterType {
-	return enum.PARAMETER_TYPE_BASICLIT
-}
-
-func (s *BasicLit) GetZeroValue() _struct.Parameter {
-	switch s.Kind {
-	case token.INT:
-		s.Value = 0
-	case token.FLOAT:
-		s.Value = lo.Empty[float32]()
-	case token.CHAR:
-		s.Value = lo.Empty[string]()
-	case token.STRING:
-		s.Value = lo.Empty[string]()
-	default:
-		s.Value = nil
-	}
-	return s
+	Value        any
+	SpecificType enum.SpecificType
+	Kind         token.Token
 }
 
 func (s *BasicLit) GetValue() any {
 	return s.Value
+}
+
+func (s *BasicLit) SetValue(value any) {
+	s.Value = value
+}
+
+func (s *BasicLit) GetType() enum.ParameterType {
+	return enum.PARAMETER_TYPE_BASICLIT
 }
 
 func (s *BasicLit) GetFormula() string {
@@ -48,9 +34,7 @@ func (s *BasicLit) GetFormula() string {
 
 // ParseBasicLit 解析ast
 func ParseBasicLit(expr *ast.BasicLit) *BasicLit {
-	bl := &BasicLit{
-		BasicValue: _struct.BasicValue{},
-	}
+	bl := &BasicLit{}
 	// 解析 value
 	bl.Kind = expr.Kind
 

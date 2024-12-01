@@ -2,7 +2,7 @@ package stmt
 
 import (
 	"caseGenerator/common/enum"
-	"caseGenerator/parser/expr"
+	"caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -34,10 +34,10 @@ type SelectorConditionResult struct {
 // StatementExpression stmt的表达式，记录了参数的变动, 参数也可以直接重新赋值
 type StatementExpression struct {
 	Name      string
-	InitParam *_struct.Parameter
+	InitParam _struct.ValueAble
 	Type      enum.StmtType
 	// 参数变动列表
-	expr.Expression
+	expression.Expression
 }
 
 // ParseStmt 完整的执行单元

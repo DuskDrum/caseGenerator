@@ -1,4 +1,4 @@
-package expr
+package expression
 
 import (
 	"fmt"
@@ -30,6 +30,55 @@ func TestEvaluateArithmeticExpression(t *testing.T) {
 	if result != expected {
 		t.Errorf("预期结果为 %v, 但得到 %v", expected, result)
 	}
+}
+
+func TestMultipleLinesArithmeticExpression(t *testing.T) {
+	// 定义初始变量
+	variables := map[string]interface{}{
+		"a": 1,
+		"b": 2,
+		"c": 3,
+	}
+
+	// 定义公式
+	formulas := map[string]string{
+		"a": "b + d",
+		"b": "c * 3",
+	}
+
+	// 计算所有公式
+	for key, formula := range formulas {
+		value, err := calculate(formula, variables)
+		if err != nil {
+			fmt.Printf("Error calculating %s: %v\n", key, err)
+			return
+		}
+		variables[key] = value
+	}
+
+	// 最终计算 a * b * c
+	result, err := calculate("a * b * c", variables)
+	if err != nil {
+		fmt.Printf("Error calculating result: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Final result: %v\n", result)
+}
+
+// 使用 govaluate 计算公式
+func calculate(expression string, variables map[string]interface{}) (float64, error) {
+	expr, err := govaluate.NewEvaluableExpression(expression)
+	if err != nil {
+		return 0, err
+	}
+
+	result, err := expr.Evaluate(variables)
+	if err != nil {
+		return 0, err
+	}
+
+	return result.(float64), nil
 }
 
 func TestEvaluateConditionExpression(t *testing.T) {

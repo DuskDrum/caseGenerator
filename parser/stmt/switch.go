@@ -22,7 +22,7 @@ func (s *Switch) Express() []StatementExpression {
 	return nil
 }
 
-func (i *Switch) CalculateCondition([]StatementExpression) []ConditionResult {
+func (s *Switch) CalculateCondition([]StatementExpression) []ConditionResult {
 	return nil
 }
 

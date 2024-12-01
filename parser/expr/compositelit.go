@@ -20,6 +20,17 @@ import (
 type CompositeLit struct {
 	Type    _struct.Parameter
 	Content []_struct.Parameter
+	// x = []int{1, 2, 3}
+	// y = struct{A int}{A: 10}
+	Value any
+}
+
+func (s *CompositeLit) GetValue() any {
+	return s.Value
+}
+
+func (s *CompositeLit) SetValue(value any) {
+	s.Value = value
 }
 
 func (s *CompositeLit) GetType() enum.ParameterType {

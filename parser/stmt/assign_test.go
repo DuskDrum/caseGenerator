@@ -12,6 +12,7 @@ func TestAssignCase(t *testing.T) {
 	sourceCode := `
     package main
     func main() {
+		c = []int{1, 2, 3}
         x, y := 1, 2
         z.b = 3
 		i := j

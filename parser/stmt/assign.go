@@ -4,13 +4,13 @@ import (
 	"caseGenerator/common/constants"
 	"caseGenerator/common/enum"
 	"caseGenerator/parser/expr"
+	expression2 "caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 	"go/token"
 	"strings"
 
 	"github.com/Knetic/govaluate"
-	"github.com/samber/lo"
 )
 
 // Assign 赋值语句
@@ -41,7 +41,7 @@ func (a *Assign) Express() []StatementExpression {
 			Type: enum.STMT_TYPE_ASSIGN,
 		}
 		// 直接取第一条即可，只有逻辑与、逻辑或才会有多条
-		expressionList := expr.ParseExpression(param.Right)
+		expressionList := expression2.Express(param.Right)
 		expression := expressionList[0]
 		if expression == nil {
 			continue
@@ -52,18 +52,20 @@ func (a *Assign) Express() []StatementExpression {
 
 		switch a.Token {
 		case token.DEFINE:
-			if se.InitParam == nil {
-				se.InitParam = lo.ToPtr(param.Right)
-			} else {
-				panic("define valued param")
+			// 设置初始化的值
+			switch rightType := param.Right.(type) {
+			case *expr.BasicLit:
+				rightType.SetValue(rightType.Value)
+				se.InitParam = rightType
+			case *expr.CompositeLit:
+				rightType.SetValue(rightType.GetFormula())
+				se.InitParam = rightType
 			}
 			se.Expr = expression.Expr
 			se.ElementList = expression.ElementList
-
 		case token.ASSIGN:
 			se.Expr = expression.Expr
 			se.ElementList = expression.ElementList
-
 		case token.ADD_ASSIGN:
 			// a += b 相当于 a = a + b
 			elementList := make([]string, 0, 10)

@@ -3,6 +3,7 @@ package stmt
 import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parser/expr"
+	expression2 "caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 	"go/token"
@@ -25,7 +26,7 @@ func (i *IncDec) Express() []StatementExpression {
 		Type: enum.STMT_TYPE_INCDEC,
 	}
 	// 直接取第一条即可，只有逻辑与、逻辑或才会有多条
-	expressionList := expr.ParseExpression(i.Content)
+	expressionList := expression2.Express(i.Content)
 	expression := expressionList[0]
 	if expression == nil {
 		return nil

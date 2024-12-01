@@ -1,6 +1,7 @@
 package expr
 
 import (
+	stmt2 "caseGenerator/parser/expression"
 	"encoding/json"
 	"fmt"
 	"go/ast"
@@ -112,10 +113,10 @@ func TestBinaryCondition(t *testing.T) {
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", param)
 			// 解析出所有要对比的列表
-			expressionList := ParseExpression(param)
+			expressionList := stmt2.Express(param)
 			fmt.Printf("expression: %v\n", expressionList)
 			for _, v := range expressionList {
-				mockList := MockExpression(v)
+				mockList := stmt2.MockExpression(v)
 				if len(mockList) > 0 {
 					fmt.Printf("mock结果列表: %v\n", mockList)
 				}
