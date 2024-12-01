@@ -18,7 +18,7 @@ import (
 //     如果是 nil， 可能是==或者!=。 nil是属于 Ident 里的
 //
 // 2. 如果两边都没有靶子，那么将其中一边设置为零值，再继续用第一步的流程(ident 不知道变量类型，所以没办法处理)
-func MockExpression(expression *Expression, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockExpression(expression *ExpressDetail, seList []stmt.StatementExpression) []mockresult.MockResult {
 	// 1. 如果有 basicLit，那么按照 govalue进行解析试算得到最终结果
 	if len(expression.BasicList) > 0 {
 		return MockBasicExpression(expression, seList)
@@ -90,7 +90,7 @@ func MockExpression(expression *Expression, seList []stmt.StatementExpression) [
 }
 
 // MockBasicExpression mock 有 basic 的表达式
-func MockBasicExpression(expression *Expression, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockBasicExpression(expression *ExpressDetail, seList []stmt.StatementExpression) []mockresult.MockResult {
 	// todo 这种多个basicLit 的类型一般是一样的，不一样就告警出去
 	var specificType *enum.SpecificType
 	basicValueList := make([]any, 0, 10)
@@ -132,7 +132,7 @@ type StatementExpressionValue struct {
 }
 
 // MockBasicIntExpression mock int basic 的表达式
-func MockBasicIntExpression(expression *Expression, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockBasicIntExpression(expression *ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
 	// 1. 找代码中参数的所有变化，比如说
 	// a,b,c := 1,2,3
 	// b = c *3
@@ -215,7 +215,7 @@ func MockBasicIntExpression(expression *Expression, basicValueList []any, variab
 }
 
 // MockBasicFloatExpression mock float basic 的表达式
-func MockBasicFloatExpression(expression *Expression, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockBasicFloatExpression(expression *ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
 	// 如果类型是 float
 	var inList []float64
 	for _, v := range basicValueList {
@@ -284,7 +284,7 @@ func MockBasicFloatExpression(expression *Expression, basicValueList []any, vari
 }
 
 // MockBasicStringExpression mock string basic 的表达式
-func MockBasicStringExpression(expression *Expression, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockBasicStringExpression(expression *ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
 	// 如果类型是 string
 	var strList []string
 	strList = append(strList, "")
@@ -366,7 +366,7 @@ func ComposeInt(params []string, current []int, index, min, max int, inequalityE
 			cExpr, err := govaluate.NewEvaluableExpression(v.Expr)
 			if err != nil {
 				//return 0, err
-				panic("Error calculating ")
+				panic("Error calculating")
 			}
 			result, err := cExpr.Evaluate(variablesMap)
 			if err != nil {

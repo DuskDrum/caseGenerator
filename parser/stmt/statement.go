@@ -37,7 +37,7 @@ type StatementExpression struct {
 	InitParam _struct.ValueAble
 	Type      enum.StmtType
 	// 参数变动列表
-	expression.Expression
+	expression.ExpressDetail
 }
 
 // ParseStmt 完整的执行单元
