@@ -3,6 +3,7 @@ package stmt
 import (
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression"
+	"caseGenerator/parser/mocker"
 	_struct "caseGenerator/parser/struct"
 	"fmt"
 	"go/ast"
@@ -18,7 +19,7 @@ type If struct {
 }
 
 func (i *If) Express() []StatementExpression {
-	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mock 的值
+	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mocker 的值
 	if i.Init != nil {
 		return i.Init.Express()
 	}
@@ -30,7 +31,7 @@ func (i *If) CalculateCondition(seList []StatementExpression) []ConditionResult 
 	conditionExpressionList := expression.Express(i.Condition)
 	// 2. 找表达式中的变量,去遍历找表达式中的变化记录
 	for _, v := range conditionExpressionList {
-		mockList := expression.MockExpression(v, seList)
+		mockList := mocker.MockExpression(v, seList)
 		if len(mockList) > 0 {
 			fmt.Printf("mock结果列表: %v\n", mockList)
 		}

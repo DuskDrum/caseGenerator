@@ -42,7 +42,6 @@ func ExpressParam(param _struct.Parameter) []*ExpressDetail {
 		return ExpressBasicLit(exprType)
 	default:
 		elementList := []string{param.GetFormula()}
-
 		expression := &ExpressDetail{
 			ElementList: elementList,
 			Expr:        strings.Join(elementList, " "),

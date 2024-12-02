@@ -8,7 +8,7 @@ import (
 	"github.com/Knetic/govaluate"
 )
 
-// ExpressUnary mock Unary
+// ExpressUnary mocker Unary
 func ExpressUnary(param *expr.Unary) []*ExpressDetail {
 	// 解析公式
 	eList := ExpressParam(param.Content)

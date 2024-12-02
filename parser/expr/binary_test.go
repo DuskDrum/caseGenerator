@@ -2,6 +2,7 @@ package expr
 
 import (
 	stmt2 "caseGenerator/parser/expression"
+	"caseGenerator/parser/mocker"
 	"encoding/json"
 	"fmt"
 	"go/ast"
@@ -116,7 +117,7 @@ func TestBinaryCondition(t *testing.T) {
 			expressionList := stmt2.Express(param)
 			fmt.Printf("expression: %v\n", expressionList)
 			for _, v := range expressionList {
-				mockList := stmt2.MockExpression(v)
+				mockList := mocker.MockExpression(v)
 				if len(mockList) > 0 {
 					fmt.Printf("mock结果列表: %v\n", mockList)
 				}

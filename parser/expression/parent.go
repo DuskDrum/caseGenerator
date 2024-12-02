@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// ExpressParent mock Parent
+// ExpressParent mocker Parent
 func ExpressParent(param *expr.Parent) []*ExpressDetail {
 	// 解析公式
 	eList := ExpressParam(param.Content)

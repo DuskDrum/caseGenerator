@@ -15,7 +15,7 @@ type Switch struct {
 }
 
 func (s *Switch) Express() []StatementExpression {
-	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mock 的值
+	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mocker 的值
 	if s.Init != nil {
 		return s.Init.Express()
 	}

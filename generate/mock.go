@@ -62,7 +62,7 @@ func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *toke
 	}
 	// 1. 第一场景， xParam是定量BasicLit， yParam是变量Ident(x、y交换同理)
 	if xParam.AstType == enum.PARAM_AST_TYPE_BasicLit && yParam.AstType == enum.PARAM_AST_TYPE_Ident {
-		// 根据对应的值去找需要 mock的变量和需要 mock 成的值
+		// 根据对应的值去找需要 mock的变量和需要 mocker 成的值
 		value := MockMatchConditionValue(op, xParam.Value)
 		mockParam := MockParamInstruct{
 			MockParamName:  yParam.Name,
@@ -71,7 +71,7 @@ func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *toke
 		paramInstructList = append(paramInstructList, mockParam)
 	}
 	if yParam.AstType == enum.PARAM_AST_TYPE_BasicLit && xParam.AstType == enum.PARAM_AST_TYPE_Ident {
-		// 根据对应的值去找需要 mock的变量和需要 mock 成的值
+		// 根据对应的值去找需要 mock的变量和需要 mocker 成的值
 		value := MockMatchConditionValue(op, yParam.Value)
 		mockParam := MockParamInstruct{
 			MockParamName:  xParam.Name,
@@ -79,7 +79,7 @@ func MockInstruct(xParam *parser.ParamValue, yParam *parser.ParamValue, op *toke
 		}
 		paramInstructList = append(paramInstructList, mockParam)
 	}
-	// 2. 第二场景，如果等式左边是变量，右边是 function， function 的结果必定为一个。这个时候 mock function 为零值，再去 mock变量
+	// 2. 第二场景，如果等式左边是变量，右边是 function， function 的结果必定为一个。这个时候 mocker function 为零值，再去 mock变量
 	if xParam.AstType == enum.PARAM_AST_TYPE_Ident && yParam.AstType.IsFunction() {
 
 	}

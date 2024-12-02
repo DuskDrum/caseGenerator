@@ -147,7 +147,7 @@ func GenGenerateFile(data generate_old.GenMeta) {
 			str += "}"
 			mockReturns := str
 			// 2. 组装mock的返回
-			mockNumber := "mock" + k
+			mockNumber := "mocker" + k
 			// 3. 如果方法名是小写开头，且没有包名引用，说明需要go-linkname
 			if utils.IsLower(v.MockFunction) && !strings.Contains(v.MockFunction, ".") {
 
