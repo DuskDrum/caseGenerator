@@ -42,12 +42,15 @@ func ParseFunc(decl *ast.FuncDecl) *Func {
 
 // ParseBody 解析方法
 func ParseBody(sb *ast.BlockStmt) {
+	crMap := make(map[string][]stmt.ConditionResult, 10)
 	for _, v := range sb.List {
 		// 解析代码块
 		p := stmt.ParseStmt(v)
 		// 生成逻辑表达式
 		express := p.LogicExpression()
-		// mock
+		// 得到mock结果
+		conditionResults := p.CalculateCondition(express)
+		crMap["xxx"] = conditionResults
 
 	}
 }
