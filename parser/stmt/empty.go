@@ -12,7 +12,7 @@ type Empty struct {
 	expr.ValueSpec
 }
 
-func (e *Empty) Express() []StatementExpression {
+func (e *Empty) LogicExpression() []StatementAssignment {
 	return nil
 }
 

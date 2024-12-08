@@ -15,7 +15,7 @@ type For struct {
 	Body *Block
 }
 
-func (f *For) Express() []StatementExpression {
+func (f *For) LogicExpression() []StatementAssignment {
 	return nil
 }
 

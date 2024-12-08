@@ -33,10 +33,10 @@ type Assign struct {
 	AssignParamList []AssignParam
 }
 
-func (a *Assign) Express() []StatementExpression {
-	stmtExpressionList := make([]StatementExpression, 0, 10)
+func (a *Assign) LogicExpression() []StatementAssignment {
+	stmtExpressionList := make([]StatementAssignment, 0, 10)
 	for _, param := range a.AssignParamList {
-		se := StatementExpression{
+		se := StatementAssignment{
 			Name: param.Left.GetFormula(),
 			Type: enum.STMT_TYPE_ASSIGN,
 		}

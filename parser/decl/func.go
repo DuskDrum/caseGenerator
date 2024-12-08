@@ -16,7 +16,7 @@ type Func struct {
 	Body     *stmt.Block
 }
 
-// ParseFunc 解析ast
+// ParseFunc 解析Func
 func ParseFunc(decl *ast.FuncDecl) *Func {
 	fieldList := make([]expr.Field, 0, 10)
 	if decl.Recv != nil {
@@ -38,4 +38,14 @@ func ParseFunc(decl *ast.FuncDecl) *Func {
 		Body:     body,
 	}
 	return f
+}
+
+// ParseBody 解析方法
+func ParseBody(sb *ast.BlockStmt) {
+	for _, v := range sb.List {
+		p := stmt.ParseStmt(v)
+		// 获取 express
+		express := p.LogicExpression()
+
+	}
 }

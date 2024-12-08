@@ -10,7 +10,7 @@ type Block struct {
 	StmtList []Stmt
 }
 
-func (b *Block) Express() []StatementExpression {
+func (b *Block) LogicExpression() []StatementAssignment {
 	return nil
 }
 

@@ -15,7 +15,7 @@ type Branch struct {
 	Token token.Token // 标签的类型，是 token.BREAK、token.CONTINUE、token.GOTO等
 }
 
-func (b *Branch) Express() []StatementExpression {
+func (b *Branch) LogicExpression() []StatementAssignment {
 	return nil
 }
 

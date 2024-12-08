@@ -13,7 +13,7 @@ type Go struct {
 	Call expr.Call
 }
 
-func (g *Go) Express() []StatementExpression {
+func (g *Go) LogicExpression() []StatementAssignment {
 	return nil
 }
 

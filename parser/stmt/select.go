@@ -10,7 +10,7 @@ type Select struct {
 	Body *Block
 }
 
-func (s *Select) Express() []StatementExpression {
+func (s *Select) LogicExpression() []StatementAssignment {
 	return nil
 }
 

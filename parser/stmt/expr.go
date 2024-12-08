@@ -13,7 +13,7 @@ type Expr struct {
 	Expr _struct.Parameter
 }
 
-func (e *Expr) Express() []StatementExpression {
+func (e *Expr) LogicExpression() []StatementAssignment {
 	return nil
 }
 

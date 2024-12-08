@@ -12,7 +12,7 @@ type Labeled struct {
 	Block Stmt       // 标签后跟的语句
 }
 
-func (l *Labeled) Express() []StatementExpression {
+func (l *Labeled) LogicExpression() []StatementAssignment {
 	return nil
 }
 

@@ -10,7 +10,7 @@ import (
 )
 
 // MockBasicIntExpression mocker int basic 的表达式
-func MockBasicIntExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockBasicIntExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementAssignment) []mockresult.MockResult {
 	// 1. 找代码中参数的所有变化，比如说
 	// a,b,c := 1,2,3
 	// b = c *3
@@ -93,7 +93,7 @@ func MockBasicIntExpression(expression *expression.ExpressDetail, basicValueList
 }
 
 // ComposeInt 组合int
-func ComposeInt(params []string, current []int, index, min, max int, inequalityExpr string, calculateExprList []stmt.StatementExpression, variablesMap map[string]any) []int {
+func ComposeInt(params []string, current []int, index, min, max int, inequalityExpr string, calculateExprList []stmt.StatementAssignment, variablesMap map[string]any) []int {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)

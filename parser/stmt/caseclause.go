@@ -13,7 +13,7 @@ type CaseClause struct {
 	BodyList []Stmt
 }
 
-func (c *CaseClause) Express() []StatementExpression {
+func (c *CaseClause) LogicExpression() []StatementAssignment {
 	return nil
 }
 

@@ -17,7 +17,7 @@ type Range struct {
 	Body    *Block
 }
 
-func (r *Range) Express() []StatementExpression {
+func (r *Range) LogicExpression() []StatementAssignment {
 	return nil
 }
 

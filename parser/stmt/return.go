@@ -12,7 +12,7 @@ type Return struct {
 	ReturnList []_struct.Parameter
 }
 
-func (r *Return) Express() []StatementExpression {
+func (r *Return) LogicExpression() []StatementAssignment {
 	return nil
 }
 

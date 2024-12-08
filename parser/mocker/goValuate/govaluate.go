@@ -11,7 +11,10 @@ import (
 )
 
 // MockBasicExpression mocker 有 basic 的表达式
-func MockBasicExpression(expression *expression.ExpressDetail, seList []stmt.StatementExpression) []mockresult.MockResult {
+// 1. 将此段代码前的所有条件都执行，不同的参数都按照公式去计算
+// 2. 如果变量定义初始值了，那么每条都执行
+// 3. 如果变量没有定义初始值，为请求中的变量或者方法得到，那么需要根据后面倒推得到需要mock的值
+func MockBasicExpression(expression *expression.ExpressDetail, seList []stmt.StatementAssignment) []mockresult.MockResult {
 	// todo 这种多个basicLit 的类型一般是一样的，不一样就告警出去
 	var specificType *enum.SpecificType
 	basicValueList := make([]any, 0, 10)
@@ -48,7 +51,7 @@ func MockBasicExpression(expression *expression.ExpressDetail, seList []stmt.Sta
 }
 
 type StatementExpressionValue struct {
-	ExpressionList []stmt.StatementExpression
+	ExpressionList []stmt.StatementAssignment
 	InitValue      any
 }
 

@@ -13,7 +13,7 @@ type Decl struct {
 	expr.ValueSpec
 }
 
-func (d *Decl) Express() []StatementExpression {
+func (d *Decl) LogicExpression() []StatementAssignment {
 	//TODO 待补充
 
 	return nil

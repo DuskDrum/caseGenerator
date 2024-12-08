@@ -9,13 +9,15 @@ import (
 
 // Stmt 参数接口类型，将参数需要的方法定义出来
 type Stmt interface {
-	// Express 生成表达式.
-	Express() []StatementExpression
+	// LogicExpression  生成逻辑表达式
+	LogicExpression() []StatementAssignment
+	//// AssignExpression 生成赋值语句
+	//AssignExpression()
 }
 
 // Condition 条件类型: if、switch、typeSwitch
 type Condition interface {
-	CalculateCondition([]StatementExpression) []ConditionResult
+	CalculateCondition([]StatementAssignment) []ConditionResult
 }
 
 type ConditionResult struct {
@@ -31,8 +33,8 @@ type CallConditionResult struct {
 type SelectorConditionResult struct {
 }
 
-// StatementExpression stmt的表达式，记录了参数的变动, 参数也可以直接重新赋值
-type StatementExpression struct {
+// StatementAssignment stmt的表达式，记录了参数的变动, 参数也可以直接重新赋值
+type StatementAssignment struct {
 	Name      string
 	InitParam _struct.ValueAble
 	Type      enum.StmtType

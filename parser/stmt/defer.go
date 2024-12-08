@@ -13,7 +13,7 @@ type Defer struct {
 	Call expr.Call
 }
 
-func (d *Defer) Express() []StatementExpression {
+func (d *Defer) LogicExpression() []StatementAssignment {
 	return nil
 }
 

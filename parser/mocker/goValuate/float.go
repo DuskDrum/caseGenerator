@@ -10,7 +10,7 @@ import (
 )
 
 // MockBasicFloatExpression mocker float basic 的表达式
-func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementAssignment) []mockresult.MockResult {
 	// 如果类型是 float
 	var inList []float64
 	for _, v := range basicValueList {
@@ -79,7 +79,7 @@ func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueLi
 }
 
 // ComposeFloat 组合float
-func ComposeFloat(params []string, current []float64, index int, min, max float64, expr string, calculateExprList []stmt.StatementExpression, variablesMap map[string]any) []float64 {
+func ComposeFloat(params []string, current []float64, index int, min, max float64, expr string, calculateExprList []stmt.StatementAssignment, variablesMap map[string]any) []float64 {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)

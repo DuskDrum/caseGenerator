@@ -15,7 +15,7 @@ type Send struct {
 	Arrow token.Pos         // 通道的方向 token.Arrow
 }
 
-func (s *Send) Express() []StatementExpression {
+func (s *Send) LogicExpression() []StatementAssignment {
 	return nil
 }
 

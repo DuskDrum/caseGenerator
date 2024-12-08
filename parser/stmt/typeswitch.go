@@ -12,22 +12,22 @@ type TypeSwitch struct {
 	Body   *Block
 }
 
-func (t *TypeSwitch) Express() []StatementExpression {
-	stmtExpressionList := make([]StatementExpression, 0, 10)
+func (t *TypeSwitch) LogicExpression() []StatementAssignment {
+	stmtExpressionList := make([]StatementAssignment, 0, 10)
 	if t.Init != nil {
-		initExpression := t.Init.Express()
+		initExpression := t.Init.LogicExpression()
 		stmtExpressionList = append(stmtExpressionList, initExpression...)
 	}
-	// Assign有可能是x := y.(type) *Assign or y.(type) *Expr
+	// Assign有可能是x := y.(type) *LogicExpression or y.(type) *Expr
 	assign, ok := t.Assign.(*Assign)
 	if ok {
-		assignExpression := assign.Express()
+		assignExpression := assign.LogicExpression()
 		stmtExpressionList = append(stmtExpressionList, assignExpression...)
 	}
 	return stmtExpressionList
 }
 
-func (i *TypeSwitch) CalculateCondition([]StatementExpression) []ConditionResult {
+func (i *TypeSwitch) CalculateCondition([]StatementAssignment) []ConditionResult {
 	return nil
 }
 

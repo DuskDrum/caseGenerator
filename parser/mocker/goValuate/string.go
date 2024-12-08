@@ -9,7 +9,7 @@ import (
 )
 
 // MockBasicStringExpression mocker string basic 的表达式
-func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementExpression) []mockresult.MockResult {
+func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementAssignment) []mockresult.MockResult {
 	// 如果类型是 string
 	var strList []string
 	strList = append(strList, "")
@@ -26,7 +26,6 @@ func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueL
 
 	// 参数名称
 	params := make([]string, 0, len(expression.IdentMap))
-	resultList := make([]mockresult.MockResult, 0, 10)
 
 	for key := range expression.IdentMap {
 		params = append(params, key)
@@ -42,6 +41,12 @@ func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueL
 
 	current := make([]string, len(params))
 	result := ComposeString(params, strList, current, 0, expression.Expr, seList, variablesMap)
+	resultList := convertToAnyResultList(expression, result, params)
+	return resultList
+}
+
+func convertToAnyResultList(expression *expression.ExpressDetail, result, params []string) []mockresult.MockResult {
+	resultList := make([]mockresult.MockResult, 0, 10)
 	if result != nil {
 		// 参数一一对应的值
 		for i, param := range params {
@@ -72,7 +77,8 @@ func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueL
 }
 
 // ComposeString 组合string
-func ComposeString(params []string, values []string, current []string, index int, expr string, calculateExprList []stmt.StatementExpression, variablesMap map[string]any) []string {
+
+func ComposeString(params []string, values []string, current []string, index int, expr string, calculateExprList []stmt.StatementAssignment, variablesMap map[string]any) []string {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)

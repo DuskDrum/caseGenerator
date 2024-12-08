@@ -18,15 +18,15 @@ type If struct {
 	Else      Stmt
 }
 
-func (i *If) Express() []StatementExpression {
+func (i *If) LogicExpression() []StatementAssignment {
 	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mocker 的值
 	if i.Init != nil {
-		return i.Init.Express()
+		return i.Init.LogicExpression()
 	}
 	return nil
 }
 
-func (i *If) CalculateCondition(seList []StatementExpression) []ConditionResult {
+func (i *If) CalculateCondition(seList []StatementAssignment) []ConditionResult {
 	// 1. 先拿到 Condition的表达式
 	conditionExpressionList := expression.Express(i.Condition)
 	// 2. 找表达式中的变量,去遍历找表达式中的变化记录

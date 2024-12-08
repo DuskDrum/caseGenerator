@@ -11,7 +11,7 @@ type CommClause struct {
 	BodyList []Stmt
 }
 
-func (c *CommClause) Express() []StatementExpression {
+func (c *CommClause) LogicExpression() []StatementAssignment {
 	return nil
 }
 
