@@ -17,6 +17,10 @@ func (e *Expr) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (e *Expr) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 // ParseExpr 解析ast
 func ParseExpr(stmt *ast.ExprStmt) *Expr {
 	exprStmt := &Expr{}

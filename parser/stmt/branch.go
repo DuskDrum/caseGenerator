@@ -19,6 +19,10 @@ func (b *Branch) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (b *Branch) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 // ParseBranch 解析ast
 func ParseBranch(stmt *ast.BranchStmt) *Branch {
 	branch := &Branch{}

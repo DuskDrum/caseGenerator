@@ -33,6 +33,10 @@ type Assign struct {
 	AssignParamList []AssignParam
 }
 
+func (a *Assign) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 func (a *Assign) LogicExpression() []StatementAssignment {
 	stmtExpressionList := make([]StatementAssignment, 0, 10)
 	for _, param := range a.AssignParamList {

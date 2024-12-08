@@ -16,6 +16,10 @@ func (l *Labeled) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (l *Labeled) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 func ParseLabeled(stmt *ast.LabeledStmt) *Labeled {
 	labeled := &Labeled{}
 

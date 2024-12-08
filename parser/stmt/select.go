@@ -14,6 +14,10 @@ func (s *Select) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (s *Select) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 // ParseSelect 解析ast
 func ParseSelect(stmt *ast.SelectStmt) *Select {
 	s := &Select{}

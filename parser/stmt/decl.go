@@ -19,6 +19,10 @@ func (d *Decl) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (d *Decl) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 func ParseDecl(stmt *ast.DeclStmt) *Decl {
 	decl := &Decl{}
 	switch declType := stmt.Decl.(type) {

@@ -19,6 +19,10 @@ func (s *Send) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (s *Send) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 // ParseSend 解析ast
 func ParseSend(stmt *ast.SendStmt) *Send {
 	send := &Send{}

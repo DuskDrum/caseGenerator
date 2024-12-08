@@ -11,13 +11,12 @@ import (
 type Stmt interface {
 	// LogicExpression  生成逻辑表达式
 	LogicExpression() []StatementAssignment
-	//// AssignExpression 生成赋值语句
-	//AssignExpression()
+	// CalculateCondition 解析Condition
+	CalculateCondition([]StatementAssignment) []ConditionResult
 }
 
 // Condition 条件类型: if、switch、typeSwitch
 type Condition interface {
-	CalculateCondition([]StatementAssignment) []ConditionResult
 }
 
 type ConditionResult struct {

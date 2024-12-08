@@ -16,6 +16,10 @@ func (r *Return) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (r *Return) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 // ParseReturn 解析ast
 func ParseReturn(stmt *ast.ReturnStmt) *Return {
 	r := &Return{}

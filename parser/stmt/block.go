@@ -14,6 +14,10 @@ func (b *Block) LogicExpression() []StatementAssignment {
 	return nil
 }
 
+func (b *Block) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 // ParseBlock 解析ast
 func ParseBlock(stmt *ast.BlockStmt) *Block {
 	b := &Block{}

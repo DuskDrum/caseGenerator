@@ -43,9 +43,11 @@ func ParseFunc(decl *ast.FuncDecl) *Func {
 // ParseBody 解析方法
 func ParseBody(sb *ast.BlockStmt) {
 	for _, v := range sb.List {
+		// 解析代码块
 		p := stmt.ParseStmt(v)
-		// 获取 express
+		// 生成逻辑表达式
 		express := p.LogicExpression()
+		// mock
 
 	}
 }

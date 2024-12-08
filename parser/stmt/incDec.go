@@ -19,6 +19,10 @@ type IncDec struct {
 	Token   token.Token       // 类型，是 token.INC、token.DEC
 }
 
+func (i *IncDec) CalculateCondition([]StatementAssignment) []ConditionResult {
+	return nil
+}
+
 func (i *IncDec) LogicExpression() []StatementAssignment {
 	stmtExpressionList := make([]StatementAssignment, 0, 10)
 	se := StatementAssignment{
