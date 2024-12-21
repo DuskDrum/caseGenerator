@@ -44,14 +44,15 @@ func ParseFunc(decl *ast.FuncDecl) *Func {
 func ParseBody(sb *ast.BlockStmt) {
 	crMap := make(map[string][]stmt.ConditionResult, 10)
 	// 1. 遍历方法里的每个 stmt，
+	for _, v := range sb.List {
+		// 1.1 解析每个stmt的内容
+		p := stmt.ParseStmt(v)
+		// 1.2 解析每个stmt 的 assignment
+		express := p.LogicExpression()
+		// 1.3 执行每一个 stmt 的公式；得到最新的赋值公式
 
-	// 1.1 解析每个stmt的内容
-
-	// 1.2 解析每个stmt 的 assignment
-
-	// 1.3 执行每一个 stmt 的公式；得到最新的赋值公式
-
-	// 1.4 解析每个condition需要的变量，得到不等式公式
+		// 1.4 解析每个condition需要的变量，得到不等式公式
+	}
 
 	// 2. 得到公式的列表
 
