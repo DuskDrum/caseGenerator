@@ -52,6 +52,13 @@ func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType
 		se.CallMap = expression.CallMap
 		se.SelectorMap = expression.SelectorMap
 
+		for k := range se.CallMap {
+			outerVariablesMap[k] = enum.SPECIFIC_TYPE_FUNC
+		}
+		for k := range se.SelectorMap {
+			outerVariablesMap[k] = enum.SPECIFIC_TYPE_STRUCT
+		}
+
 		switch a.Token {
 		case token.DEFINE, token.ASSIGN:
 			// 设置初始化的值
