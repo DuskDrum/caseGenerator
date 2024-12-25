@@ -3,6 +3,7 @@ package stmt
 import (
 	"caseGenerator/common/constants"
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	expression2 "caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
@@ -33,15 +34,12 @@ type Assign struct {
 	AssignParamList []AssignParam
 }
 
-func (a *Assign) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
-func (a *Assign) LogicExpression() []StatementAssignment {
-	stmtExpressionList := make([]StatementAssignment, 0, 10)
+func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType) {
+	formulasList := make([]bo.KeyFormula, 0, 10)
+	outerVariablesMap := make(map[string]enum.SpecificType, 10)
 	for _, param := range a.AssignParamList {
-		se := StatementAssignment{
-			Name: param.Left.GetFormula(),
+		se := bo.KeyFormula{
+			Key:  param.Left.GetFormula(),
 			Type: enum.STMT_TYPE_ASSIGN,
 		}
 		// 直接取第一条即可，只有逻辑与、逻辑或才会有多条
@@ -55,19 +53,8 @@ func (a *Assign) LogicExpression() []StatementAssignment {
 		se.SelectorMap = expression.SelectorMap
 
 		switch a.Token {
-		case token.DEFINE:
+		case token.DEFINE, token.ASSIGN:
 			// 设置初始化的值
-			switch rightType := param.Right.(type) {
-			case *expr.BasicLit:
-				rightType.SetValue(rightType.Value)
-				se.InitParam = rightType
-			case *expr.CompositeLit:
-				rightType.SetValue(rightType.GetFormula())
-				se.InitParam = rightType
-			}
-			se.Expr = expression.Expr
-			se.ElementList = expression.ElementList
-		case token.ASSIGN:
 			se.Expr = expression.Expr
 			se.ElementList = expression.ElementList
 		case token.ADD_ASSIGN:
@@ -183,9 +170,9 @@ func (a *Assign) LogicExpression() []StatementAssignment {
 		default:
 			panic("token type illegal")
 		}
-		stmtExpressionList = append(stmtExpressionList, se)
+		formulasList = append(formulasList, se)
 	}
-	return stmtExpressionList
+	return formulasList, outerVariablesMap
 }
 
 type AssignParam struct {

@@ -1,52 +1,68 @@
 package goValuate
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expression"
 	"caseGenerator/parser/expression/mockresult"
-	"caseGenerator/parser/stmt"
 
 	"github.com/Knetic/govaluate"
+	"github.com/samber/lo"
 )
 
-// MockBasicStringExpression mocker string basic 的表达式
-func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementAssignment) []mockresult.MockResult {
-	// 如果类型是 string
-	var strList []string
-	strList = append(strList, "")
+// MockBasicIntExpression mocker int basic 的表达式
+func MockBasicIntExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult.MockResult {
+	// 1. 找代码中参数的所有变化，比如说
+	// a,b,c := 1,2,3
+	// b = c *3
+	// a = b+1
+	// 那么 a * b * c * d > 500 时需要计算 a、b、c
+	// 如果类型是 int
+	var inList []int
+	inList = append(inList, 0)
 	for _, v := range basicValueList {
-		// 类型断言，将元素转换为 string
-		if value, ok := v.(string); ok {
-			strList = append(strList, value)
-			strList = append(strList, value+"a")
+		// 类型断言，将元素转换为 int
+		if value, ok := v.(int); ok {
+			inList = append(inList, value)
 		} else {
 			// 如果转换失败，返回错误
-			panic("element is not an string")
+			panic("element is not an int")
 		}
 	}
+	// todo 取列表里的最大最小值，判断怎么快速得到取值范围
+	minValue := lo.Min(inList)
+	maxValue := lo.Max(inList)
+	if minValue == maxValue {
+		minValue = minValue - 100
+		maxValue = maxValue + 100
+	}
 
-	// 参数名称
 	params := make([]string, 0, len(expression.IdentMap))
+	resultList := make([]mockresult.MockResult, 0, 10)
 
+	// 参数名称, 取 ident
 	for key := range expression.IdentMap {
-		params = append(params, key)
+		_, ok := variablesMap[key]
+		if !ok {
+			params = append(params, key)
+		}
 	}
 	// 参数名称，取call
 	for key := range expression.CallMap {
-		params = append(params, key)
+		_, ok := variablesMap[key]
+		if !ok {
+			params = append(params, key)
+		}
 	}
 	// 参数名称，取SelectorMap
 	for key := range expression.SelectorMap {
-		params = append(params, key)
+		_, ok := variablesMap[key]
+		if !ok {
+			params = append(params, key)
+		}
 	}
 
-	current := make([]string, len(params))
-	result := ComposeString(params, strList, current, 0, expression.Expr, seList, variablesMap)
-	resultList := convertToAnyResultList(expression, result, params)
-	return resultList
-}
-
-func convertToAnyResultList(expression *expression.ExpressDetail, result, params []string) []mockresult.MockResult {
-	resultList := make([]mockresult.MockResult, 0, 10)
+	current := make([]int, len(params))
+	result := ComposeInt(params, current, 0, minValue, maxValue, expression.Expr, seList, variablesMap)
 	if result != nil {
 		// 参数一一对应的值
 		for i, param := range params {
@@ -76,9 +92,8 @@ func convertToAnyResultList(expression *expression.ExpressDetail, result, params
 	return resultList
 }
 
-// ComposeString 组合string
-
-func ComposeString(params []string, values []string, current []string, index int, expr string, calculateExprList []stmt.StatementAssignment, variablesMap map[string]any) []string {
+// ComposeInt 组合int
+func ComposeInt(params []string, current []int, index, min, max int, inequalityExpr string, calculateExprList []bo.StatementAssignment, variablesMap map[string]any) []int {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)
@@ -97,7 +112,7 @@ func ComposeString(params []string, values []string, current []string, index int
 			cExpr, err := govaluate.NewEvaluableExpression(v.Expr)
 			if err != nil {
 				//return 0, err
-				panic("Error calculating ")
+				panic("Error calculating")
 			}
 			result, err := cExpr.Evaluate(variablesMap)
 			if err != nil {
@@ -105,7 +120,8 @@ func ComposeString(params []string, values []string, current []string, index int
 			}
 			parameters[v.Name] = result
 		}
-		exp, err := govaluate.NewEvaluableExpression(expr)
+
+		exp, err := govaluate.NewEvaluableExpression(inequalityExpr)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -123,12 +139,12 @@ func ComposeString(params []string, values []string, current []string, index int
 		return nil
 	}
 
-	// 遍历当前参数的所有可能值
-	for _, value := range values {
-		current[index] = value
-		result := ComposeString(params, values, current, index+1, expr, calculateExprList, variablesMap)
-		if result != nil {
-			return result
+	// 遍历当前参数从 0 到 max 的所有可能值
+	for i := min; i <= max; i++ {
+		current[index] = i
+		composeInt := ComposeInt(params, current, index+1, min, max, inequalityExpr, calculateExprList, variablesMap)
+		if composeInt != nil {
+			return composeInt
 		}
 	}
 	return nil

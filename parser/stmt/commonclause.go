@@ -11,14 +11,6 @@ type CommClause struct {
 	BodyList []Stmt
 }
 
-func (c *CommClause) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (c *CommClause) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseCommClause 解析ast
 func ParseCommClause(stmt *ast.CommClause) *CommClause {
 	cc := &CommClause{}

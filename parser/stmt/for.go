@@ -15,14 +15,6 @@ type For struct {
 	Body *Block
 }
 
-func (f *For) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (f *For) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseFor 解析ast
 func ParseFor(stmt *ast.ForStmt) *For {
 	f := &For{}

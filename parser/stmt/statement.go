@@ -2,21 +2,27 @@ package stmt
 
 import (
 	"caseGenerator/common/enum"
-	"caseGenerator/parser/expression"
-	_struct "caseGenerator/parser/struct"
+	"caseGenerator/parser/bo"
 	"go/ast"
 )
 
-// Stmt 参数接口类型，将参数需要的方法定义出来
 type Stmt interface {
-	// LogicExpression  生成逻辑表达式
-	LogicExpression() []StatementAssignment
-	// CalculateCondition 解析Condition
-	CalculateCondition([]StatementAssignment) []ConditionResult
+}
+
+// ExpressionStmt 参数接口类型，将参数需要的方法定义出来
+// ConstantsMap map[string]any-->常量map，上游传进来，常量map不会再变
+// InnerVariablesMap map[string]any， 不需要解析------>变量值Map (可以通过上下文推导出的变量， 局部变量都是可推导的),
+// 解析出OuterVariablesMap，map[string]类型，表明它是外部变量 ------> 变量字段Map(无法通过上下文推导出变量， 方法请求传进来的变量，或者用方法得到的)====>后面需要用算法算出来
+// FormulasList --> 公式List(Key 对应那个变量，Formula 对应的公式)
+type ExpressionStmt interface {
+	// FormulaExpress  生成逻辑表达式, 入参常量Map， 出参 公式List，外部变量map
+	FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType)
 }
 
 // Condition 条件类型: if、switch、typeSwitch
 type Condition interface {
+	// CalculateCondition 解析Condition
+	CalculateCondition([]bo.StatementAssignment) []ConditionResult
 }
 
 type ConditionResult struct {
@@ -30,15 +36,6 @@ type IdentConditionResult struct {
 type CallConditionResult struct {
 }
 type SelectorConditionResult struct {
-}
-
-// StatementAssignment stmt的表达式，记录了参数的变动, 参数也可以直接重新赋值
-type StatementAssignment struct {
-	Name      string
-	InitParam _struct.ValueAble
-	Type      enum.StmtType
-	// 参数变动列表
-	expression.ExpressDetail
 }
 
 // ParseStmt 完整的执行单元

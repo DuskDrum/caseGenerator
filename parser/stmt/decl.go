@@ -13,16 +13,6 @@ type Decl struct {
 	expr.ValueSpec
 }
 
-func (d *Decl) LogicExpression() []StatementAssignment {
-	//TODO 待补充
-
-	return nil
-}
-
-func (d *Decl) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 func ParseDecl(stmt *ast.DeclStmt) *Decl {
 	decl := &Decl{}
 	switch declType := stmt.Decl.(type) {

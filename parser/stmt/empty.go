@@ -12,14 +12,6 @@ type Empty struct {
 	expr.ValueSpec
 }
 
-func (e *Empty) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (e *Empty) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 func ParseEmpty(_ *ast.EmptyStmt) *Empty {
 	empty := &Empty{}
 

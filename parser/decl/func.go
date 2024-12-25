@@ -60,13 +60,4 @@ func ParseBody(sb *ast.BlockStmt) {
 
 	// 3. 得到mock结果
 
-	//for _, v := range sb.``````````````List {
-	//	// 解析代码块
-	//	p := stmt.ParseStmt(v)
-	//	// 生成逻辑表达式
-	//	express := p.LogicExpression()
-	//	// 得到mock结//	conditionResults := p.CalculateCondition(express)
-	//	crMap["xxx"] = conditionResults
-	//
-	//}``````````````
 }

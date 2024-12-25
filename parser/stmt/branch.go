@@ -15,14 +15,6 @@ type Branch struct {
 	Token token.Token // 标签的类型，是 token.BREAK、token.CONTINUE、token.GOTO等
 }
 
-func (b *Branch) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (b *Branch) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseBranch 解析ast
 func ParseBranch(stmt *ast.BranchStmt) *Branch {
 	branch := &Branch{}

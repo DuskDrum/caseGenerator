@@ -32,6 +32,11 @@ func TestEvaluateArithmeticExpression(t *testing.T) {
 	}
 }
 
+type keyFormulas struct {
+	Key      string
+	Formulas string
+}
+
 func TestMultipleLinesArithmeticExpression(t *testing.T) {
 	// 定义初始变量
 	variables := map[string]interface{}{
@@ -41,19 +46,20 @@ func TestMultipleLinesArithmeticExpression(t *testing.T) {
 	}
 
 	// 定义公式
-	formulas := map[string]string{
-		"a": "b + d",
-		"b": "c * 3",
+	formulas := []keyFormulas{
+		{Key: "a", Formulas: "b+a"},
+		{Key: "a", Formulas: "b+a"},
+		{Key: "b", Formulas: "c * b + a"},
 	}
 
 	// 计算所有公式
-	for key, formula := range formulas {
-		value, err := calculate(formula, variables)
+	for _, formula := range formulas {
+		value, err := calculate(formula.Formulas, variables)
 		if err != nil {
-			fmt.Printf("Error calculating %s: %v\n", key, err)
+			fmt.Printf("Error calculating %s: %v\n", formula.Key, err)
 			return
 		}
-		variables[key] = value
+		variables[formula.Key] = value
 	}
 
 	// 最终计算 a * b * c
@@ -181,7 +187,7 @@ func ExampleComposeInt() {
 	expr := "a+b+c>299"
 
 	// 生成组合
-	result := ComposeInt(params, current, 0, minValue, maxValue, expr)
+	result := ComposeInt(params, current, 0, minValue, maxValue, expr, nil, nil)
 	fmt.Printf("get result, detail is:%+v", result)
 	// Output:
 	// get result, detail is:[99 100 101]
@@ -199,7 +205,7 @@ func ExampleComposeFloat() {
 	expr := "a+b+c>299"
 
 	// 生成组合
-	result := ComposeFloat(params, current, 0, minValue, maxValue, expr)
+	result := ComposeFloat(params, current, 0, minValue, maxValue, expr, nil, nil)
 	fmt.Printf("get result, detail is:%+v", result)
 	// Output:
 	// get result, detail is:[99.1 99.1 101.1]
@@ -216,7 +222,7 @@ func ExampleComposeString() {
 	expr := "a+b+c>\"xx\""
 
 	// 生成组合
-	result := ComposeString(params, values, current, 0, expr)
+	result := ComposeString(params, values, current, 0, expr, nil, nil)
 	fmt.Printf("get result, detail is:%+v", result)
 	// Output:
 	// get result, detail is:[  xxa]

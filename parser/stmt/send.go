@@ -15,14 +15,6 @@ type Send struct {
 	Arrow token.Pos         // 通道的方向 token.Arrow
 }
 
-func (s *Send) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (s *Send) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseSend 解析ast
 func ParseSend(stmt *ast.SendStmt) *Send {
 	send := &Send{}

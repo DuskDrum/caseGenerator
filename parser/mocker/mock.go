@@ -1,10 +1,10 @@
 package mocker
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expression"
 	"caseGenerator/parser/expression/mockresult"
-	"caseGenerator/parser/mocker/goValuate"
-	"caseGenerator/parser/stmt"
+	"caseGenerator/parser/goValuate"
 	"strings"
 
 	"github.com/samber/lo"
@@ -21,7 +21,7 @@ type IMock interface {
 //     如果是 nil， 可能是==或者!=。 nil是属于 Ident 里的
 //
 // 2. 如果两边都没有靶子，那么将其中一边设置为零值，再继续用第一步的流程(ident 不知道变量类型，所以没办法处理)
-func MockExpression(expression *expression.ExpressDetail, seList []stmt.StatementAssignment) []mockresult.MockResult {
+func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementAssignment) []mockresult.MockResult {
 	// 1. 如果有 basicLit，那么按照 govalue进行解析试算得到最终结果
 	if len(expression.BasicList) > 0 {
 		return goValuate.MockBasicExpression(expression, seList)

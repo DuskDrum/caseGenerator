@@ -2,6 +2,7 @@ package stmt
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	expression2 "caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
@@ -19,13 +20,9 @@ type IncDec struct {
 	Token   token.Token       // 类型，是 token.INC、token.DEC
 }
 
-func (i *IncDec) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
-func (i *IncDec) LogicExpression() []StatementAssignment {
-	stmtExpressionList := make([]StatementAssignment, 0, 10)
-	se := StatementAssignment{
+func (i *IncDec) FormulaExpress() []bo.StatementAssignment {
+	stmtExpressionList := make([]bo.StatementAssignment, 0, 10)
+	se := bo.StatementAssignment{
 		Name: i.Content.GetFormula(),
 		Type: enum.STMT_TYPE_INCDEC,
 	}

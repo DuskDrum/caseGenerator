@@ -1,6 +1,8 @@
 package stmt
 
 import (
+	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression"
 	"caseGenerator/parser/mocker"
@@ -18,15 +20,16 @@ type If struct {
 	Else      Stmt
 }
 
-func (i *If) LogicExpression() []StatementAssignment {
+func (i *If) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType) {
 	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mocker 的值
 	if i.Init != nil {
-		return i.Init.LogicExpression()
+		return i.Init.FormulaExpress()
 	}
-	return nil
+	return nil, nil
 }
 
-func (i *If) CalculateCondition(seList []StatementAssignment) []ConditionResult {
+// todo  if 里要考虑 else、嵌套if、嵌套switch、嵌套 type-switch之间的关系，也要考虑 return 直接跳出 condition
+func (i *If) CalculateCondition(seList []bo.StatementAssignment) []ConditionResult {
 	// 1. 先拿到 Condition的表达式
 	conditionExpressionList := expression.Express(i.Condition)
 	// 2. 找表达式中的变量,去遍历找表达式中的变化记录

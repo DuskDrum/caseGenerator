@@ -1,6 +1,8 @@
 package stmt
 
 import (
+	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"go/ast"
 )
 
@@ -12,26 +14,34 @@ type TypeSwitch struct {
 	Body   *Block
 }
 
-func (t *TypeSwitch) LogicExpression() []StatementAssignment {
-	stmtExpressionList := make([]StatementAssignment, 0, 10)
+func (t *TypeSwitch) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType) {
+	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	outerVariablesMap := make(map[string]enum.SpecificType, 10)
 	if t.Init != nil {
-		initExpression := t.Init.LogicExpression()
-		stmtExpressionList = append(stmtExpressionList, initExpression...)
+		initF, initOuter := t.Init.FormulaExpress()
+		keyFormulaList = append(keyFormulaList, initF...)
+		for k, v := range initOuter {
+			outerVariablesMap[k] = v
+		}
 	}
-	// Assign有可能是x := y.(type) *LogicExpression or y.(type) *Expr
+	// Assign有可能是x := y.(type) *FormulaExpress or y.(type) *Expr
 	assign, ok := t.Assign.(*Assign)
 	if ok {
-		assignExpression := assign.LogicExpression()
-		stmtExpressionList = append(stmtExpressionList, assignExpression...)
+		aF, aOuter := assign.FormulaExpress()
+		keyFormulaList = append(keyFormulaList, aF...)
+		for k, v := range aOuter {
+			outerVariablesMap[k] = v
+		}
 	}
-	return stmtExpressionList
+	return keyFormulaList, outerVariablesMap
 }
 
-func (i *TypeSwitch) CalculateCondition([]StatementAssignment) []ConditionResult {
+func (t *TypeSwitch) CalculateCondition([]bo.StatementAssignment) []ConditionResult {
 	return nil
 }
 
 // ParseTypeSwitch 解析ast
+// todo type-switch 里要考虑 else、嵌套if、嵌套switch、嵌套 type-switch之间的关系，也要考虑 return 直接跳出 condition
 func ParseTypeSwitch(stmt *ast.TypeSwitchStmt) *TypeSwitch {
 	ts := &TypeSwitch{}
 

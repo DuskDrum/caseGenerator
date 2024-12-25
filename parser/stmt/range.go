@@ -17,14 +17,6 @@ type Range struct {
 	Body    *Block
 }
 
-func (r *Range) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (r *Range) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseRange 解析ast
 func ParseRange(stmt *ast.RangeStmt) *Range {
 	r := &Range{}

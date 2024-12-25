@@ -13,14 +13,6 @@ type Go struct {
 	Call expr.Call
 }
 
-func (g *Go) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (g *Go) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseGo 解析ast
 func ParseGo(stmt *ast.GoStmt) *Go {
 	g := &Go{}

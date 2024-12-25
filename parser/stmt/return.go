@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
@@ -12,11 +13,8 @@ type Return struct {
 	ReturnList []_struct.Parameter
 }
 
-func (r *Return) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (r *Return) CalculateCondition([]StatementAssignment) []ConditionResult {
+// todo 需要考虑return
+func (r *Return) CalculateCondition([]bo.StatementAssignment) []ConditionResult {
 	return nil
 }
 

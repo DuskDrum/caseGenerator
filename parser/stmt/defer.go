@@ -13,14 +13,6 @@ type Defer struct {
 	Call expr.Call
 }
 
-func (d *Defer) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (d *Defer) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseDefer 解析ast
 func ParseDefer(stmt *ast.DeferStmt) *Defer {
 	d := &Defer{}

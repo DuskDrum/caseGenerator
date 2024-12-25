@@ -1,40 +1,32 @@
 package goValuate
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expression"
 	"caseGenerator/parser/expression/mockresult"
-	"caseGenerator/parser/stmt"
 
 	"github.com/Knetic/govaluate"
-	"github.com/samber/lo"
 )
 
-// MockBasicFloatExpression mocker float basic 的表达式
-func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []stmt.StatementAssignment) []mockresult.MockResult {
-	// 如果类型是 float
-	var inList []float64
+// MockBasicStringExpression mocker string basic 的表达式
+func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult.MockResult {
+	// 如果类型是 string
+	var strList []string
+	strList = append(strList, "")
 	for _, v := range basicValueList {
-		// 类型断言，将元素转换为 float
-		if value, ok := v.(float64); ok {
-			inList = append(inList, value)
-		} else if fValue, fok := v.(float32); fok {
-			inList = append(inList, float64(fValue))
+		// 类型断言，将元素转换为 string
+		if value, ok := v.(string); ok {
+			strList = append(strList, value)
+			strList = append(strList, value+"a")
 		} else {
 			// 如果转换失败，返回错误
-			panic("element is not an float")
+			panic("element is not an string")
 		}
 	}
-	// todo 取列表里的最大最小值，判断怎么快速得到取值范围
-	minValue := lo.Min(inList)
-	maxValue := lo.Max(inList)
-	if minValue == maxValue {
-		minValue = minValue - 100
-		maxValue = maxValue + 100
-	}
+
 	// 参数名称
 	params := make([]string, 0, len(expression.IdentMap))
-	resultList := make([]mockresult.MockResult, 0, 10)
-	// 参数名称, 取 ident
+
 	for key := range expression.IdentMap {
 		params = append(params, key)
 	}
@@ -47,8 +39,14 @@ func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueLi
 		params = append(params, key)
 	}
 
-	current := make([]float64, len(params))
-	result := ComposeFloat(params, current, 0, minValue, maxValue, expression.Expr, seList, variablesMap)
+	current := make([]string, len(params))
+	result := ComposeString(params, strList, current, 0, expression.Expr, seList, variablesMap)
+	resultList := convertToAnyResultList(expression, result, params)
+	return resultList
+}
+
+func convertToAnyResultList(expression *expression.ExpressDetail, result, params []string) []mockresult.MockResult {
+	resultList := make([]mockresult.MockResult, 0, 10)
 	if result != nil {
 		// 参数一一对应的值
 		for i, param := range params {
@@ -78,8 +76,9 @@ func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueLi
 	return resultList
 }
 
-// ComposeFloat 组合float
-func ComposeFloat(params []string, current []float64, index int, min, max float64, expr string, calculateExprList []stmt.StatementAssignment, variablesMap map[string]any) []float64 {
+// ComposeString 组合string
+
+func ComposeString(params []string, values []string, current []string, index int, expr string, calculateExprList []bo.StatementAssignment, variablesMap map[string]any) []string {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)
@@ -124,12 +123,12 @@ func ComposeFloat(params []string, current []float64, index int, min, max float6
 		return nil
 	}
 
-	// 遍历当前参数从 0 到 max 的所有可能值
-	for i := min; i <= max; i++ {
-		current[index] = i
-		composeInt := ComposeFloat(params, current, index+1, min, max, expr, calculateExprList, variablesMap)
-		if composeInt != nil {
-			return composeInt
+	// 遍历当前参数的所有可能值
+	for _, value := range values {
+		current[index] = value
+		result := ComposeString(params, values, current, index+1, expr, calculateExprList, variablesMap)
+		if result != nil {
+			return result
 		}
 	}
 	return nil

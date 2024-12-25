@@ -13,14 +13,6 @@ type CaseClause struct {
 	BodyList []Stmt
 }
 
-func (c *CaseClause) LogicExpression() []StatementAssignment {
-	return nil
-}
-
-func (c *CaseClause) CalculateCondition([]StatementAssignment) []ConditionResult {
-	return nil
-}
-
 // ParseCaseClause 解析ast
 func ParseCaseClause(stmt *ast.CaseClause) *CaseClause {
 	cc := &CaseClause{}

@@ -7,7 +7,7 @@ import (
 type StmtType BaseEnum
 
 var (
-	STMT_TYPE_ASSIGN       = StmtType{Name: "LogicExpression", Desc: "赋值类型"}
+	STMT_TYPE_ASSIGN       = StmtType{Name: "FormulaExpress", Desc: "赋值类型"}
 	STMT_TYPE_BLOCK        = StmtType{Name: "Block", Desc: "代码块类型"}
 	STMT_TYPE_BRANCH       = StmtType{Name: "Branch", Desc: "分支语句"}
 	STMT_TYPE_CASECLAUSE   = StmtType{Name: "CaseClause", Desc: "switch语句中的一个case子句"}
