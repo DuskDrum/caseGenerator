@@ -111,6 +111,16 @@ func (cn *ConditionNode) Offer(child *ConditionNode) {
 	cn.Children.Offer(child)
 }
 
+// Add 往线性结构头部添加元素
+func (cn *ConditionNode) Add(parent *ConditionNode) *ConditionNode {
+	node := &ConditionNode{
+		Condition:       parent.Condition,
+		ConditionResult: parent.ConditionResult,
+		Children:        cn,
+	}
+	return node
+}
+
 type ConditionNodeResult struct {
 	ConditionNode *ConditionNode // 条件节点，有子条件，象征着一条条件链路
 	IsBreak       bool           // 表示是否已经中断，true代表已经中断了，不需要继续处理条件， false代表这个condition还需要继续处理

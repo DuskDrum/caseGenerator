@@ -14,8 +14,8 @@ type If struct {
 	Init            *Assign
 	Condition       _struct.Parameter
 	Block           *Block
-	ElseIfCondition *If // else-if列表
-	ElseCondition   *If // else记录
+	ElseIfCondition []*If  // else-if列表
+	ElseCondition   *Block // else记录
 }
 
 // ParseIf 解析ast
@@ -34,22 +34,33 @@ func ParseIf(stmt *ast.IfStmt) *If {
 	if stmt.Else != nil {
 		switch elseTyp := stmt.Else.(type) {
 		case *ast.IfStmt:
-			// 递归去找else-if
-			elseIfCondition := ParseIf(elseTyp)
-			i.ElseIfCondition = elseIfCondition
+			elseIfList := ParseElseIf(elseTyp)
+			i.ElseIfCondition = elseIfList
 		case *ast.BlockStmt:
 			// 解析else
 			elseBlock := ParseBlock(elseTyp)
-			elseCondition := &If{
-				Block: elseBlock,
-			}
-			i.ElseCondition = elseCondition
+			i.ElseCondition = elseBlock
 		default:
 			panic("parse condition error, can't get type")
 		}
 
 	}
 	return i
+}
+
+func ParseElseIf(stmt *ast.IfStmt) []*If {
+	ifList := make([]*If, 0, 10)
+	// 递归去找else-if
+	if stmt.Else == nil {
+		return ifList
+	}
+	ifStmt, ok := stmt.Else.(*ast.IfStmt)
+	if !ok {
+		panic("if else type is not *ast.IfStmt")
+	}
+	elseIfList := ParseElseIf(ifStmt)
+	ifList = append(ifList, elseIfList...)
+	return ifList
 }
 
 func (i *If) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
@@ -77,7 +88,7 @@ func (i *If) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesM
 func (i *If) ParseIfCondition() []*ConditionNodeResult {
 	// 1. 先拿到 Condition的表达式
 	conditionExpressionList := expression.Express(i.Condition)
-	cn := &ConditionNodeResult{
+	parentNode := &ConditionNodeResult{
 		ConditionNode: &ConditionNode{
 			Condition:       conditionExpressionList,
 			ConditionResult: true,
@@ -86,8 +97,12 @@ func (i *If) ParseIfCondition() []*ConditionNodeResult {
 	}
 
 	// 2. 遍历Block, 处理多个block下面condition的关系
+	// 最外层的condition, 和父类同级的条件列表
+	uncleNodeList := make([]*ConditionNodeResult, 0, 10)
+	uncleNodeList = append(uncleNodeList, parentNode)
+
 	blockResultList := make([]*ConditionNodeResult, 0, 10)
-	blockResultList = append(blockResultList, cn)
+	blockResultList = append(blockResultList, parentNode)
 	for _, stmtValue := range i.Block.StmtList {
 		// 2.1 解析condition
 		conditionResultList := ParseCondition(stmtValue)
@@ -107,8 +122,79 @@ func (i *If) ParseIfCondition() []*ConditionNodeResult {
 		}
 	}
 	// 3. 再遍历else if的block, 首先要排除第二步的condition
+	for _, v := range i.ElseIfCondition {
+		elseConditionExpressionList := expression.Express(v.Condition)
+		elseNodResult := &ConditionNodeResult{
+			ConditionNode: &ConditionNode{
+				Condition:       elseConditionExpressionList,
+				ConditionResult: true,
+			},
+			IsBreak: false,
+		}
+		// 递归调用
+		conditionResultList := v.ParseIfCondition()
+		elseResultNodeList := make([]*ConditionNodeResult, 0, 10)
 
+		// 遍历把前面几个original都取逻辑非放在最前面节点
+		var uncleNode *ConditionNode
+		for _, value := range uncleNodeList {
+			result := &ConditionNode{
+				Condition:       value.ConditionNode.Condition,
+				ConditionResult: false, // 代表这个条件要取反
+			}
+			if uncleNode == nil {
+				uncleNode = result
+			} else {
+				uncleNode.Offer(result)
+			}
+		}
+
+		for _, elseCondition := range conditionResultList {
+			if uncleNode != nil {
+				addNode := uncleNode.Add(elseCondition.ConditionNode)
+				addResult := &ConditionNodeResult{
+					ConditionNode: addNode,
+					IsBreak:       elseCondition.IsBreak,
+				}
+				elseResultNodeList = append(elseResultNodeList, addResult)
+			} else {
+				panic("uncleNode error")
+			}
+		}
+		// 把此节点放到 叔叔辈
+		uncleNodeList = append(uncleNodeList, elseNodResult)
+		// 把解析好的节点 放在block节点下
+		blockResultList = append(blockResultList, elseResultNodeList...)
+	}
 	// 4. 再遍历else的block
+	for _, stmtValue := range i.ElseCondition.StmtList {
+		// 4.1 解析condition
+		conditionResultList := ParseCondition(stmtValue)
+		// 遍历把前面几个original都取逻辑非放在最前面节点
+		var uncleNode *ConditionNode
+		for _, value := range uncleNodeList {
+			result := &ConditionNode{
+				Condition:       value.ConditionNode.Condition,
+				ConditionResult: false, // 代表这个条件要取反
+			}
+			if uncleNode == nil {
+				uncleNode = result
+			} else {
+				uncleNode.Offer(result)
+			}
+		}
+		if uncleNode != nil && len(conditionResultList) > 0 {
+			for _, result := range conditionResultList {
+				addNode := uncleNode.Add(result.ConditionNode)
+				nodeResult := &ConditionNodeResult{
+					ConditionNode: addNode,
+					IsBreak:       result.IsBreak,
+				}
+				// 把解析好的节点 放在block节点下
+				blockResultList = append(blockResultList, nodeResult)
+			}
+		}
+	}
 
-	return nil
+	return blockResultList
 }
