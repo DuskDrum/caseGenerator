@@ -14,7 +14,7 @@ type Return struct {
 }
 
 // todo 需要考虑return
-func (r *Return) CalculateCondition([]bo.StatementAssignment) []ConditionResult {
+func (r *Return) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []bo.KeyFormula) []ConditionResult {
 	return nil
 }
 
@@ -28,4 +28,11 @@ func ParseReturn(stmt *ast.ReturnStmt) *Return {
 	}
 	r.ReturnList = resultList
 	return r
+}
+
+func (i *Return) ParseReturnCondition() []*ConditionNodeResult {
+	return []*ConditionNodeResult{{
+		ConditionNode: nil,
+		IsBreak:       true,
+	}}
 }

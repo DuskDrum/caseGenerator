@@ -12,10 +12,13 @@ func TestIfCase(t *testing.T) {
 	sourceCode := `
     package main
     func main() {
-        if a := 5; a > 3 {
+		a := 5
+        if a > 3 {
 			fmt.Println("a is greater than 3")
 		} else if a < 0 {
 			fmt.Println("a is less than or equal to 0")
+		} else if a< 1 {
+			fmt.Println("a is less than or equal to 1")
 		} else {
 			fmt.Println("a is other probably")
 		}

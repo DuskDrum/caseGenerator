@@ -1,6 +1,7 @@
 package decl
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/stmt"
 	"go/ast"
@@ -42,16 +43,29 @@ func ParseFunc(decl *ast.FuncDecl) *Func {
 
 // ParseBody 解析方法
 func ParseBody(sb *ast.BlockStmt) {
-	crList := make([]stmt.ConditionResult, 0, 10)
-	saList := make([]stmt.StatementAssignment, 0, 10)
+	// 常量map
+	constantsMap := make(map[string]any, 10)
+	// 内部变量map， 通过上下文推导出来
+	innerVariablesMap := make(map[string]any, 10)
+	// 外部变量map，从请求参数里拿到
+	outerVariablesMap := make(map[string]any, 10)
+	// 公式列表
+	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	callVariableMap := make(map[string]*expr.Call, 10)
+
 	// 1. 遍历方法里的每个 stmt，
 	for _, v := range sb.List {
-		// todo 需要理清楚每个分支要走到哪些逻辑公式，和对应的Condition与非condition
+		// todo
 		// 1.1 解析每个stmt的内容
 		p := stmt.ParseStmt(v)
 		// 1.2 执行每一个 stmt 的公式；得到最新的赋值公式
-		express := p.LogicExpression()
-		saList = append(saList, express...)
+		if pes, ok := p.(stmt.ExpressionStmt); ok {
+			kfList, callMap := pes.FormulaExpress()
+			keyFormulaList = append(keyFormulaList, kfList...)
+			for k, value := range callMap {
+				callVariableMap[k] = value
+			}
+		}
 		// 1.3 解析每个condition需要的变量，得到不等式公式
 		condition := p.CalculateCondition(express)
 		crList = append(crList, condition...)

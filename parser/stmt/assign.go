@@ -34,9 +34,9 @@ type Assign struct {
 	AssignParamList []AssignParam
 }
 
-func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType) {
+func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 	formulasList := make([]bo.KeyFormula, 0, 10)
-	outerVariablesMap := make(map[string]enum.SpecificType, 10)
+	callMap := make(map[string]*expr.Call, 10)
 	for _, param := range a.AssignParamList {
 		se := bo.KeyFormula{
 			Key:  param.Left.GetFormula(),
@@ -52,11 +52,8 @@ func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType
 		se.CallMap = expression.CallMap
 		se.SelectorMap = expression.SelectorMap
 
-		for k := range se.CallMap {
-			outerVariablesMap[k] = enum.SPECIFIC_TYPE_FUNC
-		}
-		for k := range se.SelectorMap {
-			outerVariablesMap[k] = enum.SPECIFIC_TYPE_STRUCT
+		for k, v := range se.CallMap {
+			callMap[k] = v
 		}
 
 		switch a.Token {
@@ -179,7 +176,7 @@ func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType
 		}
 		formulasList = append(formulasList, se)
 	}
-	return formulasList, outerVariablesMap
+	return formulasList, callMap
 }
 
 type AssignParam struct {

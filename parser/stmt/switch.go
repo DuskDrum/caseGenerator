@@ -1,7 +1,6 @@
 package stmt
 
 import (
-	"caseGenerator/common/enum"
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
@@ -16,7 +15,7 @@ type Switch struct {
 	Body *Block
 }
 
-func (s *Switch) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType) {
+func (s *Switch) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mocker 的值
 	if s.Init != nil {
 		return s.Init.FormulaExpress()
@@ -24,12 +23,11 @@ func (s *Switch) FormulaExpress() ([]bo.KeyFormula, map[string]enum.SpecificType
 	return nil, nil
 }
 
-func (s *Switch) CalculateCondition([]bo.StatementAssignment) []ConditionResult {
+func (s *Switch) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []bo.KeyFormula) []ConditionResult {
 	return nil
 }
 
 // ParseSwitch 解析ast
-// todo switch 里要考虑 else、嵌套if、嵌套switch、嵌套 type-switch之间的关系，也要考虑 return 直接跳出 condition
 func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 	s := &Switch{}
 	if stmt.Init != nil {
@@ -42,4 +40,9 @@ func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 	s.Tag = expr.ParseParameter(stmt.Tag)
 	s.Body = ParseBlock(stmt.Body)
 	return s
+}
+
+func (i *Switch) ParseSwitchCondition() []*ConditionNodeResult {
+
+	return nil
 }
