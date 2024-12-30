@@ -42,7 +42,7 @@ func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 	return s
 }
 
-func (i *Switch) ParseSwitchCondition() []*ConditionNodeResult {
+func (s *Switch) ParseSwitchCondition() []*ConditionNodeResult {
 
 	return nil
 }

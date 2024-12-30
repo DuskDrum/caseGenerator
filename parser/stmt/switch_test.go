@@ -45,3 +45,59 @@ func TestSwitchCase(t *testing.T) {
 		return true
 	})
 }
+
+func TestParseIfProblemCase(t *testing.T) {
+	sourceCode := `
+    package main
+    func main() {
+		switch c {
+	case 9:
+		fmt.Println("c is 9")
+	case 10:
+		fmt.Println("c is 10")
+	case 11:
+		fmt.Println("c is 11")
+	case 12:
+		fmt.Println("c is 12")
+	default:
+		if b == 1 {
+			fmt.Println("b is 1")
+		} else if b > 2 {
+			if b > 2 && b < 10 {
+				fmt.Println("b > 2 && b < 10")
+				return
+			}
+			if a == 4 {
+				fmt.Println("a is 4")
+			}
+		}
+		fmt.Println("c is default")
+	}
+	fmt.Println("a is greater than 3")
+    }
+    `
+	fset := token.NewFileSet()
+	// 解析代码
+	file, err := parser.ParseFile(fset, "", sourceCode, 0)
+	if err != nil {
+		fmt.Println("解析出错:", err)
+		return
+	}
+	// 遍历函数体中的语句
+	// 遍历 AST
+	for _, d := range file.Decls {
+		decl, ok := d.(*ast.FuncDecl)
+		if !ok {
+			fmt.Println("解析出错:")
+			return
+		}
+		for _, b := range decl.Body.List {
+			if stmt, ok := b.(*ast.SwitchStmt); ok {
+				fmt.Println("找到 SwitchStmt")
+				parseIf := ParseSwitch(stmt)
+				// 被断言的对象
+				fmt.Printf("接口对象: %v\n", parseIf)
+			}
+		}
+	}
+}
