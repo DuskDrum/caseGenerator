@@ -99,16 +99,22 @@ func ParseStmt(expr ast.Stmt) Stmt {
 type ConditionNode struct {
 	Condition       []*expression.ExpressDetail // 表示当前节点的条件 (如 "A", "B", "C", "D", "E")
 	ConditionResult bool                        // 表示逻辑与还是逻辑非，true代表这一个condition要是true， false代表这个condition要是false
-	Children        *ConditionNode              // 子节点表示嵌套逻辑
+	Relation        *ConditionNode              // 关联节点表示嵌套逻辑
 }
 
 // Offer 往线性结构末端继续添加元素
-func (cn *ConditionNode) Offer(child *ConditionNode) {
-	if cn.Children == nil {
-		cn.Children = child
-		return
+func (cn *ConditionNode) Offer(relation ConditionNode) *ConditionNode {
+	if relation.Relation == nil {
+		result := relation
+		result.Relation = cn
+		return &result
 	}
-	cn.Children.Offer(child)
+	if cn.Relation == nil {
+		result := cn
+		result.Relation = &relation
+		return result
+	}
+	panic("Offer error")
 }
 
 // Add 往线性结构头部添加元素
@@ -116,7 +122,7 @@ func (cn *ConditionNode) Add(parent *ConditionNode) *ConditionNode {
 	node := &ConditionNode{
 		Condition:       parent.Condition,
 		ConditionResult: parent.ConditionResult,
-		Children:        cn,
+		Relation:        cn,
 	}
 	return node
 }

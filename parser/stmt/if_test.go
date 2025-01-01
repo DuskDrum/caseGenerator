@@ -131,7 +131,8 @@ func TestParseIfCase(t *testing.T) {
 // 4. a>3 && b >0 && b >2 && b >20 && a <10 && a==5
 // 5. a>3 && b >0 && b >2 && b >20 && a >100 && b >100 && a==5
 // 6. a>3 && b >0 && b >2 && b >20 && a >100 && b <=100 return
-// 7. a <= 3
+// 7. a <= 3 && b > 20
+// 8. a <= 3 && b <= 20
 func TestParseBlockCase(t *testing.T) {
 	sourceCode := `
     package main
@@ -171,6 +172,11 @@ func TestParseBlockCase(t *testing.T) {
 			}
 		} else {
 			fmt.Println("a <= 3")
+			if b > 20 {
+				fmt.Println("b > 20")
+			} else {
+				fmt.Println("b <= 20")
+			}
 		}
     }
     `
@@ -195,6 +201,10 @@ func TestParseBlockCase(t *testing.T) {
 				parseIf := ParseIf(stmt)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseIf)
+				// 解析 condition
+				conditionResult := parseIf.ParseIfCondition()
+				fmt.Printf(" 解析condition后的结果: %v\n", conditionResult)
+
 			}
 		}
 	}

@@ -112,10 +112,14 @@ func (i *If) ParseIfCondition() []*ConditionNodeResult {
 	blockResultList := i.ParseIfBlockCondition(parentNode)
 	// 3. 再遍历else if的block, 首先要排除第二步的condition
 	elseIfConditionResultList, uncleNodeList := i.ParseElseIfCondition(parentNode)
-	blockResultList = append(blockResultList, elseIfConditionResultList...)
+	if len(elseIfConditionResultList) > 0 {
+		blockResultList = append(blockResultList, elseIfConditionResultList...)
+	}
 	// 4. 再遍历else的block
 	elseConditionResultList := i.ParseElseCondition(uncleNodeList)
-	blockResultList = append(blockResultList, elseConditionResultList...)
+	if len(elseConditionResultList) > 0 {
+		blockResultList = append(blockResultList, elseConditionResultList...)
+	}
 	return blockResultList
 }
 
@@ -132,15 +136,19 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 				// 手动深拷贝
 				condiNode := parentNode.ConditionNode
 				// 在尾部加上conditionNode
-				condiNode.Offer(conditionResult.ConditionNode)
+				result := condiNode.Offer(conditionResult.ConditionNode)
 				middleNode := &ConditionNodeResult{
-					ConditionNode: condiNode,
+					ConditionNode: result,
 					IsBreak:       conditionResult.IsBreak,
 				}
 				blockResultList = append(blockResultList, middleNode)
 			}
-
 		}
+	}
+	// 如果没有任何的条件语句，那么把主条件放到结果中
+	// 含义是: IF xxx {} 下没有任何其他的条件，那么把 xxx 这个条件放到结果中返回
+	if len(blockResultList) == 0 {
+		blockResultList = append(blockResultList, parentNode)
 	}
 	return blockResultList
 }
@@ -164,7 +172,8 @@ func (i *If) ParseElseIfCondition(parentNode *ConditionNodeResult) ([]*Condition
 			if uncleNode == nil {
 				uncleNode = result
 			} else {
-				uncleNode.Offer(result)
+				resultNode := uncleNode.Offer(result)
+				uncleNode = resultNode
 			}
 		}
 		// 3. 解析本condition条件
@@ -173,7 +182,7 @@ func (i *If) ParseElseIfCondition(parentNode *ConditionNodeResult) ([]*Condition
 			ConditionNode: &ConditionNode{
 				Condition:       elseConditionExpressionList,
 				ConditionResult: true,
-				Children:        uncleNode,
+				Relation:        uncleNode,
 			},
 			IsBreak: false,
 		}
@@ -203,7 +212,8 @@ func (i *If) ParseElseCondition(uncleNodeList []*ConditionNode) []*ConditionNode
 		if uncleNode == nil {
 			uncleNode = result
 		} else {
-			uncleNode.Offer(result)
+			resultNode := uncleNode.Offer(result)
+			uncleNode = resultNode
 		}
 	}
 	if uncleNode == nil {
