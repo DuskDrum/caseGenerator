@@ -103,18 +103,18 @@ type ConditionNode struct {
 }
 
 // Offer 往线性结构末端继续添加元素
-func (cn *ConditionNode) Offer(relation ConditionNode) *ConditionNode {
-	if relation.Relation == nil {
-		result := relation
-		result.Relation = cn
-		return &result
+func (cn *ConditionNode) Offer(relation *ConditionNode) *ConditionNode {
+	if relation == nil {
+		result := cn
+		return result
 	}
 	if cn.Relation == nil {
 		result := cn
-		result.Relation = &relation
+		result.Relation = relation
 		return result
+	} else {
+		return cn.Relation.Offer(relation)
 	}
-	panic("Offer error")
 }
 
 // Add 往线性结构头部添加元素
