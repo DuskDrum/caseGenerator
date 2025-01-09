@@ -231,8 +231,10 @@ func TestParseSimpleBlockCase(t *testing.T) {
 		if b>0 {
 			if a == 5 {
 				fmt.Println("a ==5 && b > 1111")
+			} else if a > 5 {
+				fmt.Println("a > 5 && b > 1111")
+				return
 			}
-			
 			if b ==10 {
 				fmt.Println("b == 10")	
 			}
