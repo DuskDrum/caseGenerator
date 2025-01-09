@@ -216,11 +216,6 @@ func TestParseBlockCase(t *testing.T) {
 // 2. a>3 && b >0 && a ==5
 // 3. a <= 3 && b > 20
 // 4. a <= 3 && b <= 20
-//
-//	else if a > 5 {
-//					fmt.Println("a > 5 && b > 1111")
-//					return
-//				}
 func TestParseSimpleBlockCase(t *testing.T) {
 	sourceCode := `
     package main
