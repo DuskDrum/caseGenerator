@@ -121,20 +121,14 @@ func (i *If) ParseIfCondition() []*ConditionNodeResult {
 	if len(elseConditionResultList) > 0 {
 		blockResultList = append(blockResultList, elseConditionResultList...)
 	}
-	// 5. 处理break的记录，即return的
-	breakNodeList := ParseBreakUncleNode(uncleNodeList)
-	if len(breakNodeList) > 0 {
-		blockResultList = append(blockResultList, breakNodeList...)
-	}
 	return blockResultList
 }
 
-// todo 整理这个方法 、 测试这个方法
 // ParseIfBlockCondition 解析block下的多个逻辑，父节点和子节点之间是 逻辑与关系
+// todo 整理这个方法 、 测试这个方法
 func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*ConditionNodeResult {
 	// 1. 遍历Block, 处理多个block下面condition的关系
 	blockResultList := make([]*ConditionNodeResult, 0, 10)
-	middleResultList := make([]*ConditionNodeResult, 0, 10)
 	sourceNodeList := make([]*ConditionNode, 0, 10)
 
 	// 手动深拷贝
@@ -161,11 +155,7 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 						})
 						// 如果 解析出来的 nodeResult不是被阻塞的，那么需要继续排列组合的进行执行
 					} else {
-						sourceNodeList = append(sourceNodeList, result)
-						middleResultList = append(middleResultList, &ConditionNodeResult{
-							ConditionNode: result,
-							IsBreak:       false,
-						})
+						middleSourceNodeList = append(middleSourceNodeList, result)
 					}
 				} else {
 					if conditionResult.IsBreak {
@@ -193,11 +183,7 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 							}
 							// 在尾部加上conditionNode
 							result := snNode.Offer(conditionResult.ConditionNode)
-							sourceNodeList = append(sourceNodeList, result)
-							middleResultList = append(middleResultList, &ConditionNodeResult{
-								ConditionNode: result,
-								IsBreak:       false,
-							})
+							middleSourceNodeList = append(middleSourceNodeList, result)
 						}
 					}
 				}
@@ -283,16 +269,6 @@ func (i *If) ParseElseCondition(uncleNodeList []*ConditionNodeResult) []*Conditi
 		}
 	}
 	return blockResultList
-}
-
-func ParseBreakUncleNode(uncleNodeList []*ConditionNodeResult) []*ConditionNodeResult {
-	results := make([]*ConditionNodeResult, 0, 10)
-	for _, v := range uncleNodeList {
-		if v.IsBreak {
-			results = append(results, v)
-		}
-	}
-	return results
 }
 
 func ParseUncleNodeRelation(uncleNodeList []*ConditionNodeResult) *ConditionNode {

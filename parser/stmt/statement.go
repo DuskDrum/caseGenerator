@@ -113,7 +113,9 @@ func (cn *ConditionNode) Offer(relation *ConditionNode) *ConditionNode {
 		result.Relation = relation
 		return result
 	} else {
-		return cn.Relation.Offer(relation)
+		result := cn.Relation.Offer(relation)
+		cn.Relation = result
+		return cn
 	}
 }
 
