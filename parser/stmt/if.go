@@ -125,7 +125,6 @@ func (i *If) ParseIfCondition() []*ConditionNodeResult {
 }
 
 // ParseIfBlockCondition 解析block下的多个逻辑，父节点和子节点之间是 逻辑与关系
-// todo 整理这个方法 、 测试这个方法
 func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*ConditionNodeResult {
 	// 1. 遍历Block, 处理多个block下面condition的关系
 	blockResultList := make([]*ConditionNodeResult, 0, 10)
@@ -138,54 +137,10 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 			middleSourceNodeList := make([]*ConditionNode, 0, 10)
 			// 3. 遍历将结果作为子节点挂在父 condition下
 			for _, conditionResult := range conditionResultList {
-				if len(sourceNodeList) == 0 {
-					// 手动深拷贝
-					parentSourceNode, err := utils.DeepCopyByJson(parentNode.ConditionNode)
-					if err != nil {
-						panic(err.Error())
-					}
-					// 在尾部加上conditionNode
-					result := parentSourceNode.Offer(conditionResult.ConditionNode)
-					// 如果 解析出来的 nodeResult是被阻塞的，那么直接返回到结果中， 不放到middleNode中了
-					if conditionResult.IsBreak {
-						blockResultList = append(blockResultList, &ConditionNodeResult{
-							ConditionNode: result,
-							IsBreak:       true,
-						})
-						// 如果 解析出来的 nodeResult不是被阻塞的，那么需要继续排列组合的进行执行
-					} else {
-						middleSourceNodeList = append(middleSourceNodeList, result)
-					}
-				} else {
-					if conditionResult.IsBreak {
-						for _, sn := range sourceNodeList {
-							// 手动深拷贝
-							snNode, snErr := utils.DeepCopyByJson(sn)
-							if snErr != nil {
-								panic(snErr.Error())
-							}
-							// 在尾部加上conditionNode
-							result := snNode.Offer(conditionResult.ConditionNode)
-
-							blockResultList = append(blockResultList, &ConditionNodeResult{
-								ConditionNode: result,
-								IsBreak:       true,
-							})
-						}
-						// 如果 解析出来的 nodeResult不是被阻塞的，那么需要继续排列组合的进行执行
-					} else {
-						for _, sn := range sourceNodeList {
-							// 手动深拷贝
-							snNode, snErr := utils.DeepCopyByJson(sn)
-							if snErr != nil {
-								panic(snErr.Error())
-							}
-							// 在尾部加上conditionNode
-							result := snNode.Offer(conditionResult.ConditionNode)
-							middleSourceNodeList = append(middleSourceNodeList, result)
-						}
-					}
-				}
+				// 遍历将子节点挂在父condition下
+				nodeList, nodeResultList := parseConditionResult(conditionResult, sourceNodeList, parentNode)
+				middleSourceNodeList = append(middleSourceNodeList, nodeList...)
+				blockResultList = append(blockResultList, nodeResultList...)
 			}
 			// 赋值
 			sourceNodeList = middleSourceNodeList
@@ -203,6 +158,121 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 		blockResultList = append(blockResultList, parentNode)
 	}
 	return blockResultList
+}
+
+func parseConditionResult(conditionResult *ConditionNodeResult, sourceNodeList []*ConditionNode, parentNode *ConditionNodeResult) ([]*ConditionNode, []*ConditionNodeResult) {
+	middleSourceNodeList := make([]*ConditionNode, 0, 10)
+	blockResultList := make([]*ConditionNodeResult, 0, 10)
+
+	if len(sourceNodeList) == 0 {
+		// 执行parentNode对应的解析
+		middleSourceNode, blockResult := doParseBlockParentNode(parentNode, conditionResult)
+		// 解析后的middleSourceNode，要放入到一起，下个循环使用其作为参数，继续处理。
+		if middleSourceNode != nil {
+			middleSourceNodeList = append(middleSourceNodeList, middleSourceNode)
+		}
+		// 解析后的blockResult，解析到了return，下个循环不能再使用其作为参数。
+		if blockResult != nil {
+			blockResultList = append(blockResultList, blockResult)
+		}
+	} else {
+		middleSourceList, nodeResultList := doParseSourceNodeList(conditionResult, sourceNodeList)
+		if len(middleSourceList) != 0 {
+			middleSourceNodeList = append(middleSourceNodeList, middleSourceList...)
+		}
+		if len(nodeResultList) != 0 {
+			blockResultList = append(blockResultList, nodeResultList...)
+		}
+	}
+	return middleSourceNodeList, blockResultList
+
+}
+
+func doParseBlockParentNode(parentNode *ConditionNodeResult, conditionResult *ConditionNodeResult) (*ConditionNode, *ConditionNodeResult) {
+	var negativeResult *ConditionNode = nil
+	// 手动深拷贝
+	parentSourceNode, err := utils.DeepCopyByJson(parentNode.ConditionNode)
+	if err != nil {
+		panic(err.Error())
+	}
+	// 在尾部加上conditionNode
+	result := parentSourceNode.Offer(conditionResult.ConditionNode)
+
+	// negative parent node
+	negativeParentSourceNode, err := utils.DeepCopyByJson(parentNode.ConditionNode)
+	if err != nil {
+		panic(err.Error())
+	}
+	// 在尾部加上conditionNode
+	if conditionResult.ConditionNode != nil {
+		negativeResult = negativeParentSourceNode.Offer(&ConditionNode{
+			Condition:       conditionResult.ConditionNode.Condition,
+			ConditionResult: !conditionResult.ConditionNode.ConditionResult,
+			Relation:        conditionResult.ConditionNode.Relation,
+		})
+	}
+
+	// 如果 解析出来的 nodeResult是被阻塞的，那么直接返回到结果中， 不放到middleNode中了
+	if conditionResult.IsBreak {
+		return negativeResult, &ConditionNodeResult{
+			ConditionNode: result,
+			IsBreak:       true,
+		}
+		// 如果 解析出来的 nodeResult不是被阻塞的，那么需要继续排列组合的进行执行
+	} else {
+		return result, nil
+	}
+}
+
+func doParseSourceNodeList(conditionResult *ConditionNodeResult, sourceNodeList []*ConditionNode) ([]*ConditionNode, []*ConditionNodeResult) {
+	middleSourceNodeList := make([]*ConditionNode, 0, 10)
+	middleNodeResultList := make([]*ConditionNodeResult, 0, 10)
+	if conditionResult.IsBreak {
+		for _, sn := range sourceNodeList {
+			// 手动深拷贝， 直接return出去了
+			snNode, snErr := utils.DeepCopyByJson(sn)
+			if snErr != nil {
+				panic(snErr.Error())
+			}
+			// 在尾部加上conditionNode
+			result := snNode.Offer(conditionResult.ConditionNode)
+			middleNodeResultList = append(middleNodeResultList, &ConditionNodeResult{
+				ConditionNode: result,
+				IsBreak:       true,
+			})
+
+			if conditionResult.ConditionNode == nil {
+				continue
+			}
+			// negative parent node， 同级别的条件要越过这个condition，所以需要取反
+			negativeParentSourceNode, err := utils.DeepCopyByJson(sn)
+			if err != nil {
+				panic(err.Error())
+			}
+			// 在尾部加上conditionNode
+			negativeResult := negativeParentSourceNode.Offer(&ConditionNode{
+				Condition:       conditionResult.ConditionNode.Condition,
+				ConditionResult: !conditionResult.ConditionNode.ConditionResult,
+				Relation:        conditionResult.ConditionNode.Relation,
+			})
+			middleSourceNodeList = append(middleSourceNodeList, negativeResult)
+
+		}
+		return nil, middleNodeResultList
+		// 如果 解析出来的 nodeResult不是被阻塞的，那么需要继续排列组合的进行执行
+	} else {
+		for _, sn := range sourceNodeList {
+			// 手动深拷贝
+			snNode, snErr := utils.DeepCopyByJson(sn)
+			if snErr != nil {
+				panic(snErr.Error())
+			}
+			// 在尾部加上conditionNode
+			result := snNode.Offer(conditionResult.ConditionNode)
+			middleSourceNodeList = append(middleSourceNodeList, result)
+		}
+		return middleSourceNodeList, nil
+	}
 }
 
 // ParseElseIfCondition 解析else if 列表， else if 互相有取反的逻辑
@@ -257,7 +327,10 @@ func (i *If) ParseElseCondition(uncleNodeList []*ConditionNodeResult) []*Conditi
 			// 3. 遍历将结果作为子节点挂在父 condition下
 			for _, conditionResult := range conditionResultList {
 				// 手动深拷贝
-				condiNode := uncleNode
+				condiNode, snErr := utils.DeepCopyByJson(uncleNode)
+				if snErr != nil {
+					panic(snErr.Error())
+				}
 				// 在尾部加上conditionNode
 				condiNode.Offer(conditionResult.ConditionNode)
 				middleNode := &ConditionNodeResult{
@@ -267,6 +340,12 @@ func (i *If) ParseElseCondition(uncleNodeList []*ConditionNodeResult) []*Conditi
 				blockResultList = append(blockResultList, middleNode)
 			}
 		}
+	}
+	if len(blockResultList) == 0 {
+		blockResultList = append(blockResultList, &ConditionNodeResult{
+			ConditionNode: uncleNode,
+			IsBreak:       false,
+		})
 	}
 	return blockResultList
 }
