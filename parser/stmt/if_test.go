@@ -44,7 +44,9 @@ func TestIfCase(t *testing.T) {
 				fmt.Println("找到 IfStmt")
 				parseIf := ParseIf(stmt)
 				// 被断言的对象
-				fmt.Printf("接口对象: %v\n", parseIf)
+				// 解析 condition
+				conditionResult := parseIf.ParseIfCondition()
+				fmt.Printf(" 解析condition后的结果: %v\n", conditionResult)
 			}
 		}
 	}
@@ -212,10 +214,9 @@ func TestParseBlockCase(t *testing.T) {
 
 // TestParseBlockCase 主要用来解析if内部的多个条件分支，是怎么找到条件关系的
 // 这个例子最后要得到的结果是:
-// 1. a>3 && b < -1 return
-// 2. a>3 && b >0 && a ==5
-// 3. a <= 3 && b > 20
-// 4. a <= 3 && b <= 20
+// 1. b > 0 && a == 5 && b == 10
+// 2. b > 0 && a != 5 && a > 5
+// 3. b <= 0
 func TestParseSimpleBlockCase(t *testing.T) {
 	sourceCode := `
     package main

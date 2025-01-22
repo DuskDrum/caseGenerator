@@ -60,6 +60,7 @@ func ParseTypeSwitch(stmt *ast.TypeSwitchStmt) *TypeSwitch {
 }
 
 func (i *TypeSwitch) ParseTypeSwitchCondition() []*ConditionNodeResult {
+	results := make([]*ConditionNodeResult, 0, 10)
 
-	return nil
+	return results
 }

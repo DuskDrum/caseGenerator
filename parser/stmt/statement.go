@@ -119,6 +119,16 @@ func (cn *ConditionNode) Offer(relation *ConditionNode) *ConditionNode {
 	}
 }
 
+// Negate 取反
+func (cn *ConditionNode) Negate() {
+	cn.ConditionResult = false
+	if cn.Relation == nil {
+		return
+	} else {
+		cn.Relation.Negate()
+	}
+}
+
 // Add 往线性结构头部添加元素
 func (cn *ConditionNode) Add(parent *ConditionNode) *ConditionNode {
 	node := &ConditionNode{

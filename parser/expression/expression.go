@@ -49,3 +49,37 @@ func ExpressParam(param _struct.Parameter) []*ExpressDetail {
 		return []*ExpressDetail{expression}
 	}
 }
+
+func ExpressTarget(param, targetParam _struct.Parameter) []*ExpressDetail {
+	expressionList := make([]*ExpressDetail, 0, 10)
+	eList := ExpressTargetParam(param, targetParam)
+	expressionList = append(expressionList, eList...)
+	return expressionList
+}
+
+// ExpressTargetParam 将Binary、Unary解析为Expression，得到两个东西，一个是里面的Ident和func的引用，一个是最终得到的公式
+func ExpressTargetParam(param, targetParam _struct.Parameter) []*ExpressDetail {
+	switch exprType := param.(type) {
+	case *expr.Binary:
+		return ExpressBinary(exprType)
+	case *expr.Unary:
+		return ExpressUnary(exprType)
+	case *expr.Parent:
+		return ExpressParent(exprType)
+	case *expr.Ident:
+		return ExpressTargetIdent(exprType, targetParam)
+	case *expr.Selector:
+		return ExpressTargetSelector(exprType, targetParam)
+	case *expr.Call:
+		return ExpressTargetCall(exprType, targetParam)
+	case *expr.BasicLit:
+		return ExpressTargetBasicLit(exprType, targetParam)
+	default:
+		elementList := []string{param.GetFormula()}
+		expression := &ExpressDetail{
+			ElementList: elementList,
+			Expr:        strings.Join(elementList, " "),
+		}
+		return []*ExpressDetail{expression}
+	}
+}
