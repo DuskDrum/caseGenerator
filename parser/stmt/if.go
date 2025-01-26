@@ -493,6 +493,12 @@ func (i *If) ParseElseCondition(uncleNode *ConditionNode) []*ConditionNodeResult
 			}
 		}
 	}
+	if len(blockResultList) == 0 {
+		blockResultList = append(blockResultList, &ConditionNodeResult{
+			ConditionNode: uncleNode,
+			IsBreak:       false,
+		})
+	}
 	return blockResultList
 }
 

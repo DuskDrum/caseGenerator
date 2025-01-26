@@ -217,6 +217,59 @@ func TestParseBlockCase(t *testing.T) {
 
 // TestParseBlockCase 主要用来解析if内部的多个条件分支，是怎么找到条件关系的
 // 这个例子最后要得到的结果是:
+// 1. a>3
+// 2. !(a>3) && b > 20
+// 3. !(a>3) && !(b > 20)
+func TestSimpleElseParseBlockCase(t *testing.T) {
+	sourceCode := `
+    package main
+    func main() {
+		a := 5
+		b := 10
+        if a > 3 {
+			fmt.Println("a > 3")
+		} else {
+			fmt.Println("a <= 3")
+			if b > 20 {
+				fmt.Println("b > 20")
+			} else {
+				fmt.Println("b <= 20")
+			}
+		}
+    }
+    `
+	fset := token.NewFileSet()
+	// 解析代码
+	file, err := parser.ParseFile(fset, "", sourceCode, 0)
+	if err != nil {
+		fmt.Println("解析出错:", err)
+		return
+	}
+	// 遍历函数体中的语句
+	// 遍历 AST
+	for _, d := range file.Decls {
+		decl, ok := d.(*ast.FuncDecl)
+		if !ok {
+			fmt.Println("解析出错:")
+			return
+		}
+		for _, b := range decl.Body.List {
+			if stmt, ok := b.(*ast.IfStmt); ok {
+				fmt.Println("找到 IfStmt")
+				parseIf := ParseIf(stmt)
+				// 被断言的对象
+				fmt.Printf("接口对象: %v\n", parseIf)
+				// 解析 condition
+				conditionResult := parseIf.ParseIfCondition()
+				fmt.Printf(" 解析condition后的结果: %v\n", conditionResult)
+
+			}
+		}
+	}
+}
+
+// TestParseBlockCase 主要用来解析if内部的多个条件分支，是怎么找到条件关系的
+// 这个例子最后要得到的结果是:
 // 1. b > 0 && a == 5 && b == 10
 // 2. b > 0 && a != 5 && a > 5
 // 3. b <= 0
