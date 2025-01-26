@@ -47,6 +47,9 @@ func TestIfCase(t *testing.T) {
 				// 解析 condition
 				conditionResult := parseIf.ParseIfCondition()
 				fmt.Printf(" 解析condition后的结果: %v\n", conditionResult)
+				if len(conditionResult) != 3 {
+					panic("result is error")
+				}
 			}
 		}
 	}
@@ -226,14 +229,21 @@ func TestParseSimpleBlockCase(t *testing.T) {
 
 		if b>0 {
 			if a == 5 {
-				fmt.Println("a ==5 && b > 1111")
-			} else if a > 5 {
-				fmt.Println("a > 5 && b > 1111")
+				fmt.Println("a ==5 && b > 0")
+	     	} else if a < 5 {
+				fmt.Println("a < 5 && b > 0")
+			} else if a > 10 {
+				fmt.Println("a > 5 && b > 0")
 				return
 			}
-			if b ==10 {
-				fmt.Println("b == 10")	
+			if b == 10 {
+				fmt.Println("b == 10")
+				return
+		   }
+			if b < 10 {
+				fmt.Println("b < 10")
 			}
+			return
 		}
     }
     `
@@ -262,7 +272,9 @@ func TestParseSimpleBlockCase(t *testing.T) {
 				// 解析 condition
 				conditionResult := parseIf.ParseIfCondition()
 				fmt.Printf(" 解析condition后的结果: %v\n", conditionResult)
-
+				if len(conditionResult) != 6 {
+					panic("result is error")
+				}
 			}
 		}
 	}

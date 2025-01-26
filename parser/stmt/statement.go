@@ -5,6 +5,7 @@ import (
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression"
 	"go/ast"
+	"strings"
 )
 
 type Stmt interface {
@@ -126,6 +127,25 @@ func (cn *ConditionNode) Negate() {
 		return
 	} else {
 		cn.Relation.Negate()
+	}
+}
+
+// ExprString 取所有 relation 的 expr 值
+func (cn *ConditionNode) ExprString() string {
+	exprList := make([]string, 0, 10)
+	for _, c := range cn.Condition {
+		if cn.ConditionResult {
+			exprList = append(exprList, c.Expr)
+		} else {
+			exprList = append(exprList, "!("+c.Expr+")")
+		}
+	}
+	joinString := strings.Join(exprList, " && ")
+
+	if cn.Relation == nil {
+		return joinString
+	} else {
+		return joinString + " && " + cn.Relation.ExprString()
 	}
 }
 
