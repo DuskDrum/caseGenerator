@@ -318,103 +318,6 @@ func isResultConflict(targetList []*ConditionNodeResult, source *ConditionNodeRe
 }
 
 // todo 怎么给方法加上注释
-func parseConditionResult(rightConditionResult *ConditionNodeResult, leftSourceNode *ConditionNode) (*ConditionNode, []*ConditionNodeResult) {
-	blockResultList := make([]*ConditionNodeResult, 0, 10)
-	// 如果 sourceNodeList 列表是空
-	middleSource, middleNodeResultList := doParseSourceNodeList(rightConditionResult, leftSourceNode)
-	if len(middleNodeResultList) != 0 {
-		blockResultList = append(blockResultList, middleNodeResultList...)
-	}
-
-	return middleSource, blockResultList
-}
-
-func doParseBlockParentNode(parentNode *ConditionNodeResult, conditionResult *ConditionNodeResult) (*ConditionNode, *ConditionNodeResult) {
-	var negativeResult *ConditionNode = nil
-	// 手动深拷贝
-	parentSourceNode, err := utils.DeepCopyByJson(parentNode.ConditionNode)
-	if err != nil {
-		panic(err.Error())
-	}
-	// 在尾部加上conditionNode
-	result := parentSourceNode.Offer(conditionResult.ConditionNode)
-
-	// negative parent node
-	negativeParentSourceNode, err := utils.DeepCopyByJson(parentNode.ConditionNode)
-	if err != nil {
-		panic(err.Error())
-	}
-	// 在尾部加上conditionNode
-	if conditionResult.ConditionNode != nil {
-		negativeResult = negativeParentSourceNode.Offer(&ConditionNode{
-			Condition:       conditionResult.ConditionNode.Condition,
-			ConditionResult: !conditionResult.ConditionNode.ConditionResult,
-			Relation:        conditionResult.ConditionNode.Relation,
-		})
-	}
-
-	// 如果 解析出来的 nodeResult是被阻塞的，那么直接返回到结果中， 不放到middleNode中了
-	if conditionResult.IsBreak {
-		return negativeResult, &ConditionNodeResult{
-			ConditionNode: result,
-			IsBreak:       true,
-		}
-		// 如果 解析出来的 nodeResult不是被阻塞的，那么需要继续排列组合的进行执行
-	} else {
-		return result, nil
-	}
-}
-
-func doParseSourceNodeList(rightConditionResult *ConditionNodeResult, leftSourceNode *ConditionNode) (*ConditionNode, []*ConditionNodeResult) {
-	middleNodeResultList := make([]*ConditionNodeResult, 0, 10)
-	if rightConditionResult.IsBreak {
-		middleSourceNode, middleNodeList := parseIsBreak(leftSourceNode, rightConditionResult)
-		middleNodeResultList = append(middleNodeResultList, middleNodeList...)
-		return middleSourceNode, middleNodeResultList
-		// 如果 解析出来的 nodeResult不是被阻塞的，那么需要继续排列组合的进行执行
-	} else {
-		// 手动深拷贝
-		snNode, snErr := utils.DeepCopyByJson(leftSourceNode)
-		if snErr != nil {
-			panic(snErr.Error())
-		}
-		// 在尾部加上conditionNode
-		result := snNode.Offer(rightConditionResult.ConditionNode)
-
-		return result, nil
-	}
-}
-
-func parseIsBreak(leftNode *ConditionNode, rightConditionResult *ConditionNodeResult) (*ConditionNode, []*ConditionNodeResult) {
-	middleNodeResultList := make([]*ConditionNodeResult, 0, 10)
-	// 手动深拷贝， 直接return出去了
-	snNode, snErr := utils.DeepCopyByJson(leftNode)
-	if snErr != nil {
-		panic(snErr.Error())
-	}
-	// 在尾部加上conditionNode
-	result := snNode.Offer(rightConditionResult.ConditionNode)
-	middleNodeResultList = append(middleNodeResultList, &ConditionNodeResult{
-		ConditionNode: result,
-		IsBreak:       true,
-	})
-
-	if rightConditionResult.ConditionNode == nil {
-		return nil, middleNodeResultList
-	}
-	// negative parent node， 同级别的条件要越过这个condition，所以需要取反
-	negativeParentSourceNode, err := utils.DeepCopyByJson(leftNode)
-	if err != nil {
-		panic(err.Error())
-	}
-	// 在尾部加上conditionNode
-	negativeResult := negativeParentSourceNode.Offer(&ConditionNode{
-		Condition:       rightConditionResult.ConditionNode.Condition,
-		ConditionResult: !rightConditionResult.ConditionNode.ConditionResult,
-		Relation:        rightConditionResult.ConditionNode.Relation,
-	})
-	return negativeResult, middleNodeResultList
-}
 
 // ParseElseIfCondition 解析else if 列表， else if 互相有取反的逻辑
 func (i *If) ParseElseIfCondition(parentNode *ConditionNodeResult) ([]*ConditionNodeResult, *ConditionNode) {
@@ -500,27 +403,6 @@ func (i *If) ParseElseCondition(uncleNode *ConditionNode) []*ConditionNodeResult
 		})
 	}
 	return blockResultList
-}
-
-func ParseUncleNodeRelation(uncleNodeList []*ConditionNodeResult) *ConditionNode {
-	var uncleNode *ConditionNode
-	for _, nodeResult := range uncleNodeList {
-		if nodeResult.IsBreak {
-			continue
-		}
-		value := nodeResult.ConditionNode
-		result := &ConditionNode{
-			Condition:       value.Condition,
-			ConditionResult: false, // 代表这个条件要取反
-		}
-		if uncleNode == nil {
-			uncleNode = result
-		} else {
-			resultNode := uncleNode.Offer(result)
-			uncleNode = resultNode
-		}
-	}
-	return uncleNode
 }
 
 func DeepCopyErrorByJson[T any](p T) T {
