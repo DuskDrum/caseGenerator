@@ -41,6 +41,9 @@ func TestSwitchCase(t *testing.T) {
 			parseSwitch := ParseSwitch(stmt)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", parseSwitch)
+			// 解析 condition
+			conditionResult := parseSwitch.ParseSwitchCondition()
+			fmt.Printf(" 解析condition后的结果: %v\n", conditionResult)
 		}
 		return true
 	})

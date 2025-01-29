@@ -12,9 +12,10 @@ import (
 // Switch switch语句
 // switch语句用于根据不同的条件执行不同的代码块
 type Switch struct {
-	Tag  _struct.Parameter // Tag是一个表达式（Expr），它是switch语句要判断的值。例如，在switch num中，num对应的表达式就是Tag
-	Init *Assign
-	Body *Block
+	Tag            _struct.Parameter // Tag是一个表达式（Expr），它是switch语句要判断的值。例如，在switch num中，num对应的表达式就是Tag
+	Init           *Assign
+	CaseClauseList []*CaseClause // case列表
+	DefaultCase    *CaseClause   // 默认的case列表，List值为nil
 }
 
 func (s *Switch) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
@@ -40,7 +41,29 @@ func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 		s.Init = ParseAssign(as)
 	}
 	s.Tag = expr.ParseParameter(stmt.Tag)
-	s.Body = ParseBlock(stmt.Body)
+
+	caseClauseList := make([]*CaseClause, 0, 10)
+	defaultCaseList := make([]*CaseClause, 0, 10)
+	// 解析 body, body是ast.BlockStmt类型，其中元素都应该是*ast.CaseClause,否则不合法
+	for _, v := range stmt.Body.List {
+		clause, ok := v.(*ast.CaseClause)
+		if !ok {
+			panic("switch clause type is not case")
+		}
+		if clause.List != nil {
+			caseClauseList = append(caseClauseList, ParseCaseClause(clause))
+		} else {
+			defaultCaseList = append(defaultCaseList, ParseCaseClause(clause))
+		}
+	}
+	// default 只能有一个，解析出多个就报错
+	if len(defaultCaseList) > 1 {
+		panic("default clause list size more than 1")
+	}
+	if len(defaultCaseList) == 1 {
+		s.DefaultCase = defaultCaseList[0]
+	}
+	s.CaseClauseList = caseClauseList
 	return s
 }
 
@@ -48,40 +71,34 @@ func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 // default则不同，default需要把之前所有的case都取反
 func (s *Switch) ParseSwitchCondition() []*ConditionNodeResult {
 	results := make([]*ConditionNodeResult, 0, 10)
-	caseDetailNodeList := make([]*ConditionNode, 0, 10)
+	uncleNodeList := make([]*ConditionNode, 0, 10)
 	// 1. 首先解析tag
 	tag := s.Tag
-	// 2. 解析Body， Body是一个[]stmt.Stmt，里面都是*stmt.CaseClause
-	for _, stmtDetail := range s.Body.StmtList {
-		clause, ok := stmtDetail.(*CaseClause)
-		if !ok {
-			panic("can't parse switch stmtList item")
-		}
+	// 2. 解析caseList, 每个元素都是*stmt.CaseClause
+	for _, clause := range s.CaseClauseList {
 		caseList := clause.CaseList
 		bodyList := clause.BodyList
 		// 遍历的解析caseList、bodyList
-		if len(caseList) > 0 {
-			for _, caseDetail := range caseList {
-				list, node := parseBodyList(bodyList, tag, caseDetail)
-				results = append(results, list...)
-				caseDetailNodeList = append(caseDetailNodeList, node)
-			}
-		} else {
-			// clause如果是没有CaseList的，代表是else。将caseDetailNodeList里的所有内容取反
-			var cn *ConditionNode
-			for _, v := range caseDetailNodeList {
-				conditionNode := &ConditionNode{
-					Condition:       v.Condition,
-					ConditionResult: false,
-				}
-				cn = conditionNode.Offer(cn)
-			}
-			results = append(results, &ConditionNodeResult{
-				ConditionNode: cn,
-				IsBreak:       false,
-			})
+		for _, caseDetail := range caseList {
+			list, node := parseBodyList(bodyList, tag, caseDetail)
+			results = append(results, list...)
+			uncleNodeList = append(uncleNodeList, node)
 		}
 	}
+	// 3. 解析 defaultCase
+	// clause如果是没有CaseList的，代表是else。将caseDetailNodeList里的所有内容取反
+	var cn *ConditionNode
+	for _, v := range uncleNodeList {
+		conditionNode := &ConditionNode{
+			Condition:       v.Condition,
+			ConditionResult: false,
+		}
+		cn = conditionNode.Offer(cn)
+	}
+	results = append(results, &ConditionNodeResult{
+		ConditionNode: cn,
+		IsBreak:       false,
+	})
 	return results
 }
 
