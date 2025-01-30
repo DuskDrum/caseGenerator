@@ -112,6 +112,17 @@ func TestParseIfProblemCase(t *testing.T) {
 	case 11:
 		fmt.Println("c is 11")
 	case 12:
+		if b == 1 {
+			fmt.Println("b is 1")
+		} else if b > 2 {
+			if b > 2 && b < 10 {
+				fmt.Println("b > 2 && b < 10")
+				return
+			}
+			if a == 4 {
+				fmt.Println("a is 4")
+			}
+		}
 		fmt.Println("c is 12")
 	default:
 		if b == 1 {
@@ -148,9 +159,12 @@ func TestParseIfProblemCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.SwitchStmt); ok {
 				fmt.Println("找到 SwitchStmt")
-				parseIf := ParseSwitch(stmt)
+				parseSwitch := ParseSwitch(stmt)
 				// 被断言的对象
-				fmt.Printf("接口对象: %v\n", parseIf)
+				fmt.Printf("接口对象: %v\n", parseSwitch)
+				// 解析 condition
+				conditionResult := parseSwitch.ParseSwitchCondition()
+				fmt.Printf(" 解析condition后的结果: %v\n", conditionResult)
 			}
 		}
 	}

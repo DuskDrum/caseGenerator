@@ -87,18 +87,52 @@ func (s *Switch) ParseSwitchCondition() []*ConditionNodeResult {
 	}
 	// 3. 解析 defaultCase
 	// clause如果是没有CaseList的，代表是else。将caseDetailNodeList里的所有内容取反
+	if s.DefaultCase != nil {
+		defaultTag := parseDefaultTag(uncleNodeList, s.DefaultCase)
+		results = append(results, defaultTag...)
+	}
+	return results
+}
+
+func parseDefaultTag(uncleNodeList []*ConditionNode, defaultClause *CaseClause) []*ConditionNodeResult {
+	results := make([]*ConditionNodeResult, 0, 10)
+	// 给 uncle 所有条件取反
 	var cn *ConditionNode
 	for _, v := range uncleNodeList {
 		conditionNode := &ConditionNode{
 			Condition:       v.Condition,
-			ConditionResult: false,
+			ConditionResult: !v.ConditionResult,
 		}
 		cn = conditionNode.Offer(cn)
 	}
-	results = append(results, &ConditionNodeResult{
-		ConditionNode: cn,
-		IsBreak:       false,
-	})
+	// 解析 default 中的每个条件
+	for _, bodyDetail := range defaultClause.BodyList {
+		// 遍历解析
+		conditionResultList := ParseCondition(bodyDetail)
+		if len(conditionResultList) != 0 {
+			for _, middleConditionResultDetail := range conditionResultList {
+				// 手动深拷贝
+				sourceNode, err := utils.DeepCopyByJson(cn)
+				if err != nil {
+					panic(err.Error())
+				}
+				// 向后添加元素
+				offerNode := sourceNode.Offer(middleConditionResultDetail.ConditionNode)
+				// 返回出去
+				results = append(results, &ConditionNodeResult{
+					ConditionNode: offerNode,
+					IsBreak:       middleConditionResultDetail.IsBreak,
+				})
+			}
+		}
+	}
+	// 如果 default 中没有子条件，那么返回所有叔节点取反
+	if len(results) == 0 {
+		results = append(results, &ConditionNodeResult{
+			ConditionNode: cn,
+			IsBreak:       false,
+		})
+	}
 	return results
 }
 
@@ -111,14 +145,7 @@ func parseBodyList(bodyList []Stmt, tag _struct.Parameter, caseDetail _struct.Pa
 		Condition:       conditionExpressionList,
 		ConditionResult: true,
 	}
-	// 定义中间变量记录一个body中多个condition之间的关系
-	middleNodeResultList := make([]*ConditionNodeResult, 0, 10)
-	if len(middleNodeResultList) == 0 {
-		results = append(results, &ConditionNodeResult{
-			ConditionNode: cn,
-			IsBreak:       false,
-		})
-	}
+
 	for _, bodyDetail := range bodyList {
 		// 遍历解析
 		conditionResultList := ParseCondition(bodyDetail)
@@ -134,10 +161,17 @@ func parseBodyList(bodyList []Stmt, tag _struct.Parameter, caseDetail _struct.Pa
 				// 返回出去
 				results = append(results, &ConditionNodeResult{
 					ConditionNode: offerNode,
-					IsBreak:       false,
+					IsBreak:       middleConditionResultDetail.IsBreak,
 				})
 			}
 		}
+	}
+	// 如果没有子节点，那么返回当前节点
+	if len(results) == 0 {
+		results = append(results, &ConditionNodeResult{
+			ConditionNode: cn,
+			IsBreak:       false,
+		})
 	}
 
 	return results, cn
