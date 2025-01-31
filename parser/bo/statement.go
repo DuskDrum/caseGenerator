@@ -15,6 +15,7 @@ type StatementAssignment struct {
 	expression.ExpressDetail
 }
 
+// KeyFormula 赋值键值对
 type KeyFormula struct {
 	Key     string
 	Formula string // 公式

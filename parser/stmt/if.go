@@ -202,6 +202,10 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 	// 二维数组，用来记录平级的多条语句
 	abreastMatrixList := make([][]*ConditionNodeResult, 0, 10)
 
+	// 记录赋值键值对列表
+	keyFormulaList := make([]*bo.KeyFormula, 0, 10)
+	FormulaCallMap := make(map[string]*expr.Call, 10)
+
 	// nodeList 取最近的那个条件
 	//leftNodeList := make([]*ConditionNode, 0, 10)
 	//leftNodeList = append(leftNodeList, parentNode.ConditionNode)
