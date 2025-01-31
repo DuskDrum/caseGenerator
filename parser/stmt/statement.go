@@ -162,7 +162,7 @@ func (cn *ConditionNode) Add(parent *ConditionNode) *ConditionNode {
 type ConditionNodeResult struct {
 	ConditionNode  *ConditionNode        // 条件节点，有子条件，象征着一条条件链路
 	IsBreak        bool                  // 表示是否已经中断，true代表已经中断了，不需要继续处理条件， false代表这个condition还需要继续处理
-	KeyFormulaList []*bo.KeyFormula      // 赋值键值对列表
+	KeyFormulaList []bo.KeyFormula       // 赋值键值对列表
 	FormulaCallMap map[string]*expr.Call // 赋值方法map
 }
 
@@ -188,5 +188,5 @@ func ParseConditionKeyFormula(condition Stmt) ([]bo.KeyFormula, map[string]*expr
 	if pes, ok := condition.(ExpressionStmt); ok {
 		return pes.FormulaExpress()
 	}
-	return nil, nil
+	return []bo.KeyFormula{}, map[string]*expr.Call{}
 }

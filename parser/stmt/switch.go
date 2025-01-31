@@ -96,7 +96,7 @@ func (s *Switch) ParseSwitchCondition() []*ConditionNodeResult {
 
 func parseDefaultTag(uncleNodeList []*ConditionNode, defaultClause *CaseClause) []*ConditionNodeResult {
 	results := make([]*ConditionNodeResult, 0, 10)
-	// 给 uncle 所有条件取反
+	// 1. 给 uncle 所有条件取反
 	var cn *ConditionNode
 	for _, v := range uncleNodeList {
 		conditionNode := &ConditionNode{
@@ -105,8 +105,15 @@ func parseDefaultTag(uncleNodeList []*ConditionNode, defaultClause *CaseClause) 
 		}
 		cn = conditionNode.Offer(cn)
 	}
-	// 解析 default 中的每个条件
+	// 2.记录赋值键值对列表
+	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	formulaCallMap := make(map[string]*expr.Call, 10)
+	// 3. 解析 default 中的每个条件
 	for _, bodyDetail := range defaultClause.BodyList {
+		// 4. 解析每一句是否是赋值语句，并将其存储起来
+		formulaList, callMap := ParseConditionKeyFormula(bodyDetail)
+		keyFormulaList = append(keyFormulaList, formulaList...)
+		utils.PutAll(formulaCallMap, callMap)
 		// 遍历解析
 		conditionResultList := ParseCondition(bodyDetail)
 		if len(conditionResultList) != 0 {
@@ -116,6 +123,12 @@ func parseDefaultTag(uncleNodeList []*ConditionNode, defaultClause *CaseClause) 
 				if err != nil {
 					panic(err.Error())
 				}
+				// 组装赋值语句
+				copyFormulaList := make([]bo.KeyFormula, 0, 10)
+				copy(formulaList, copyFormulaList)
+				copyFormulaList = append(copyFormulaList, middleConditionResultDetail.KeyFormulaList...)
+				middleConditionResultDetail.KeyFormulaList = copyFormulaList
+
 				// 向后添加元素
 				offerNode := sourceNode.Offer(middleConditionResultDetail.ConditionNode)
 				// 返回出去
@@ -139,15 +152,24 @@ func parseDefaultTag(uncleNodeList []*ConditionNode, defaultClause *CaseClause) 
 // parseBodyList 解析body列表
 func parseBodyList(bodyList []Stmt, tag _struct.Parameter, caseDetail _struct.Parameter) ([]*ConditionNodeResult, *ConditionNode) {
 	results := make([]*ConditionNodeResult, 0, 10)
-
+	// 1. 解析出 tag
 	conditionExpressionList := expression.ExpressTargetParam(caseDetail, tag)
 	cn := &ConditionNode{
 		Condition:       conditionExpressionList,
 		ConditionResult: true,
 	}
 
+	// 2.记录赋值键值对列表
+	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	formulaCallMap := make(map[string]*expr.Call, 10)
+
 	for _, bodyDetail := range bodyList {
-		// 遍历解析
+		// 3. 解析每一句是否是赋值语句，并将其存储起来
+		formulaList, callMap := ParseConditionKeyFormula(bodyDetail)
+		keyFormulaList = append(keyFormulaList, formulaList...)
+		utils.PutAll(formulaCallMap, callMap)
+
+		// 4.遍历解析条件语句
 		conditionResultList := ParseCondition(bodyDetail)
 		if len(conditionResultList) != 0 {
 			for _, middleConditionResultDetail := range conditionResultList {
@@ -156,6 +178,12 @@ func parseBodyList(bodyList []Stmt, tag _struct.Parameter, caseDetail _struct.Pa
 				if err != nil {
 					panic(err.Error())
 				}
+				// 组装赋值语句
+				copyFormulaList := make([]bo.KeyFormula, 0, 10)
+				copy(formulaList, copyFormulaList)
+				copyFormulaList = append(copyFormulaList, middleConditionResultDetail.KeyFormulaList...)
+				middleConditionResultDetail.KeyFormulaList = copyFormulaList
+
 				// 向后添加元素
 				offerNode := sourceNode.Offer(middleConditionResultDetail.ConditionNode)
 				// 返回出去

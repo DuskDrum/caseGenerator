@@ -203,22 +203,32 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 	abreastMatrixList := make([][]*ConditionNodeResult, 0, 10)
 
 	// 记录赋值键值对列表
-	keyFormulaList := make([]*bo.KeyFormula, 0, 10)
-	FormulaCallMap := make(map[string]*expr.Call, 10)
+	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	formulaCallMap := make(map[string]*expr.Call, 10)
 
 	// nodeList 取最近的那个条件
 	//leftNodeList := make([]*ConditionNode, 0, 10)
 	//leftNodeList = append(leftNodeList, parentNode.ConditionNode)
 	// 2. for循环解析block里的每条语句
 	for _, stmtValue := range i.Block.StmtList {
-		// 3. 解析每一条语句，得到的是这句statement解析出来的条件列表。
+		// 3. 解析每一句是否是赋值语句，并将其存储起来
+		formulaList, callMap := ParseConditionKeyFormula(stmtValue)
+		keyFormulaList = append(keyFormulaList, formulaList...)
+		utils.PutAll(formulaCallMap, callMap)
+		// 4. 解析每一条条件语句，得到的是这句statement解析出来的条件列表。
 		conditionResultList := ParseCondition(stmtValue)
-		// 4. 将解析得到的结果放入到二维数组中
+		// 5. 将解析得到的结果放入到二维数组中, 合并每个条件语句前的赋值语句
 		if len(conditionResultList) > 0 {
+			for _, v := range conditionResultList {
+				copyFormulaList := make([]bo.KeyFormula, 0, 10)
+				copy(formulaList, copyFormulaList)
+				copyFormulaList = append(copyFormulaList, v.KeyFormulaList...)
+				v.KeyFormulaList = copyFormulaList
+			}
 			abreastMatrixList = append(abreastMatrixList, conditionResultList)
 		}
 	}
-	// 5. 解析二维数组，将第一步和第二步的数据排列组合出来，分别正向和反向排列，遇到break的不需要取反了
+	// 6. 解析二维数组，将第一步和第二步的数据排列组合出来，分别正向和反向排列，遇到break的不需要取反了
 	// 存放最终结果
 	var resultList []*ConditionNodeResult
 
