@@ -180,16 +180,19 @@ func parseBodyList(bodyList []Stmt, tag _struct.Parameter, caseDetail _struct.Pa
 				}
 				// 组装赋值语句
 				copyFormulaList := make([]bo.KeyFormula, 0, 10)
+				// 深度拷贝
 				copy(formulaList, copyFormulaList)
 				copyFormulaList = append(copyFormulaList, middleConditionResultDetail.KeyFormulaList...)
-				middleConditionResultDetail.KeyFormulaList = copyFormulaList
-
+				//middleConditionResultDetail.KeyFormulaList = copyFormulaList
+				copyCallMap := utils.CopyMap(callMap)
 				// 向后添加元素
 				offerNode := sourceNode.Offer(middleConditionResultDetail.ConditionNode)
 				// 返回出去
 				results = append(results, &ConditionNodeResult{
-					ConditionNode: offerNode,
-					IsBreak:       middleConditionResultDetail.IsBreak,
+					ConditionNode:  offerNode,
+					IsBreak:        middleConditionResultDetail.IsBreak,
+					KeyFormulaList: copyFormulaList,
+					FormulaCallMap: copyCallMap,
 				})
 			}
 		}
