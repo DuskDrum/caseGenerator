@@ -220,8 +220,7 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 		// 5. 将解析得到的结果放入到二维数组中, 合并每个条件语句前的赋值语句
 		if len(conditionResultList) > 0 {
 			for _, v := range conditionResultList {
-				copyFormulaList := make([]bo.KeyFormula, 0, 10)
-				copy(formulaList, copyFormulaList)
+				copyFormulaList := utils.CopySlice(keyFormulaList)
 				copyFormulaList = append(copyFormulaList, v.KeyFormulaList...)
 				v.KeyFormulaList = copyFormulaList
 			}
@@ -249,8 +248,10 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 			copyNode := DeepCopyErrorByJson(parentNode)
 			resultNode := copyNode.ConditionNode.Offer(v.ConditionNode)
 			parentResultList = append(parentResultList, &ConditionNodeResult{
-				ConditionNode: resultNode,
-				IsBreak:       v.IsBreak,
+				ConditionNode:  resultNode,
+				IsBreak:        v.IsBreak,
+				KeyFormulaList: v.KeyFormulaList,
+				FormulaCallMap: formulaCallMap,
 			})
 		}
 		return parentResultList
