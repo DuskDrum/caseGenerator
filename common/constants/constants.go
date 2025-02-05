@@ -5,4 +5,6 @@ const (
 	SELF_TYPE     = "self"
 	CLAUSE        = "("
 	CLAUSE_CLOSE  = ")"
+
+	NIL = "nil"
 )

@@ -1,6 +1,7 @@
 package decl
 
 import (
+	"caseGenerator/common/utils"
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/stmt"
@@ -52,6 +53,7 @@ func ParseBody(sb *ast.BlockStmt) {
 	// 公式列表
 	keyFormulaList := make([]bo.KeyFormula, 0, 10)
 	callVariableMap := make(map[string]*expr.Call, 10)
+	nodeResultList := make([]*stmt.ConditionNodeResult, 0, 10)
 
 	// 1. 遍历方法里的每个 stmt，
 	for _, v := range sb.List {
@@ -66,11 +68,29 @@ func ParseBody(sb *ast.BlockStmt) {
 				callVariableMap[k] = value
 			}
 		}
-		// 1.3 解析每个condition需要的变量，得到不等式公式
-		condition := p.CalculateCondition(express)
-		crList = append(crList, condition...)
+		// 1.3 执行每一句的condition
+		conditionResultList := stmt.ParseCondition(v)
+		// 1.4 拼接每一个 case 的赋值信息和条件信息
+		for _, result := range conditionResultList {
+			// 深度拷贝赋值语句
+			copyFormulaList := utils.CopySlice(keyFormulaList)
+			copyCallMap := utils.CopyMap(callVariableMap)
+			// new 新的 result
+			nodeResultList = append(nodeResultList, &stmt.ConditionNodeResult{
+				ConditionNode:  result.ConditionNode,
+				IsBreak:        result.IsBreak,
+				KeyFormulaList: copyFormulaList,
+				FormulaCallMap: copyCallMap,
+			})
+		}
 	}
-	// 2. 遍历执行所有公式、
+	// 2. 遍历执行所有公式；
+	// 按照先遍历赋值语句，再遍历条件语句的顺序，执行formula
+	for _, v := range nodeResultList {
+		moker.MockExpression()
+	}
+
+	// 3. 找到需要mock的值，开始生成mock结构体
 
 	// 3. 得到mock结果
 
