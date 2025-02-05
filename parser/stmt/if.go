@@ -220,11 +220,15 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 		// 5. 将解析得到的结果放入到二维数组中, 合并每个条件语句前的赋值语句
 		if len(conditionResultList) > 0 {
 			for _, v := range conditionResultList {
-				copyFormulaList := utils.CopySlice(keyFormulaList)
-				copyFormulaList = append(copyFormulaList, v.KeyFormulaList...)
-				v.KeyFormulaList = copyFormulaList
+				if v.ConditionNode != nil {
+					copyFormulaList := utils.CopySlice(keyFormulaList)
+					copyFormulaList = append(copyFormulaList, v.KeyFormulaList...)
+					v.KeyFormulaList = copyFormulaList
+				}
 			}
-			abreastMatrixList = append(abreastMatrixList, conditionResultList)
+			if len(conditionResultList) > 0 {
+				abreastMatrixList = append(abreastMatrixList, conditionResultList)
+			}
 		}
 	}
 	// 6. 解析二维数组，将第一步和第二步的数据排列组合出来，分别正向和反向排列，遇到break的不需要取反了
@@ -275,6 +279,10 @@ func generateCombinations(arr [][]*ConditionNodeResult, index int, current []*Co
 				node := result.ConditionNode.Offer(copyNode.ConditionNode)
 				result.ConditionNode = node
 				result.IsBreak = copyNode.IsBreak
+			}
+			// 此处暂时这样处理，解决 列表冲突问题，取最长那条
+			if len(v.KeyFormulaList) > len(result.KeyFormulaList) {
+				result.KeyFormulaList = v.KeyFormulaList
 			}
 			// 如果已经是 break，那么就不需要 offer 后面的记录
 			if copyNode.IsBreak {

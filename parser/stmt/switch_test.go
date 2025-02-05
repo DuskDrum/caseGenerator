@@ -263,21 +263,24 @@ func TestSimpleExpressCase(t *testing.T) {
 		c := a * b + a
 		switch c {
 	case 12:
-		b = a 
-		if b == 1 {
-			fmt.Println("b is 1")
-		} else if b > 2 {
-			b = c * 2
-		}
+		b = a
 		fmt.Println("c is 12")
 	default:
 		a = b
 		b = a + c + a	
 		if b == 1 {
 			a = 4
-			fmt.Println("b is 1")
-		} else if b > 2 {
-			b = a + 2
+			b = a + 2	
+			if b > 2 && b < 10 {
+				b = 20
+				fmt.Println("b > 2 && b < 10")
+				return
+			}
+			c = b + 4
+			if a == 4 {
+				a = 10
+				fmt.Println("a is 4")
+			}
 		}
 		fmt.Println("c is default")
 	}
