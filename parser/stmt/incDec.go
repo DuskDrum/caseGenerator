@@ -20,7 +20,7 @@ type IncDec struct {
 	Token   token.Token       // 类型，是 token.INC、token.DEC
 }
 
-func (i *IncDec) FormulaExpress() []bo.StatementAssignment {
+func (i *IncDec) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 	stmtExpressionList := make([]bo.StatementAssignment, 0, 10)
 	se := bo.StatementAssignment{
 		Name: i.Content.GetFormula(),
@@ -30,7 +30,7 @@ func (i *IncDec) FormulaExpress() []bo.StatementAssignment {
 	expressionList := expression2.Express(i.Content)
 	expression := expressionList[0]
 	if expression == nil {
-		return nil
+		return nil, nil
 	}
 	se.IdentMap = expression.IdentMap
 	se.CallMap = expression.CallMap
