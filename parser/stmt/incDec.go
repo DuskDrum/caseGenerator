@@ -21,9 +21,9 @@ type IncDec struct {
 }
 
 func (i *IncDec) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
-	stmtExpressionList := make([]bo.StatementAssignment, 0, 10)
-	se := bo.StatementAssignment{
-		Name: i.Content.GetFormula(),
+	stmtExpressionList := make([]bo.KeyFormula, 0, 10)
+	se := bo.KeyFormula{
+		Key:  i.Content.GetFormula(),
 		Type: enum.STMT_TYPE_INCDEC,
 	}
 	// 直接取第一条即可，只有逻辑与、逻辑或才会有多条
@@ -55,8 +55,10 @@ func (i *IncDec) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 		panic("incDec type illegal")
 	}
 
+	se.Formula = se.Expr
+
 	stmtExpressionList = append(stmtExpressionList, se)
-	return stmtExpressionList
+	return stmtExpressionList, expression.CallMap
 }
 
 // ParseIncDec 解析ast
