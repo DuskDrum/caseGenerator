@@ -5,6 +5,7 @@ import (
 	"caseGenerator/parser/expression"
 	"caseGenerator/parser/expression/mockresult"
 	"caseGenerator/parser/goValuate"
+	"caseGenerator/parser/stmt"
 	"strings"
 
 	"github.com/samber/lo"
@@ -93,4 +94,21 @@ func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementA
 	// 3. 如果没有 basic 也没有 nil，那么先不处理
 
 	return nil
+}
+
+// MockKeyFormula 根据传参赋值语句列表和 条件语句得到 需要 mock 的记录
+func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult.MockResult {
+	// 1. 找出所有条件的参数，判断是不是在赋值语句里
+
+	// 2. 如果在赋值语句里，那么就是局部变量，执行公式即可
+
+	// 3. 如果不在赋值语句里，分情况讨论:
+	// a. 外部常量，如果是 包.xxx，那么是外部常量
+	// b. 内部常量， 要先解析出来包中定义的常量在里面那么就是内部常量
+	// c. 变量，未知数，要用算法逐一从公式中算出来，变量对应的可能是从请求传进来，也可能是从方法得到
+
+	// 4.
+
+	return nil
+
 }
