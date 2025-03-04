@@ -4,6 +4,7 @@ import (
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
+	"go/token"
 )
 
 // CaseClause 表示switch语句中的一个case子句
@@ -11,6 +12,7 @@ import (
 type CaseClause struct {
 	CaseList []_struct.Parameter //例如，在case 1, 2:中，1和2对应的表达式就在List中。list为nil那么代表了是default
 	BodyList []Stmt
+	Position token.Pos // 代码的行数，同一个文件里比对才有意义
 }
 
 // ParseCaseClause 解析ast
@@ -28,5 +30,6 @@ func ParseCaseClause(stmt *ast.CaseClause) *CaseClause {
 	}
 	cc.CaseList = cl
 	cc.BodyList = bl
+	cc.Position = stmt.Pos()
 	return cc
 }

@@ -97,6 +97,7 @@ func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementA
 }
 
 // MockKeyFormula 根据传参赋值语句列表和 条件语句得到 需要 mock 的记录
+// todo 先不考虑外部常量
 func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult.MockResult {
 	// 1. 找出所有条件的参数，判断是不是在赋值语句里
 

@@ -45,12 +45,12 @@ func ParseFunc(decl *ast.FuncDecl) *Func {
 
 // ParseBody 解析方法
 func ParseBody(sb *ast.BlockStmt) {
-	// 常量map
-	constantsMap := make(map[string]any, 10)
+	// 常量map, 先不考虑
+	// constantsMap := make(map[string]any, 10)
 	// 内部变量map， 通过上下文推导出来
-	innerVariablesMap := make(map[string]any, 10)
+	//innerVariablesMap := make(map[string]any, 10)
 	// 外部变量map，从请求参数里拿到
-	outerVariablesMap := make(map[string]any, 10)
+	//outerVariablesMap := make(map[string]any, 10)
 	// 公式列表
 	keyFormulaList := make([]bo.KeyFormula, 0, 10)
 	callVariableMap := make(map[string]*expr.Call, 10)

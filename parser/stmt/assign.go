@@ -32,6 +32,7 @@ type Assign struct {
 	// token.SHR_ASSIGN     // >>=
 	// token.AND_NOT_ASSIGN // &^=
 	AssignParamList []AssignParam
+	Position        token.Pos // 代码的行数，同一个文件里比对才有意义
 }
 
 func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
@@ -205,6 +206,6 @@ func ParseAssign(stmt *ast.AssignStmt) *Assign {
 	}
 	assign.AssignParamList = list
 	assign.Token = stmt.Tok
-
+	assign.Position = stmt.Pos()
 	return assign
 }

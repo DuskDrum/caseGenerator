@@ -7,6 +7,7 @@ import (
 	"caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
+	"go/token"
 )
 
 // Switch switch语句
@@ -16,6 +17,7 @@ type Switch struct {
 	Init           *Assign
 	CaseClauseList []*CaseClause // case列表
 	DefaultCase    *CaseClause   // 默认的case列表，List值为nil
+	Position       token.Pos     // 代码的行数，同一个文件里比对才有意义
 }
 
 func (s *Switch) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
@@ -41,6 +43,7 @@ func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 		s.Init = ParseAssign(as)
 	}
 	s.Tag = expr.ParseParameter(stmt.Tag)
+	s.Position = stmt.Pos()
 
 	caseClauseList := make([]*CaseClause, 0, 10)
 	defaultCaseList := make([]*CaseClause, 0, 10)
@@ -68,6 +71,7 @@ func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 }
 
 // ParseSwitchCondition  每个switch-case天然就是else的，每个case只需要关心自己要对应的值即可
+// todo 应该把KeyFormulaList打到每个条件里
 // default则不同，default需要把之前所有的case都取反
 func (s *Switch) ParseSwitchCondition() []*ConditionNodeResult {
 	results := make([]*ConditionNodeResult, 0, 10)

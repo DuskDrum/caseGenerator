@@ -8,6 +8,7 @@ import (
 	_struct "caseGenerator/parser/struct"
 	"encoding/json"
 	"go/ast"
+	"go/token"
 )
 
 // If 条件语句
@@ -16,8 +17,9 @@ type If struct {
 	Init            *Assign
 	Condition       _struct.Parameter
 	Block           *Block
-	ElseIfCondition []*If  // else-if列表
-	ElseCondition   *Block // else记录
+	ElseIfCondition []*If     // else-if列表
+	ElseCondition   *Block    // else记录
+	Position        token.Pos // 代码的行数，同一个文件里比对才有意义
 }
 
 // ParseIf 解析ast
@@ -32,6 +34,7 @@ func ParseIf(stmt *ast.IfStmt) *If {
 	}
 	i.Block = ParseBlock(stmt.Body)
 	i.Condition = expr.ParseParameter(stmt.Cond)
+	i.Position = stmt.Pos()
 
 	if stmt.Else != nil {
 		switch elseTyp := stmt.Else.(type) {
