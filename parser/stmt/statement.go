@@ -5,6 +5,7 @@ import (
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression"
 	"go/ast"
+	"go/token"
 	"strings"
 )
 
@@ -101,6 +102,7 @@ type ConditionNode struct {
 	Condition       []*expression.ExpressDetail // 表示当前节点的条件 (如 "A", "B", "C", "D", "E")
 	ConditionResult bool                        // 表示逻辑与还是逻辑非，true代表这一个condition要是true， false代表这个condition要是false
 	Relation        *ConditionNode              // 关联节点表示嵌套逻辑
+	Position        token.Position
 }
 
 // Offer 往线性结构末端继续添加元素

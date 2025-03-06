@@ -4,6 +4,7 @@ import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parser/expression"
 	_struct "caseGenerator/parser/struct"
+	"go/token"
 )
 
 // StatementAssignment stmt的表达式，记录了参数的变动, 参数也可以直接重新赋值
@@ -22,4 +23,6 @@ type KeyFormula struct {
 	Type    enum.StmtType
 	// 参数变动列表
 	expression.ExpressDetail
+	//
+	Position token.Position
 }

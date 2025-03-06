@@ -99,6 +99,8 @@ func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementA
 // MockKeyFormula 根据传参赋值语句列表和 条件语句得到 需要 mock 的记录
 // todo 先不考虑外部常量
 func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult.MockResult {
+	// 全部的条件信息, 全部赋值信息
+	MockConditionNode(condition.ConditionNode, condition.KeyFormulaList)
 	// 1. 找出所有条件的参数，判断是不是在赋值语句里
 
 	// 2. 如果在赋值语句里，那么就是局部变量，执行公式即可
@@ -112,4 +114,22 @@ func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult.MockResult
 
 	return nil
 
+}
+
+func MockConditionNode(conditionNode *stmt.ConditionNode, formulaList []bo.KeyFormula) []mockresult.MockResult {
+	if conditionNode.Relation != nil {
+		return MockConditionNode(conditionNode.Relation, formulaList)
+	}
+
+	// 执行公式，找
+	formulas := make([]bo.KeyFormula, 0, 10)
+	_ := conditionNode.Condition
+
+	for _, v := range formulaList {
+		if v.Position.Line < conditionNode.Position.Line {
+			formulas = append(formulas, v)
+		}
+	}
+
+	return nil
 }
