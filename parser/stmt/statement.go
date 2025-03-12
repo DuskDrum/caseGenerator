@@ -3,7 +3,7 @@ package stmt
 import (
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
-	"caseGenerator/parser/expression"
+	"caseGenerator/parser/expression/govaluate"
 	"go/ast"
 	"go/token"
 	"strings"
@@ -99,9 +99,15 @@ func ParseStmt(expr ast.Stmt) Stmt {
 }
 
 type ConditionNode struct {
-	Condition       []*expression.ExpressDetail // 表示当前节点的条件 (如 "A", "B", "C", "D", "E")
-	ConditionResult bool                        // 表示逻辑与还是逻辑非，true代表这一个condition要是true， false代表这个condition要是false
-	Relation        *ConditionNode              // 关联节点表示嵌套逻辑
+	Condition       []*govaluate.ExpressDetail // 表示当前节点的条件 (如 "A", "B", "C", "D", "E")
+	ConditionResult bool                       // 表示逻辑与还是逻辑非，true代表这一个condition要是true， false代表这个condition要是false
+	Relation        *ConditionNode             // 关联节点表示嵌套逻辑
+	Position        token.Position
+}
+
+type ConditionNodeExpress struct {
+	Condition       []*govaluate.ExpressDetail // 表示当前节点的条件 (如 "A", "B", "C", "D", "E")
+	ConditionResult bool                       // 表示逻辑与还是逻辑非，true代表这一个condition要是true， false代表这个condition要是false
 	Position        token.Position
 }
 

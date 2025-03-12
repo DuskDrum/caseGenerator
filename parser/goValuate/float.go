@@ -2,15 +2,15 @@ package goValuate
 
 import (
 	"caseGenerator/parser/bo"
-	"caseGenerator/parser/expression"
-	"caseGenerator/parser/expression/mockresult"
+	govaluate2 "caseGenerator/parser/expression/govaluate"
+	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 
 	"github.com/Knetic/govaluate"
 	"github.com/samber/lo"
 )
 
 // MockBasicFloatExpression mocker float basic 的表达式
-func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult.MockResult {
+func MockBasicFloatExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult2.MockResult {
 	// 如果类型是 float
 	var inList []float64
 	for _, v := range basicValueList {
@@ -33,7 +33,7 @@ func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueLi
 	}
 	// 参数名称
 	params := make([]string, 0, len(expression.IdentMap))
-	resultList := make([]mockresult.MockResult, 0, 10)
+	resultList := make([]mockresult2.MockResult, 0, 10)
 	// 参数名称, 取 ident
 	for key := range expression.IdentMap {
 		params = append(params, key)
@@ -53,21 +53,21 @@ func MockBasicFloatExpression(expression *expression.ExpressDetail, basicValueLi
 		// 参数一一对应的值
 		for i, param := range params {
 			if ident, ok := expression.IdentMap[param]; ok {
-				imr := &mockresult.IdentMockResult{
+				imr := &mockresult2.IdentMockResult{
 					Ident:     *ident,
 					MockValue: result[i],
 				}
 				resultList = append(resultList, imr)
 			}
 			if call, ok := expression.CallMap[param]; ok {
-				cmr := &mockresult.CallMockResult{
+				cmr := &mockresult2.CallMockResult{
 					Call:      *call,
 					MockValue: result[i],
 				}
 				resultList = append(resultList, cmr)
 			}
 			if selector, ok := expression.SelectorMap[param]; ok {
-				smr := &mockresult.SelectorMockResult{
+				smr := &mockresult2.SelectorMockResult{
 					Selector:  *selector,
 					MockValue: result[i],
 				}

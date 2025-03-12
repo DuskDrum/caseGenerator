@@ -2,8 +2,8 @@ package mocker
 
 import (
 	"caseGenerator/parser/bo"
-	"caseGenerator/parser/expression"
-	"caseGenerator/parser/expression/mockresult"
+	"caseGenerator/parser/expression/govaluate"
+	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 	"caseGenerator/parser/goValuate"
 	"caseGenerator/parser/stmt"
 	"strings"
@@ -22,13 +22,13 @@ type IMock interface {
 //     如果是 nil， 可能是==或者!=。 nil是属于 Ident 里的
 //
 // 2. 如果两边都没有靶子，那么将其中一边设置为零值，再继续用第一步的流程(ident 不知道变量类型，所以没办法处理)
-func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementAssignment) []mockresult.MockResult {
+func MockExpression(expression *govaluate.ExpressDetail, seList []bo.StatementAssignment) []mockresult2.MockResult {
 	// 1. 如果有 basicLit，那么按照 govalue进行解析试算得到最终结果
 	if len(expression.BasicList) > 0 {
 		return goValuate.MockBasicExpression(expression, seList)
 	}
 	// 2. 如果有nil，那么将其他属性都变成 nil
-	resultList := make([]mockresult.MockResult, 0, 10)
+	resultList := make([]mockresult2.MockResult, 0, 10)
 	if len(expression.IdentMap) > 0 {
 		var nilTag bool
 		for _, v := range expression.IdentMap {
@@ -42,14 +42,14 @@ func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementA
 					continue
 				}
 				if lo.Contains(expression.ElementList, "!=") {
-					result := &mockresult.IdentMockResult{
+					result := &mockresult2.IdentMockResult{
 						Ident: *v,
 						// todo 需要获取零值
 						MockValue: "ZERO",
 					}
 					resultList = append(resultList, result)
 				} else {
-					result := &mockresult.IdentMockResult{
+					result := &mockresult2.IdentMockResult{
 						Ident:     *v,
 						MockValue: nil,
 					}
@@ -58,14 +58,14 @@ func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementA
 			}
 			for _, v := range expression.CallMap {
 				if lo.Contains(expression.ElementList, "!=") {
-					result := &mockresult.CallMockResult{
+					result := &mockresult2.CallMockResult{
 						Call: *v,
 						// todo 需要获取零值
 						MockValue: "ZERO",
 					}
 					resultList = append(resultList, result)
 				} else {
-					result := &mockresult.CallMockResult{
+					result := &mockresult2.CallMockResult{
 						Call:      *v,
 						MockValue: nil,
 					}
@@ -74,14 +74,14 @@ func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementA
 			}
 			for _, v := range expression.SelectorMap {
 				if lo.Contains(expression.ElementList, "!=") {
-					result := &mockresult.SelectorMockResult{
+					result := &mockresult2.SelectorMockResult{
 						Selector: *v,
 						// todo 需要获取零值
 						MockValue: "ZERO",
 					}
 					resultList = append(resultList, result)
 				} else {
-					result := &mockresult.SelectorMockResult{
+					result := &mockresult2.SelectorMockResult{
 						Selector:  *v,
 						MockValue: nil,
 					}
@@ -98,9 +98,24 @@ func MockExpression(expression *expression.ExpressDetail, seList []bo.StatementA
 
 // MockKeyFormula 根据传参赋值语句列表和 条件语句得到 需要 mock 的记录
 // todo 先不考虑外部常量
-func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult.MockResult {
+func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult2.MockResult {
+	// 1. 解析出全部的判断条件
+	nodeExpressesList := AnalysisConditionNode(condition.ConditionNode)
+	formulaList := condition.KeyFormulaList
+	// 2. 遍历判断条件开始执行公式
+	positionSnapshot := 0
+	for _, v := range nodeExpressesList {
+		formulaSnapshotList := make([]bo.KeyFormula, 0, 10)
+		for _, f := range formulaList {
+			// 根据行数确认 assignment 和 condition
+			if f.Position.Line < v.Position.Line && f.Position.Line > positionSnapshot {
+				formulaSnapshotList = append(formulaSnapshotList, f)
+			}
+		}
+
+	}
+
 	// 全部的条件信息, 全部赋值信息
-	MockConditionNode(condition.ConditionNode, condition.KeyFormulaList)
 	// 1. 找出所有条件的参数，判断是不是在赋值语句里
 
 	// 2. 如果在赋值语句里，那么就是局部变量，执行公式即可
@@ -116,20 +131,22 @@ func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult.MockResult
 
 }
 
-func MockConditionNode(conditionNode *stmt.ConditionNode, formulaList []bo.KeyFormula) []mockresult.MockResult {
-	if conditionNode.Relation != nil {
-		return MockConditionNode(conditionNode.Relation, formulaList)
-	}
+func AnalysisConditionNode(conditionNode *stmt.ConditionNode) []*stmt.ConditionNodeExpress {
+	expressList := make([]*stmt.ConditionNodeExpress, 0, 10)
 
-	// 执行公式，找
-	formulas := make([]bo.KeyFormula, 0, 10)
-	_ := conditionNode.Condition
-
-	for _, v := range formulaList {
-		if v.Position.Line < conditionNode.Position.Line {
-			formulas = append(formulas, v)
+	var nodeSnapshot = conditionNode
+	for {
+		expressList = append(expressList, &stmt.ConditionNodeExpress{
+			Condition:       nodeSnapshot.Condition,
+			ConditionResult: nodeSnapshot.ConditionResult,
+			Position:        nodeSnapshot.Position,
+		})
+		if nodeSnapshot.Relation == nil {
+			break
+		} else {
+			nodeSnapshot = nodeSnapshot.Relation
 		}
 	}
 
-	return nil
+	return expressList
 }

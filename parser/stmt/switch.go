@@ -4,7 +4,7 @@ import (
 	"caseGenerator/common/utils"
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
-	"caseGenerator/parser/expression"
+	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 	"go/token"
@@ -158,7 +158,7 @@ func parseDefaultTag(uncleNodeList []*ConditionNode, defaultClause *CaseClause) 
 func parseBodyList(bodyList []Stmt, tag _struct.Parameter, caseDetail _struct.Parameter) ([]*ConditionNodeResult, *ConditionNode) {
 	results := make([]*ConditionNodeResult, 0, 10)
 	// 1. 解析出 tag
-	conditionExpressionList := expression.ExpressTargetParam(caseDetail, tag)
+	conditionExpressionList := govaluate.ExpressTargetParam(caseDetail, tag)
 	cn := &ConditionNode{
 		Condition:       conditionExpressionList,
 		ConditionResult: true,

@@ -39,14 +39,13 @@ type keyFormulas struct {
 
 func TestMultipleLinesArithmeticExpression(t *testing.T) {
 	// 定义初始变量
-	variables := map[string]interface{}{
-		"a": 1,
-		"b": 2,
-		"c": 3,
-	}
+	variables := map[string]any{}
 
 	// 定义公式
 	formulas := []keyFormulas{
+		{Key: "a", Formulas: "1"},
+		{Key: "b", Formulas: "2"},
+		{Key: "c", Formulas: "3"},
 		{Key: "a", Formulas: "b+a"},
 		{Key: "a", Formulas: "b+a"},
 		{Key: "b", Formulas: "c * b + a"},
@@ -73,7 +72,7 @@ func TestMultipleLinesArithmeticExpression(t *testing.T) {
 }
 
 // 使用 govaluate 计算公式
-func calculate(expression string, variables map[string]interface{}) (float64, error) {
+func calculate(expression string, variables map[string]interface{}) (any, error) {
 	expr, err := govaluate.NewEvaluableExpression(expression)
 	if err != nil {
 		return 0, err
@@ -84,7 +83,7 @@ func calculate(expression string, variables map[string]interface{}) (float64, er
 		return 0, err
 	}
 
-	return result.(float64), nil
+	return result, nil
 }
 
 func TestEvaluateConditionExpression(t *testing.T) {

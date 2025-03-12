@@ -2,14 +2,14 @@ package goValuate
 
 import (
 	"caseGenerator/parser/bo"
-	"caseGenerator/parser/expression"
-	"caseGenerator/parser/expression/mockresult"
+	govaluate2 "caseGenerator/parser/expression/govaluate"
+	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 
 	"github.com/Knetic/govaluate"
 )
 
 // MockBasicStringExpression mocker string basic 的表达式
-func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult.MockResult {
+func MockBasicStringExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult2.MockResult {
 	// 如果类型是 string
 	var strList []string
 	strList = append(strList, "")
@@ -45,27 +45,27 @@ func MockBasicStringExpression(expression *expression.ExpressDetail, basicValueL
 	return resultList
 }
 
-func convertToAnyResultList(expression *expression.ExpressDetail, result, params []string) []mockresult.MockResult {
-	resultList := make([]mockresult.MockResult, 0, 10)
+func convertToAnyResultList(expression *govaluate2.ExpressDetail, result, params []string) []mockresult2.MockResult {
+	resultList := make([]mockresult2.MockResult, 0, 10)
 	if result != nil {
 		// 参数一一对应的值
 		for i, param := range params {
 			if ident, ok := expression.IdentMap[param]; ok {
-				imr := &mockresult.IdentMockResult{
+				imr := &mockresult2.IdentMockResult{
 					Ident:     *ident,
 					MockValue: result[i],
 				}
 				resultList = append(resultList, imr)
 			}
 			if call, ok := expression.CallMap[param]; ok {
-				cmr := &mockresult.CallMockResult{
+				cmr := &mockresult2.CallMockResult{
 					Call:      *call,
 					MockValue: result[i],
 				}
 				resultList = append(resultList, cmr)
 			}
 			if selector, ok := expression.SelectorMap[param]; ok {
-				smr := &mockresult.SelectorMockResult{
+				smr := &mockresult2.SelectorMockResult{
 					Selector:  *selector,
 					MockValue: result[i],
 				}

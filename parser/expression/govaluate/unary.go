@@ -1,4 +1,4 @@
-package expression
+package govaluate
 
 import (
 	"caseGenerator/parser/expr"

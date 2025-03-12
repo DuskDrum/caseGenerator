@@ -1,4 +1,4 @@
-package expression
+package govaluate
 
 import (
 	"caseGenerator/parser/expr"
@@ -6,25 +6,25 @@ import (
 	"strings"
 )
 
-func ExpressIdent(param *expr.Ident) []*ExpressDetail {
+func ExpressBasicLit(param *expr.BasicLit) []*ExpressDetail {
 	elementList := []string{param.GetFormula()}
-	identMap := map[string]*expr.Ident{param.IdentName: param}
+	basicList := []*expr.BasicLit{param}
 
 	expression := &ExpressDetail{
 		ElementList: elementList,
-		IdentMap:    identMap,
+		BasicList:   basicList,
 		Expr:        strings.Join(elementList, " "),
 	}
 	return []*ExpressDetail{expression}
 }
 
-func ExpressTargetIdent(param *expr.Ident, targetParam _struct.Parameter) []*ExpressDetail {
+func ExpressTargetBasicLit(param *expr.BasicLit, targetParam _struct.Parameter) []*ExpressDetail {
 	elementList := []string{param.GetFormula()}
-	identMap := map[string]*expr.Ident{param.IdentName: param}
+	basicList := []*expr.BasicLit{param}
 
 	expression := &ExpressDetail{
 		ElementList: elementList,
-		IdentMap:    identMap,
+		BasicList:   basicList,
 		Expr:        targetParam.GetFormula() + " = " + param.GetFormula(),
 	}
 	return []*ExpressDetail{expression}

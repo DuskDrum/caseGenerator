@@ -4,7 +4,6 @@ import (
 	"caseGenerator/common/utils"
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
-	"caseGenerator/parser/mocker"
 	"caseGenerator/parser/stmt"
 	"go/ast"
 
@@ -87,9 +86,9 @@ func ParseBody(sb *ast.BlockStmt) {
 	}
 	// 2. 遍历执行所有公式；
 	// 按照先遍历赋值语句，再遍历条件语句的顺序，执行formula
-	for _, v := range nodeResultList {
-		mocker.MockExpression()
-	}
+	//for _, v := range nodeResultList {
+	//	mocker.MockExpression()
+	//}
 
 	// 3. 找到需要mock的值，开始生成mock结构体
 

@@ -1,7 +1,7 @@
 package expr
 
 import (
-	stmt2 "caseGenerator/parser/expression"
+	stmt2 "caseGenerator/parser/expression/govaluate"
 	"caseGenerator/parser/mocker"
 	"encoding/json"
 	"fmt"

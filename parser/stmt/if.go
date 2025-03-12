@@ -4,7 +4,7 @@ import (
 	"caseGenerator/common/utils"
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
-	"caseGenerator/parser/expression"
+	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
 	"encoding/json"
 	"go/ast"
@@ -105,7 +105,7 @@ func (i *If) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesM
 
 func (i *If) ParseIfCondition() []*ConditionNodeResult {
 	// 1. 先拿到 本 IF 的Condition的表达式 (父类if条件)
-	conditionExpressionList := expression.Express(i.Condition)
+	conditionExpressionList := govaluate.Express(i.Condition)
 	parentNode := &ConditionNodeResult{
 		ConditionNode: &ConditionNode{
 			Condition:       conditionExpressionList,
@@ -356,7 +356,7 @@ func (i *If) ParseElseIfCondition(parentNode *ConditionNodeResult) ([]*Condition
 		// 2. 先将前面的叔类节点取反
 		negateNode := negateUncleNode(uncleNode)
 		// 3. 解析本condition条件
-		elseConditionExpressionList := expression.Express(v.Condition)
+		elseConditionExpressionList := govaluate.Express(v.Condition)
 		elseExpress := &ConditionNode{
 			Condition:       elseConditionExpressionList,
 			ConditionResult: true,

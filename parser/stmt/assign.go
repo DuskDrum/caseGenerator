@@ -5,7 +5,7 @@ import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
-	expression2 "caseGenerator/parser/expression"
+	expression2 "caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 	"go/token"

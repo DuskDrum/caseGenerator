@@ -3,8 +3,8 @@ package goValuate
 import (
 	"caseGenerator/common/enum"
 	"caseGenerator/parser/bo"
-	"caseGenerator/parser/expression"
-	"caseGenerator/parser/expression/mockresult"
+	"caseGenerator/parser/expression/govaluate"
+	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 	"fmt"
 
 	"github.com/samber/lo"
@@ -14,7 +14,7 @@ import (
 // 1. 将此段代码前的所有条件都执行，不同的参数都按照公式去计算
 // 2. 如果变量定义初始值了，那么每条都执行
 // 3. 如果变量没有定义初始值，为请求中的变量或者方法得到，那么需要根据后面倒推得到需要mock的值
-func MockBasicExpression(expression *expression.ExpressDetail, seList []bo.StatementAssignment) []mockresult.MockResult {
+func MockBasicExpression(expression *govaluate.ExpressDetail, seList []bo.StatementAssignment) []mockresult2.MockResult {
 	// todo 这种多个basicLit 的类型一般是一样的，不一样就告警出去
 	var specificType *enum.SpecificType
 	basicValueList := make([]any, 0, 10)
@@ -60,19 +60,19 @@ type StatementExpressionValue struct {
 // 不变量不能 mocker，这个不变量需要想办法解析出来
 // 方法调用需要mock，mocker 时要考虑私有方法
 // selector 一般都是变量，可以想办法用 json 去组装和类型转化
-func MockByResult(mockResultList []mockresult.MockResult) {
+func MockByResult(mockResultList []mockresult2.MockResult) {
 	for _, v := range mockResultList {
 		switch x := v.(type) {
-		case *mockresult.IdentMockResult:
+		case *mockresult2.IdentMockResult:
 			// 1. 根据 ident 的 name 找到他对应的类型：是变量还是不变量，是从方法入参进来，还是调用其他方法得到
 			fmt.Print(x)
 			// 2. 如果是赋值而来，就去找其对应的关系
 
 			// 3. 如果是方法调用得到，那么就去mock 那个方法
 
-		case *mockresult.CallMockResult:
+		case *mockresult2.CallMockResult:
 			// 1. 根据 call 的 信息去mock：直接mock公共方法，或者 go:linkname去mock私有方法
-		case *mockresult.SelectorMockResult:
+		case *mockresult2.SelectorMockResult:
 			// 1. 根据 selector 的 name 找到他对应的类型：是变量还是不变量，是从方法入参进来，还是调用其他方法得到
 
 			// 2. 根据要selector的结构得到要 mocker 的值

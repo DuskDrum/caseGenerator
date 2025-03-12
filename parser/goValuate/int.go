@@ -2,15 +2,15 @@ package goValuate
 
 import (
 	"caseGenerator/parser/bo"
-	"caseGenerator/parser/expression"
-	"caseGenerator/parser/expression/mockresult"
+	govaluate2 "caseGenerator/parser/expression/govaluate"
+	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 
 	"github.com/Knetic/govaluate"
 	"github.com/samber/lo"
 )
 
 // MockBasicIntExpression mocker int basic 的表达式
-func MockBasicIntExpression(expression *expression.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult.MockResult {
+func MockBasicIntExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult2.MockResult {
 	// 1. 找代码中参数的所有变化，比如说
 	// a,b,c := 1,2,3
 	// b = c *3
@@ -37,7 +37,7 @@ func MockBasicIntExpression(expression *expression.ExpressDetail, basicValueList
 	}
 
 	params := make([]string, 0, len(expression.IdentMap))
-	resultList := make([]mockresult.MockResult, 0, 10)
+	resultList := make([]mockresult2.MockResult, 0, 10)
 
 	// 参数名称, 取 ident
 	for key := range expression.IdentMap {
@@ -67,21 +67,21 @@ func MockBasicIntExpression(expression *expression.ExpressDetail, basicValueList
 		// 参数一一对应的值
 		for i, param := range params {
 			if ident, ok := expression.IdentMap[param]; ok {
-				imr := &mockresult.IdentMockResult{
+				imr := &mockresult2.IdentMockResult{
 					Ident:     *ident,
 					MockValue: result[i],
 				}
 				resultList = append(resultList, imr)
 			}
 			if call, ok := expression.CallMap[param]; ok {
-				cmr := &mockresult.CallMockResult{
+				cmr := &mockresult2.CallMockResult{
 					Call:      *call,
 					MockValue: result[i],
 				}
 				resultList = append(resultList, cmr)
 			}
 			if selector, ok := expression.SelectorMap[param]; ok {
-				smr := &mockresult.SelectorMockResult{
+				smr := &mockresult2.SelectorMockResult{
 					Selector:  *selector,
 					MockValue: result[i],
 				}
