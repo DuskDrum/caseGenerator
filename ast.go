@@ -53,6 +53,36 @@ func (c *Context) Int(v int, typ *Sort) *AST {
 	}
 }
 
+// Int64 creates an integer type.
+//
+// Maps: Z3_mk_int64
+func (c *Context) Int64(v int64, typ *Sort) *AST {
+	return &AST{
+		rawCtx: c.raw,
+		rawAST: C.Z3_mk_int64(c.raw, C.longlong(v), typ.rawSort),
+	}
+}
+
+// Float creates an float type.
+//
+// Maps: Z3_mk_int64
+func (c *Context) Float(v float32, typ *Sort) *AST {
+	return &AST{
+		rawCtx: c.raw,
+		rawAST: C.Z3_mk_fpa_numeral_float(c.raw, C.float(v), typ.rawSort),
+	}
+}
+
+// Double creates an double type.
+//
+// Maps: Z3_mk_int64
+func (c *Context) Double(v float64, typ *Sort) *AST {
+	return &AST{
+		rawCtx: c.raw,
+		rawAST: C.Z3_mk_fpa_numeral_double(c.raw, C.double(v), typ.rawSort),
+	}
+}
+
 // True creates the value "true".
 //
 // Maps: Z3_mk_true
@@ -83,4 +113,11 @@ func (a *AST) Int() int {
 	var dst C.int
 	C.Z3_get_numeral_int(a.rawCtx, a.rawAST, &dst)
 	return int(dst)
+}
+
+// Float gets the float value of this AST. The value must be able to fit
+// into a machine integer.
+func (a *AST) Float() float32 {
+	var dst C.double = C.Z3_get_numeral_double(a.rawCtx, a.rawAST)
+	return float32(dst)
 }
