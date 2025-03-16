@@ -116,7 +116,7 @@ func TestZ3Case4(t *testing.T) {
 
 	// 添加约束：a > 10 且 a + b = 20 且 a = 15 且 a + c < 10 且 !d
 	solver := ctx.NewSolver()
-	as := a.Gt(ctx.Float(10.1, ctx.FloatSort()))
+	as := a.FpaGt(ctx.FloatType(10.1, ctx.FloatSort()))
 
 	solver.Assert(as)
 
