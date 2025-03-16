@@ -103,3 +103,115 @@ func (a *AST) Ge(a2 *AST) *AST {
 		rawAST: C.Z3_mk_ge(a.rawCtx, a.rawAST, a2.rawAST),
 	}
 }
+
+// Fpa相关
+
+// FpaAdd creates an AST node representing adding.
+//
+// All AST values must be part of the same context.
+// Z3_mk_fpa_add
+func (a *AST) FpaAdd(args ...*AST) *AST {
+	raws := make([]C.Z3_ast, len(args)+1)
+	raws[0] = a.rawAST
+	for i, arg := range args {
+		raws[i+1] = arg.rawAST
+	}
+
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_add(
+			a.rawCtx,
+			C.uint(len(raws)),
+			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+	}
+}
+
+// FpaMul creates an AST node representing multiplication.
+//
+// All AST values must be part of the same context.
+// Z3_mk_fpa_mul
+func (a *AST) FpaMul(args ...*AST) *AST {
+	raws := make([]C.Z3_ast, len(args)+1)
+	raws[0] = a.rawAST
+	for i, arg := range args {
+		raws[i+1] = arg.rawAST
+	}
+
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_mul(
+			a.rawCtx,
+			C.uint(len(raws)),
+			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+	}
+}
+
+// FpaSub creates an AST node representing subtraction.
+//
+// All AST values must be part of the same context.
+// Z3_mk_fpa_sub
+func (a *AST) FpaSub(args ...*AST) *AST {
+	raws := make([]C.Z3_ast, len(args)+1)
+	raws[0] = a.rawAST
+	for i, arg := range args {
+		raws[i+1] = arg.rawAST
+	}
+
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_sub(
+			a.rawCtx,
+			C.uint(len(raws)),
+			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+	}
+}
+
+// FpaLt creates a "less than" comparison.
+//
+// Maps to: Z3_mk_fpa_lt
+func (a *AST) FpaLt(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_lt(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
+// FpaLe creates a "less than" comparison.
+//
+// Maps to: Z3_mk_fpa_leq
+func (a *AST) FpaLe(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_leq(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
+// FpaGt creates a "greater than" comparison.
+//
+// Maps to: Z3_mk_fpa_gt
+func (a *AST) FpaGt(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_gt(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
+// FpaGe creates a "greater than" comparison.
+//
+// Maps to: Z3_mk_fpa_geq
+func (a *AST) FpaGe(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_geq(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
+// FpaEq creates a "greater than" comparison.
+//
+// Maps to: Z3_mk_fpa_eq
+func (a *AST) FpaEq(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_fpa_eq(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}

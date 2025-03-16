@@ -66,7 +66,17 @@ func (c *Context) Int64(v int64, typ *Sort) *AST {
 // Float creates an float type.
 //
 // Maps: Z3_mk_int64
-func (c *Context) Float(v float32, typ *Sort) *AST {
+func (c *Context) Float(v float32) *AST {
+	return &AST{
+		rawCtx: c.raw,
+		rawAST: C.Z3_mk_fpa_numeral_float(c.raw, C.float(v), C.Z3_mk_fpa_sort(c.raw, 8, 24)),
+	}
+}
+
+// FloatType creates an float type.
+//
+// Maps: Z3_mk_int64
+func (c *Context) FloatType(v float32, typ *Sort) *AST {
 	return &AST{
 		rawCtx: c.raw,
 		rawAST: C.Z3_mk_fpa_numeral_float(c.raw, C.float(v), typ.rawSort),
@@ -75,11 +85,11 @@ func (c *Context) Float(v float32, typ *Sort) *AST {
 
 // Double creates an double type.
 //
-// Maps: Z3_mk_int64
-func (c *Context) Double(v float64, typ *Sort) *AST {
+// Maps: Z3_mk_float64
+func (c *Context) Double(v float64) *AST {
 	return &AST{
 		rawCtx: c.raw,
-		rawAST: C.Z3_mk_fpa_numeral_double(c.raw, C.double(v), typ.rawSort),
+		rawAST: C.Z3_mk_fpa_numeral_double(c.raw, C.double(v), C.Z3_mk_fpa_sort(c.raw, 11, 53)),
 	}
 }
 

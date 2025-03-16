@@ -29,7 +29,7 @@ func (c *Context) IntSort() *Sort {
 func (c *Context) FloatSort() *Sort {
 	return &Sort{
 		rawCtx:  c.raw,
-		rawSort: C.Z3_mk_fpa_sort_32(c.raw),
+		rawSort: C.Z3_mk_fpa_sort(c.raw, 8, 24),
 	}
 }
 
@@ -37,6 +37,6 @@ func (c *Context) FloatSort() *Sort {
 func (c *Context) DoubleSort() *Sort {
 	return &Sort{
 		rawCtx:  c.raw,
-		rawSort: C.Z3_mk_fpa_sort_64(c.raw),
+		rawSort: C.Z3_mk_fpa_sort(c.raw, 11, 53),
 	}
 }
