@@ -1,11 +1,12 @@
 package z3
 
 import (
+	"caseGenerator/go-z3"
 	"caseGenerator/parser/expr"
 )
 
 // ExpressParent mocker Parent
-func ExpressParent(param *expr.Parent) []*Z3Express {
+func ExpressParent(param *expr.Parent) *z3.AST {
 	// 解析公式
 	//eList := ExpressParam(param.Content)
 
@@ -32,12 +33,13 @@ func ExpressParent(param *expr.Parent) []*Z3Express {
 	// 解析括号
 	elementList = append(elementList, ")")
 
-	return []*Z3Express{{
-		//Expr:        strings.Join(elementList, " "),
-		//ElementList: elementList,
-		//IdentMap:    identMap,
-		//CallMap:     callMap,
-		//BasicList:   basicList,
-		//SelectorMap: selectorMap,
-	}}
+	return nil
+	//return []*Z3Express{{
+	//Expr:        strings.Join(elementList, " "),
+	//ElementList: elementList,
+	//IdentMap:    identMap,
+	//CallMap:     callMap,
+	//BasicList:   basicList,
+	//SelectorMap: selectorMap,
+	//}}
 }

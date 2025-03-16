@@ -8,18 +8,16 @@ import (
 
 // Z3Express 公式
 type Z3Express struct {
-	Z3Ast z3.AST // z3的 ast
+	Z3Ast *z3.AST // z3的 ast
 }
 
-func Express(param _struct.Parameter) []*Z3Express {
-	expressionList := make([]*Z3Express, 0, 10)
-	eList := ExpressParam(param)
-	expressionList = append(expressionList, eList...)
-	return expressionList
+func Express(param _struct.Parameter) *Z3Express {
+	ast := ExpressParam(param)
+	return &Z3Express{Z3Ast: ast}
 }
 
 // ExpressParam 将Binary、Unary解析为Expression，得到两个东西，一个是里面的Ident和func的引用，一个是最终得到的公式
-func ExpressParam(param _struct.Parameter) []*Z3Express {
+func ExpressParam(param _struct.Parameter) *z3.AST {
 	switch exprType := param.(type) {
 	case *expr.Binary:
 		return ExpressBinary(exprType)

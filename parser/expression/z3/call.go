@@ -1,12 +1,13 @@
 package z3
 
 import (
+	"caseGenerator/go-z3"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"strings"
 )
 
-func ExpressCall(param *expr.Call) []*Z3Express {
+func ExpressCall(param *expr.Call) *z3.AST {
 	key := strings.ReplaceAll(param.GetFormula(), ".", "_")
 	key = strings.ReplaceAll(key, "(", "_")
 	key = strings.ReplaceAll(key, ")", "")
@@ -16,15 +17,15 @@ func ExpressCall(param *expr.Call) []*Z3Express {
 
 	//elementList := []string{"astCall_" + key}
 
-	expression := &Z3Express{
-		//ElementList: elementList,
-		//CallMap:     callMap,
-		//Expr:        strings.Join(elementList, " "),
-	}
-	return []*Z3Express{expression}
+	//expression := &Z3Express{
+	//ElementList: elementList,
+	//CallMap:     callMap,
+	//Expr:        strings.Join(elementList, " "),
+	//}
+	return nil
 }
 
-func ExpressTargetCall(param *expr.Call, targetParam _struct.Parameter) []*Z3Express {
+func ExpressTargetCall(param *expr.Call, targetParam _struct.Parameter) *Z3Express {
 	key := strings.ReplaceAll(param.GetFormula(), ".", "_")
 	key = strings.ReplaceAll(key, "(", "_")
 	key = strings.ReplaceAll(key, ")", "")
@@ -34,10 +35,11 @@ func ExpressTargetCall(param *expr.Call, targetParam _struct.Parameter) []*Z3Exp
 
 	//elementList := []string{"astCall_" + key}
 
-	expression := &Z3Express{
-		//ElementList: elementList,
-		//CallMap:     callMap,
-		//Expr:        targetParam.GetFormula() + " = " + "astCall_" + key,
-	}
-	return []*Z3Express{expression}
+	//expression := &Z3Express{
+	//ElementList: elementList,
+	//CallMap:     callMap,
+	//Expr:        targetParam.GetFormula() + " = " + "astCall_" + key,
+	//}
+	//return []*Z3Express{expression}
+	return nil
 }
