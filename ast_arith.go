@@ -110,19 +110,15 @@ func (a *AST) Ge(a2 *AST) *AST {
 //
 // All AST values must be part of the same context.
 // Z3_mk_fpa_add
-func (a *AST) FpaAdd(args ...*AST) *AST {
-	raws := make([]C.Z3_ast, len(args)+1)
-	raws[0] = a.rawAST
-	for i, arg := range args {
-		raws[i+1] = arg.rawAST
-	}
-
+func (a *AST) FpaAdd(t1, t2 *AST) *AST {
 	return &AST{
 		rawCtx: a.rawCtx,
 		rawAST: C.Z3_mk_fpa_add(
 			a.rawCtx,
-			C.uint(len(raws)),
-			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+			a.rawAST, // Rounding Mode
+			t1.rawAST,
+			t2.rawAST,
+		),
 	}
 }
 
@@ -130,19 +126,15 @@ func (a *AST) FpaAdd(args ...*AST) *AST {
 //
 // All AST values must be part of the same context.
 // Z3_mk_fpa_mul
-func (a *AST) FpaMul(args ...*AST) *AST {
-	raws := make([]C.Z3_ast, len(args)+1)
-	raws[0] = a.rawAST
-	for i, arg := range args {
-		raws[i+1] = arg.rawAST
-	}
-
+func (a *AST) FpaMul(t1, t2 *AST) *AST {
 	return &AST{
 		rawCtx: a.rawCtx,
 		rawAST: C.Z3_mk_fpa_mul(
 			a.rawCtx,
-			C.uint(len(raws)),
-			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+			a.rawAST, // Rounding Mode
+			t1.rawAST,
+			t2.rawAST,
+		),
 	}
 }
 
@@ -150,19 +142,15 @@ func (a *AST) FpaMul(args ...*AST) *AST {
 //
 // All AST values must be part of the same context.
 // Z3_mk_fpa_sub
-func (a *AST) FpaSub(args ...*AST) *AST {
-	raws := make([]C.Z3_ast, len(args)+1)
-	raws[0] = a.rawAST
-	for i, arg := range args {
-		raws[i+1] = arg.rawAST
-	}
-
+func (a *AST) FpaSub(t1, t2 *AST) *AST {
 	return &AST{
 		rawCtx: a.rawCtx,
 		rawAST: C.Z3_mk_fpa_sub(
 			a.rawCtx,
-			C.uint(len(raws)),
-			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+			a.rawAST, // Rounding Mode
+			t1.rawAST,
+			t2.rawAST,
+		),
 	}
 }
 
