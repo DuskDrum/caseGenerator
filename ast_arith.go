@@ -130,6 +130,117 @@ func (a *AST) Ge(a2 *AST) *AST {
 	}
 }
 
+// Int相关
+
+// AddInt creates an AST node representing adding.
+//
+// All AST values must be part of the same context.
+func (a *AST) AddInt(t *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_add(
+			a.rawCtx,
+			a.rawAST,
+			t.rawAST,
+		),
+	}
+}
+
+// MulInt creates an AST node representing multiplication.
+//
+// All AST values must be part of the same context.
+func (a *AST) MulInt(t *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_mul(
+			a.rawCtx,
+			a.rawAST,
+			t.rawAST,
+		),
+	}
+}
+
+// SubInt creates an AST node representing subtraction.
+//
+// All AST values must be part of the same context.
+func (a *AST) SubInt(t *AST) *AST {
+
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_sub(
+			a.rawCtx,
+			a.rawAST,
+			t.rawAST,
+		),
+	}
+}
+
+// DivInt
+// Z3_mk_div
+func (a *AST) DivInt(t *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_div(
+			a.rawCtx,
+			a.rawAST,
+			t.rawAST,
+		),
+	}
+}
+
+// RemInt   %
+// Z3_mk_rem
+func (a *AST) RemInt(t *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_rem(
+			a.rawCtx,
+			a.rawAST,
+			t.rawAST,
+		),
+	}
+}
+
+// LtInt creates a "less than" comparison.
+//
+// Maps to: Z3_mk_lt
+func (a *AST) LtInt(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_lt(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
+// LeInt creates a "less than" comparison.
+//
+// Maps to: Z3_mk_le
+func (a *AST) LeInt(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_le(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
+// GtInt creates a "greater than" comparison.
+//
+// Maps to: Z3_mk_gt
+func (a *AST) GtInt(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_gt(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
+// GeInt creates a "less than" comparison.
+//
+// Maps to: Z3_mk_ge
+func (a *AST) GeInt(a2 *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_ge(a.rawCtx, a.rawAST, a2.rawAST),
+	}
+}
+
 // Fpa相关
 
 // FpaAdd creates an AST node representing adding.
