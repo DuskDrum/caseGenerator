@@ -39,7 +39,6 @@ func expressRelation(param *expr.Binary, xExpression *z3.AST, yExpression *z3.AS
 	}
 
 	// 需要判断类型是int还是float
-	// todo 判断是int还是float
 	if param.Op == token.ADD {
 		return xExpression.Add(yExpression)
 	} else if param.Op == token.SUB {
