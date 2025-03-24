@@ -133,13 +133,12 @@ func (a *AST) Float() float32 {
 }
 
 // MakeInt 创建整数节点
-func (c *Context) MakeInt(num int) *C.Z3_ast {
+func (c *Context) MakeInt(num int) C.Z3_ast {
 	intSort := C.Z3_mk_int_sort(c.raw)
 	return C.Z3_mk_int(c.raw, C.int(num), intSort)
 }
 
 // MakeDouble 创建双精度浮点数节点
-func (c *Context) MakeDouble(num float64) *C.Z3_ast {
-	doubleSort := C.Z3_mk_fpa_sort_double(c.raw)
-	return C.Z3_mk_fpa_numeral_float(c.raw, C.double(num), doubleSort)
+func (c *Context) MakeDouble(num float32) C.Z3_ast {
+	return C.Z3_mk_fpa_numeral_float(c.raw, C.float(num), C.Z3_mk_fpa_sort(c.raw, 8, 24))
 }

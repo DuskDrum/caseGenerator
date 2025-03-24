@@ -17,7 +17,8 @@ func TestASTAdd(t *testing.T) {
 	v3 := ctx.Int(3, ctx.IntSort())
 
 	// Add
-	raw := v1.Add(v2, v3)
+	raw := v1.Add(v2)
+	raw = raw.Add(v3)
 
 	actual := raw.String()
 	if actual != "(+ 1 2 3)" {
@@ -38,7 +39,8 @@ func TestASTMul(t *testing.T) {
 	v3 := ctx.Int(3, ctx.IntSort())
 
 	// Mul
-	raw := v1.Mul(v2, v3)
+	raw := v1.Mul(v2)
+	raw = raw.Mul(v3)
 
 	actual := raw.String()
 	if actual != "(* 1 2 3)" {
@@ -59,7 +61,7 @@ func TestASTSub(t *testing.T) {
 	v3 := ctx.Int(3, ctx.IntSort())
 
 	// Sub
-	raw := v1.Sub(v2, v3)
+	raw := v1.Sub(v2).Sub(v3)
 
 	actual := raw.String()
 	if actual != "(- (- 1 2) 3)" {

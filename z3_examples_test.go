@@ -32,7 +32,7 @@ func ExampleBasicMath() {
 	zero := ctx.Int(0, ctx.IntSort()) // To save repeats
 
 	// x + y + z > 4
-	s.Assert(x.Add(y, z).Gt(ctx.Int(4, ctx.IntSort())))
+	s.Assert(x.Add(y).Add(z).Gt(ctx.Int(4, ctx.IntSort())))
 
 	// x + y < 2
 	s.Assert(x.Add(y).Lt(ctx.Int(2, ctx.IntSort())))
