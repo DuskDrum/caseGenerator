@@ -39,12 +39,12 @@ func (a *AST) Not() *AST {
 // Eq creates a "equal" comparison.
 //
 // Maps to: Z3_mk_eq
-func (a *AST) Eq(a2 *AST) *AST {
-	return &AST{
-		rawCtx: a.rawCtx,
-		rawAST: C.Z3_mk_eq(a.rawCtx, a.rawAST, a2.rawAST),
-	}
-}
+//func (a *AST) Eq(a2 *AST) *AST {
+//	return &AST{
+//		rawCtx: a.rawCtx,
+//		rawAST: C.Z3_mk_eq(a.rawCtx, a.rawAST, a2.rawAST),
+//	}
+//}
 
 // Ite creates an AST node representing if a then a2 else a3.
 //
