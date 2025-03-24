@@ -40,3 +40,10 @@ func (c *Context) DoubleSort() *Sort {
 		rawSort: C.Z3_mk_fpa_sort(c.raw, 11, 53),
 	}
 }
+
+// GetSortKind 获取 sort类型
+func GetSortKind(ast *AST) C.Z3_sort_kind {
+	sort := C.Z3_get_sort(ast.rawCtx, ast.rawAST)
+	kind := C.Z3_get_sort_kind(ast.rawCtx, sort)
+	return kind
+}

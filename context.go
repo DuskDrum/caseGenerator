@@ -8,6 +8,14 @@ type Context struct {
 	raw C.Z3_context
 }
 
+// DefaultContext 初始化Z3上下文
+func DefaultContext() *Context {
+	config := C.Z3_mk_config()
+	ctx := C.Z3_mk_context(config)
+	C.Z3_del_config(config)
+	return &Context{raw: ctx}
+}
+
 func NewContext(c *Config) *Context {
 	return &Context{
 		raw: C.Z3_mk_context(c.Z3Value()),

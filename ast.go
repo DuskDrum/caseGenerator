@@ -131,3 +131,15 @@ func (a *AST) Float() float32 {
 	var dst C.double = C.Z3_get_numeral_double(a.rawCtx, a.rawAST)
 	return float32(dst)
 }
+
+// MakeInt 创建整数节点
+func (c *Context) MakeInt(num int) *C.Z3_ast {
+	intSort := C.Z3_mk_int_sort(c.raw)
+	return C.Z3_mk_int(c.raw, C.int(num), intSort)
+}
+
+// MakeDouble 创建双精度浮点数节点
+func (c *Context) MakeDouble(num float64) *C.Z3_ast {
+	doubleSort := C.Z3_mk_fpa_sort_double(c.raw)
+	return C.Z3_mk_fpa_numeral_float(c.raw, C.double(num), doubleSort)
+}

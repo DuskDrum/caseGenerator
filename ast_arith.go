@@ -10,21 +10,35 @@ import "C"
 // Add creates an AST node representing adding.
 //
 // All AST values must be part of the same context.
-func (a *AST) Add(args ...*AST) *AST {
-	raws := make([]C.Z3_ast, len(args)+1)
-	raws[0] = a.rawAST
-	for i, arg := range args {
-		raws[i+1] = arg.rawAST
-	}
-
-	return &AST{
-		rawCtx: a.rawCtx,
-		rawAST: C.Z3_mk_add(
-			a.rawCtx,
-			C.uint(len(raws)),
-			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+func (a *AST) Add(b *AST) *AST {
+	kindA := GetSortKind(a)
+	kindB := GetSortKind(b)
+	if kindA == C.Z3_INT_SORT && kindB == C.Z3_INT_SORT {
+		// 调用Z3_mk_add
+		return C.Z3_mk_add(a.rawCtx, a, b)
+	} else if kindA == C.Z3_FLOATING_POINT_SORT && kindB == C.Z3_FLOATING_POINT_SORT {
+		// 调用Z3_mk_fpa_add
+		return C.Z3_mk_fpa_add(a.rawCtx, a, b)
+	} else {
+		panic("Unsupported types")
 	}
 }
+
+//func (a *AST) Add(args ...*AST) *AST {
+//	raws := make([]C.Z3_ast, len(args)+1)
+//	raws[0] = a.rawAST
+//	for i, arg := range args {
+//		raws[i+1] = arg.rawAST
+//	}
+//
+//	return &AST{
+//		rawCtx: a.rawCtx,
+//		rawAST: C.Z3_mk_add(
+//			a.rawCtx,
+//			C.uint(len(raws)),
+//			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+//	}
+//}
 
 // Mul creates an AST node representing multiplication.
 //
