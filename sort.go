@@ -17,6 +17,14 @@ func (c *Context) BoolSort() *Sort {
 	}
 }
 
+// StringSort returns the string type.
+func (c *Context) StringSort() *Sort {
+	return &Sort{
+		rawCtx:  c.raw,
+		rawSort: C.Z3_mk_string_sort(c.raw),
+	}
+}
+
 // IntSort returns the int type.
 func (c *Context) IntSort() *Sort {
 	return &Sort{

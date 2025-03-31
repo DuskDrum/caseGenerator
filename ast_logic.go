@@ -36,15 +36,25 @@ func (a *AST) Not() *AST {
 	}
 }
 
-// Eq creates a "equal" comparison.
+// UnaryMinus creates an AST node representing UnaryMinus
 //
-// Maps to: Z3_mk_eq
-//func (a *AST) Eq(a2 *AST) *AST {
-//	return &AST{
-//		rawCtx: a.rawCtx,
-//		rawAST: C.Z3_mk_eq(a.rawCtx, a.rawAST, a2.rawAST),
-//	}
-//}
+// Maps to: Z3_mk_unary_minus
+func (a *AST) UnaryMinus() *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_unary_minus(a.rawCtx, a.rawAST),
+	}
+}
+
+// BvNot creates an AST node representing bvNot
+// 按位取反
+// Maps to: Z3_mk_bvnot
+func (a *AST) BvNot() *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_bvnot(a.rawCtx, a.rawAST),
+	}
+}
 
 // Ite creates an AST node representing if a then a2 else a3.
 //
@@ -121,5 +131,89 @@ func (a *AST) Or(args ...*AST) *AST {
 			a.rawCtx,
 			C.uint(len(raws)),
 			(*C.Z3_ast)(unsafe.Pointer(&raws[0]))),
+	}
+}
+
+// BvAnd creates an AST node representing a & b
+//
+// a and a2 must be part of the same Context and be boolean types.
+func (a *AST) BvAnd(b *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_bvand(
+			a.rawCtx,
+			a.rawAST,
+			b.rawAST,
+		),
+	}
+}
+
+// BvOr creates an AST node representing a | b
+//
+// a and b must be part of the same Context and be boolean types.
+func (a *AST) BvOr(b *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_bvor(
+			a.rawCtx,
+			a.rawAST,
+			b.rawAST,
+		),
+	}
+}
+
+// BvXor creates an AST node representing a ^ b
+//
+// a and b must be part of the same Context and be boolean types.
+func (a *AST) BvXor(b *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_bvxor(
+			a.rawCtx,
+			a.rawAST,
+			b.rawAST,
+		),
+	}
+}
+
+// BvNAnd creates an AST node representing a &^ b
+// 按位与非
+// a and b must be part of the same Context and be boolean types.
+func (a *AST) BvNAnd(b *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_bvnand(
+			a.rawCtx,
+			a.rawAST,
+			b.rawAST,
+		),
+	}
+}
+
+// BvShl creates an AST node representing a << b
+// 向量左移
+// a and b must be part of the same Context and be boolean types.
+func (a *AST) BvShl(b *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_bvshl(
+			a.rawCtx,
+			a.rawAST,
+			b.rawAST,
+		),
+	}
+}
+
+// BvaShr creates an AST node representing a >> b
+// 向量右移
+// a and b must be part of the same Context and be boolean types.
+func (a *AST) BvaShr(b *AST) *AST {
+	return &AST{
+		rawCtx: a.rawCtx,
+		rawAST: C.Z3_mk_bvashr(
+			a.rawCtx,
+			a.rawAST,
+			b.rawAST,
+		),
 	}
 }
