@@ -3,31 +3,25 @@ package z3
 import (
 	"caseGenerator/go-z3"
 	"caseGenerator/parser/expr"
-	_struct "caseGenerator/parser/struct"
 )
 
 func ExpressBasicLit(param *expr.BasicLit) *z3.AST {
-	//elementList := []string{param.GetFormula()}
-	//basicList := []*expr.BasicLit{param}
-
-	//expression := &Z3Express{
-	//ElementList: elementList,
-	//BasicList:   basicList,
-	//Expr:        strings.Join(elementList, " "),
-	//}
-	//return []*Z3Express{expression}
-	return nil
-}
-
-func ExpressTargetBasicLit(param *expr.BasicLit, targetParam _struct.Parameter) *Z3Express {
-	//elementList := []string{param.GetFormula()}
-	//basicList := []*expr.BasicLit{param}
-
-	//expression := &Z3Express{
-	//ElementList: elementList,
-	//BasicList:   basicList,
-	//Expr:        targetParam.GetFormula() + " = " + param.GetFormula(),
-	//}
-	//return []*Z3Express{expression}
+	config := z3.NewConfig()
+	ctx := z3.NewContext(config)
+	defer ctx.Close()
+	switch param.Value.(type) {
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64: // rune就是int32
+		return ctx.Const(ctx.Symbol(param.GetFormula()), ctx.IntSort())
+	case float32:
+		return ctx.Const(ctx.Symbol(param.GetFormula()), ctx.FloatSort())
+	case float64:
+		return ctx.Const(ctx.Symbol(param.GetFormula()), ctx.DoubleSort())
+	case bool:
+		return ctx.Const(ctx.Symbol(param.GetFormula()), ctx.BoolSort())
+	case string:
+		return ctx.Const(ctx.Symbol(param.GetFormula()), ctx.StringSort())
+	default:
+		panic("basic type not found")
+	}
 	return nil
 }

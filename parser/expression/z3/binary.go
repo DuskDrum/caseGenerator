@@ -38,7 +38,22 @@ func expressRelation(param *expr.Binary, xExpression *z3.AST, yExpression *z3.AS
 		return xExpression.Ge(yExpression)
 	}
 
-	// 需要判断类型是int还是float
+	// 位运算
+	if param.Op == token.AND { // &
+		return xExpression.BvAnd(yExpression)
+	} else if param.Op == token.OR { // |
+		return xExpression.BvOr(yExpression)
+	} else if param.Op == token.XOR { // ^ binary代表了按位异或
+		return xExpression.BvXor(yExpression)
+	} else if param.Op == token.SHL { // <<
+		return xExpression.BvShl(yExpression)
+	} else if param.Op == token.SHR { // >>
+		return xExpression.BvaShr(yExpression)
+	} else if param.Op == token.AND_NOT { // &^  按位与非
+		return xExpression.BvNAnd(yExpression)
+	}
+
+	// 数学运算 需要判断类型是int还是float
 	if param.Op == token.ADD {
 		return xExpression.Add(yExpression)
 	} else if param.Op == token.SUB {

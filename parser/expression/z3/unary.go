@@ -14,9 +14,9 @@ func ExpressUnary(param *expr.Unary) *z3.AST {
 	if param.Op == token.NOT {
 		return ast.Not()
 	} else if param.Op == token.SUB {
-		config := z3.NewConfig()
-		ctx := z3.NewContext(config)
-		return ctx.Int(0, ctx.IntSort()).Sub(ast)
+		return ast.UnaryMinus()
+	} else if param.Op == token.XOR { // ^ unary代表了取反
+		return ast.BvNot()
 	}
 
 	return nil
