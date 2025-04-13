@@ -3,8 +3,10 @@ package expr
 import (
 	"fmt"
 	"go/ast"
+	"go/build"
 	"go/parser"
 	"go/token"
+	"strings"
 	"testing"
 )
 
@@ -15,8 +17,9 @@ package main
 import "fmt"
 
 func main() {
+	var a = 0
     fmt.Println("Hello, World!")
-    add(1, 2)
+    a = add(1, 2)
 }
 `
 
@@ -54,4 +57,52 @@ func main() {
 		}
 		return true
 	})
+}
+
+func TestCallImportCase(t *testing.T) {
+	src := `
+package main
+
+import "fmt"
+
+func main() {
+	var a = 0
+    fmt.Println("Hello, World!")
+    a = add(1, 2)
+}
+`
+
+	// 创建文件集
+	fset := token.NewFileSet()
+
+	// 解析源文件
+	node, err := parser.ParseFile(fset, "", src, 0)
+	if err != nil {
+		fmt.Println("解析错误:", err)
+		return
+	}
+
+	// 解析导入声明的别名和路径
+	for _, imp := range node.Imports {
+		path := strings.Trim(imp.Path.Value, "\"")
+		importCtx := build.Default
+		pkg, _ := importCtx.Import(path, "", build.FindOnly)
+		fmt.Println(pkg.Dir) // 输出包源码目录
+
+		pkgs, _ := parser.ParseDir(fset, pkg.Dir, nil, parser.ParseComments)
+		for _, pkgAst := range pkgs {
+			ast.Inspect(pkgAst, func(n ast.Node) bool {
+				// 检查是否为 *ast.BasicLit 节点
+				if funcDecl, ok := n.(*ast.FuncDecl); ok {
+					if funcDecl.Name.Name == "Println" {
+						fmt.Println("找到基本字面量:")
+						// 输出字面量的类型和值
+						fmt.Printf("  类型: %v\n", funcDecl.Type.Results)
+						fmt.Printf("  值: %v\n", funcDecl.Type.Func)
+					}
+				}
+				return true
+			})
+		}
+	}
 }

@@ -2,7 +2,12 @@ package expr
 
 import (
 	_struct "caseGenerator/parser/struct"
+	"fmt"
 	"go/ast"
+	"go/build"
+	"go/parser"
+	"go/token"
+	"strings"
 )
 
 // ParseParameter 同时处理几种可能存在值的类型，如BasicLit、FuncLit、CompositeLit、CallExpr
@@ -80,4 +85,31 @@ func ParseRecursionValue(expr ast.Expr) *_struct.RecursionParam {
 		ap.Child = ParseRecursionValue(exprType.Value)
 	}
 	return ap
+}
+
+// ParseResponseImportFuncDecl 解析import方法的响应列表
+func ParseResponseImportFuncDecl(importPath, funcName string) []Field {
+	path := strings.Trim(importPath, "\"")
+	importCtx := build.Default
+	pkg, _ := importCtx.Import(path, "", build.FindOnly)
+	fmt.Println(pkg.Dir) // 输出包源码目录
+
+	fields := make([]Field, 0, 10)
+
+	fset := token.NewFileSet()
+	pkgs, _ := parser.ParseDir(fset, pkg.Dir, nil, parser.ParseComments)
+	for _, pkgAst := range pkgs {
+		ast.Inspect(pkgAst, func(n ast.Node) bool {
+			// 检查是否为 *ast.BasicLit 节点
+			if funcDecl, ok := n.(*ast.FuncDecl); ok {
+				if funcDecl.Name.Name == funcName {
+					funcType := ParseFuncType(funcDecl.Type)
+					fields = append(fields, funcType.Results...)
+					return false
+				}
+			}
+			return true
+		})
+	}
+	return fields
 }

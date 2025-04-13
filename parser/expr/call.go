@@ -14,6 +14,8 @@ type Call struct {
 	Function _struct.Parameter
 	// 参数列表
 	Args []_struct.Parameter
+	// response列表
+	Results []Field
 }
 
 func (s *Call) GetType() enum.ParameterType {
@@ -44,5 +46,7 @@ func ParseCall(expr *ast.CallExpr) *Call {
 		callList = append(callList, call)
 	}
 	ca.Args = callList
+	// 解析import
+
 	return ca
 }
