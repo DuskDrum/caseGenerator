@@ -38,11 +38,11 @@ func (s *Field) GetFormula() string {
 }
 
 // ParseField 解析ast
-func ParseField(expr *ast.Field) *Field {
+func ParseField(expr *ast.Field, af *ast.File) *Field {
 	identList := make([]Ident, 0, 10)
 	if expr.Names != nil {
 		for _, v := range expr.Names {
-			ident := ParseIdent(v)
+			ident := ParseIdent(v, af)
 			if ident != nil {
 				identList = append(identList, lo.FromPtr(ident))
 			}
@@ -51,10 +51,10 @@ func ParseField(expr *ast.Field) *Field {
 
 	filed := &Field{
 		FiledNames: identList,
-		Type:       ParseParameter(expr.Type),
+		Type:       ParseParameter(expr.Type, af),
 	}
 	if expr.Tag != nil {
-		tag := ParseBasicLit(expr.Tag)
+		tag := ParseBasicLit(expr.Tag, af)
 
 		if tag != nil {
 			filed.Tag = tag

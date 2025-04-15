@@ -20,7 +20,7 @@ func (i *Ident) GetFormula() string {
 }
 
 // ParseIdent 解析ast
-func ParseIdent(expr *ast.Ident) *Ident {
+func ParseIdent(expr *ast.Ident, _ *ast.File) *Ident {
 	return &Ident{
 		IdentName: expr.Name,
 	}

@@ -24,9 +24,9 @@ func (s *TypeAssert) GetFormula() string {
 }
 
 // ParseTypeAssert 解析ast
-func ParseTypeAssert(expr *ast.TypeAssertExpr) *TypeAssert {
+func ParseTypeAssert(expr *ast.TypeAssertExpr, af *ast.File) *TypeAssert {
 	typeAssert := &TypeAssert{}
-	typeAssert.Content = ParseParameter(expr.X)
-	typeAssert.Type = ParseParameter(expr.Type)
+	typeAssert.Content = ParseParameter(expr.X, af)
+	typeAssert.Type = ParseParameter(expr.Type, af)
 	return typeAssert
 }

@@ -48,51 +48,51 @@ type SelectorConditionResult struct {
 }
 
 // ParseStmt 完整的执行单元
-func ParseStmt(expr ast.Stmt) Stmt {
+func ParseStmt(expr ast.Stmt, af *ast.File) Stmt {
 	if expr == nil {
 		return nil
 	}
 	switch stmtType := expr.(type) {
 	case *ast.DeclStmt:
-		return ParseDecl(stmtType)
+		return ParseDecl(stmtType, af)
 	case *ast.EmptyStmt:
-		return ParseEmpty(stmtType)
+		return ParseEmpty(stmtType, af)
 	case *ast.LabeledStmt:
-		return ParseLabeled(stmtType)
+		return ParseLabeled(stmtType, af)
 	case *ast.ExprStmt:
-		return ParseExpr(stmtType)
+		return ParseExpr(stmtType, af)
 	case *ast.SendStmt:
-		return ParseSend(stmtType)
+		return ParseSend(stmtType, af)
 	case *ast.IncDecStmt:
-		return ParseIncDec(stmtType)
+		return ParseIncDec(stmtType, af)
 	case *ast.AssignStmt:
-		return ParseAssign(stmtType)
+		return ParseAssign(stmtType, af)
 	case *ast.GoStmt:
-		return ParseGo(stmtType)
+		return ParseGo(stmtType, af)
 	case *ast.DeferStmt:
-		return ParseDefer(stmtType)
+		return ParseDefer(stmtType, af)
 	case *ast.ReturnStmt:
-		return ParseReturn(stmtType)
+		return ParseReturn(stmtType, af)
 	case *ast.BranchStmt:
-		return ParseBranch(stmtType)
+		return ParseBranch(stmtType, af)
 	case *ast.BlockStmt:
-		return ParseBlock(stmtType)
+		return ParseBlock(stmtType, af)
 	case *ast.IfStmt:
-		return ParseIf(stmtType)
+		return ParseIf(stmtType, af)
 	case *ast.CaseClause:
-		return ParseCaseClause(stmtType)
+		return ParseCaseClause(stmtType, af)
 	case *ast.SwitchStmt:
-		return ParseSwitch(stmtType)
+		return ParseSwitch(stmtType, af)
 	case *ast.TypeSwitchStmt:
-		return ParseTypeSwitch(stmtType)
+		return ParseTypeSwitch(stmtType, af)
 	case *ast.CommClause:
-		return ParseCommClause(stmtType)
+		return ParseCommClause(stmtType, af)
 	case *ast.SelectStmt:
-		return ParseSelect(stmtType)
+		return ParseSelect(stmtType, af)
 	case *ast.ForStmt:
-		return ParseFor(stmtType)
+		return ParseFor(stmtType, af)
 	case *ast.RangeStmt:
-		return ParseRange(stmtType)
+		return ParseRange(stmtType, af)
 	default:
 		panic("未知类型...")
 	}

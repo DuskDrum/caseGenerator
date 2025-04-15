@@ -34,10 +34,10 @@ func (s *FuncDecl) GetFormula() string {
 }
 
 // ParseFuncDecl 解析ast
-func ParseFuncDecl(expr *ast.FuncDecl) *FuncDecl {
+func ParseFuncDecl(expr *ast.FuncDecl, af *ast.File) *FuncDecl {
 	fd := &FuncDecl{Name: Ident{}}
 	if expr.Type != nil {
-		funcType := ParseFuncType(expr.Type)
+		funcType := ParseFuncType(expr.Type, af)
 		if funcType != nil {
 			fd.Type = lo.FromPtr(funcType)
 		}
@@ -45,7 +45,7 @@ func ParseFuncDecl(expr *ast.FuncDecl) *FuncDecl {
 	if expr.Recv != nil {
 		fields := make([]Field, 0, 10)
 		for _, recv := range expr.Recv.List {
-			funcType := ParseField(recv)
+			funcType := ParseField(recv, af)
 			if funcType != nil {
 				fields = append(fields, lo.FromPtr(funcType))
 			}

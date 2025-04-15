@@ -16,19 +16,19 @@ type For struct {
 }
 
 // ParseFor 解析ast
-func ParseFor(stmt *ast.ForStmt) *For {
+func ParseFor(stmt *ast.ForStmt, af *ast.File) *For {
 	f := &For{}
 	if stmt.Init != nil {
-		f.Init = ParseStmt(stmt.Init)
+		f.Init = ParseStmt(stmt.Init, af)
 	}
 	if stmt.Post != nil {
-		f.Post = ParseStmt(stmt.Post)
+		f.Post = ParseStmt(stmt.Post, af)
 	}
 	if stmt.Cond != nil {
-		f.Cond = expr.ParseParameter(stmt.Cond)
+		f.Cond = expr.ParseParameter(stmt.Cond, af)
 	}
 	if stmt.Body != nil {
-		f.Body = ParseBlock(stmt.Body)
+		f.Body = ParseBlock(stmt.Body, af)
 	}
 	return f
 }

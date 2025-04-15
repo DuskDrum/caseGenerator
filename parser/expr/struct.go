@@ -29,13 +29,13 @@ func (s *Struct) GetFormula() string {
 }
 
 // ParseStruct 解析ast
-func ParseStruct(expr *ast.StructType) *Struct {
+func ParseStruct(expr *ast.StructType, af *ast.File) *Struct {
 	s := &Struct{}
 	fields := expr.Fields
 	fieldList := make([]Field, 0, 10)
 	if fields != nil {
 		for _, field := range fields.List {
-			pf := ParseField(field)
+			pf := ParseField(field, af)
 			if pf != nil {
 				fieldList = append(fieldList, lo.FromPtr(pf))
 			}

@@ -26,9 +26,9 @@ func (s *FuncLit) GetFormula() string {
 }
 
 // ParseFuncLit 解析ast
-func ParseFuncLit(expr *ast.FuncLit) *FuncLit {
+func ParseFuncLit(expr *ast.FuncLit, af *ast.File) *FuncLit {
 	fl := &FuncLit{}
-	funcType := ParseFuncType(expr.Type)
+	funcType := ParseFuncType(expr.Type, af)
 	if funcType != nil {
 		fl.FuncType = lo.FromPtr(funcType)
 	}

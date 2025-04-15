@@ -49,23 +49,23 @@ func (s *Slice) GetFormula() string {
 }
 
 // ParseSlice 解析ast
-func ParseSlice(expr *ast.SliceExpr) *Slice {
+func ParseSlice(expr *ast.SliceExpr, af *ast.File) *Slice {
 	slice := &Slice{}
-	slice.Content = ParseParameter(expr.X)
+	slice.Content = ParseParameter(expr.X, af)
 	if expr.Low != nil {
-		low := ParseParameter(expr.Low)
+		low := ParseParameter(expr.Low, af)
 		if low != nil {
 			slice.Low = lo.ToPtr(low)
 		}
 	}
 	if expr.High != nil {
-		high := ParseParameter(expr.High)
+		high := ParseParameter(expr.High, af)
 		if high != nil {
 			slice.High = lo.ToPtr(high)
 		}
 	}
 	if expr.Max != nil {
-		maxExpr := ParseParameter(expr.Max)
+		maxExpr := ParseParameter(expr.Max, af)
 		if maxExpr != nil {
 			slice.Max = lo.ToPtr(maxExpr)
 		}

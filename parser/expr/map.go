@@ -25,10 +25,10 @@ func (m *Map) GetFormula() string {
 }
 
 // ParseMap 解析ast
-func ParseMap(expr *ast.MapType) *Map {
+func ParseMap(expr *ast.MapType, af *ast.File) *Map {
 	m := &Map{}
-	m.KeyType = ParseParameter(expr.Key)
-	m.ValueType = lo.FromPtr(ParseRecursionValue(expr.Value))
+	m.KeyType = ParseParameter(expr.Key, af)
+	m.ValueType = lo.FromPtr(ParseRecursionValue(expr.Value, af))
 
 	return m
 }

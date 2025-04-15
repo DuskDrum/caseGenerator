@@ -30,9 +30,9 @@ func (s *Chan) GetFormula() string {
 }
 
 // ParseChan 解析ast
-func ParseChan(expr *ast.ChanType) *Chan {
+func ParseChan(expr *ast.ChanType, af *ast.File) *Chan {
 	ch := &Chan{}
 	ch.Dir = expr.Dir
-	ch.Param = ParseParameter(expr.Value)
+	ch.Param = ParseParameter(expr.Value, af)
 	return ch
 }

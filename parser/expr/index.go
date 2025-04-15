@@ -25,10 +25,10 @@ func (s *Index) GetFormula() string {
 }
 
 // ParseIndex 解析ast
-func ParseIndex(expr *ast.IndexExpr) *Index {
+func ParseIndex(expr *ast.IndexExpr, af *ast.File) *Index {
 	i := &Index{}
-	i.Subject = ParseParameter(expr.X)
-	i.Index = ParseParameter(expr.Index)
+	i.Subject = ParseParameter(expr.X, af)
+	i.Index = ParseParameter(expr.Index, af)
 
 	return i
 }

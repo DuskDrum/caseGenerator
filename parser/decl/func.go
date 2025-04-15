@@ -19,18 +19,18 @@ type Func struct {
 }
 
 // ParseFunc 解析Func
-func ParseFunc(decl *ast.FuncDecl) *Func {
+func ParseFunc(decl *ast.FuncDecl, af *ast.File) *Func {
 	fieldList := make([]expr.Field, 0, 10)
 	if decl.Recv != nil {
 		for _, v := range decl.Recv.List {
-			pf := expr.ParseField(v)
+			pf := expr.ParseField(v, af)
 			if pf != nil {
 				fieldList = append(fieldList, lo.FromPtr(pf))
 			}
 		}
 	}
-	name := expr.ParseIdent(decl.Name)
-	funcType := expr.ParseFuncType(decl.Type)
+	name := expr.ParseIdent(decl.Name, af)
+	funcType := expr.ParseFuncType(decl.Type, af)
 	body := stmt.ParseBlock(decl.Body)
 
 	f := &Func{
@@ -43,7 +43,7 @@ func ParseFunc(decl *ast.FuncDecl) *Func {
 }
 
 // ParseBody 解析方法
-func ParseBody(sb *ast.BlockStmt) {
+func ParseBody(sb *ast.BlockStmt, af *ast.File) {
 	// 常量map, 先不考虑
 	// constantsMap := make(map[string]any, 10)
 	// 内部变量map， 通过上下文推导出来
@@ -59,7 +59,7 @@ func ParseBody(sb *ast.BlockStmt) {
 	for _, v := range sb.List {
 		// todo
 		// 1.1 解析每个stmt的内容
-		p := stmt.ParseStmt(v)
+		p := stmt.ParseStmt(v, af)
 		// 1.2 执行每一个 stmt 的公式；得到最新的赋值公式
 		if pes, ok := p.(stmt.ExpressionStmt); ok {
 			kfList, callMap := pes.FormulaExpress()

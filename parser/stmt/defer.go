@@ -14,9 +14,9 @@ type Defer struct {
 }
 
 // ParseDefer 解析ast
-func ParseDefer(stmt *ast.DeferStmt) *Defer {
+func ParseDefer(stmt *ast.DeferStmt, af *ast.File) *Defer {
 	d := &Defer{}
-	call := expr.ParseCall(stmt.Call)
+	call := expr.ParseCall(stmt.Call, af)
 	if call != nil {
 		d.Call = lo.FromPtr(call)
 	}

@@ -19,11 +19,11 @@ func (r *Return) CalculateCondition(constantsMap, innerVariablesMap, outerVariab
 }
 
 // ParseReturn 解析ast
-func ParseReturn(stmt *ast.ReturnStmt) *Return {
+func ParseReturn(stmt *ast.ReturnStmt, af *ast.File) *Return {
 	r := &Return{}
 	resultList := make([]_struct.Parameter, 0, 10)
 	for _, v := range stmt.Results {
-		result := expr.ParseParameter(v)
+		result := expr.ParseParameter(v, af)
 		resultList = append(resultList, result)
 	}
 	r.ReturnList = resultList

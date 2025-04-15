@@ -41,7 +41,7 @@ func (t *TypeSwitch) CalculateCondition(constantsMap, innerVariablesMap, outerVa
 }
 
 // ParseTypeSwitch 解析ast
-func ParseTypeSwitch(stmt *ast.TypeSwitchStmt) *TypeSwitch {
+func ParseTypeSwitch(stmt *ast.TypeSwitchStmt, af *ast.File) *TypeSwitch {
 	ts := &TypeSwitch{}
 
 	if stmt.Init != nil {
@@ -49,12 +49,12 @@ func ParseTypeSwitch(stmt *ast.TypeSwitchStmt) *TypeSwitch {
 		if !ok {
 			panic("switch init type is not assign")
 		}
-		ts.Init = ParseAssign(as)
+		ts.Init = ParseAssign(as, af)
 	}
 	if stmt.Assign != nil {
-		ts.Assign = ParseStmt(stmt.Assign)
+		ts.Assign = ParseStmt(stmt.Assign, af)
 	}
-	ts.Body = ParseBlock(stmt.Body)
+	ts.Body = ParseBlock(stmt.Body, af)
 
 	return ts
 }

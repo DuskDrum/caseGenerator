@@ -33,7 +33,7 @@ func (s *BasicLit) GetFormula() string {
 }
 
 // ParseBasicLit 解析ast
-func ParseBasicLit(expr *ast.BasicLit) *BasicLit {
+func ParseBasicLit(expr *ast.BasicLit, _ *ast.File) *BasicLit {
 	bl := &BasicLit{}
 	// 解析 value
 	bl.Kind = expr.Kind

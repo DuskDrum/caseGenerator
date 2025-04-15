@@ -18,19 +18,19 @@ type Range struct {
 }
 
 // ParseRange 解析ast
-func ParseRange(stmt *ast.RangeStmt) *Range {
+func ParseRange(stmt *ast.RangeStmt, af *ast.File) *Range {
 	r := &Range{}
 	if stmt.Key != nil {
-		r.Key = expr.ParseParameter(stmt.Key)
+		r.Key = expr.ParseParameter(stmt.Key, af)
 	}
 	if stmt.Value != nil {
-		r.Value = expr.ParseParameter(stmt.Value)
+		r.Value = expr.ParseParameter(stmt.Value, af)
 	}
 	if stmt.X != nil {
-		r.Content = expr.ParseParameter(stmt.X)
+		r.Content = expr.ParseParameter(stmt.X, af)
 	}
 	r.Token = stmt.Tok
-	r.Body = ParseBlock(stmt.Body)
+	r.Body = ParseBlock(stmt.Body, af)
 
 	return r
 }

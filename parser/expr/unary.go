@@ -23,10 +23,10 @@ func (s *Unary) GetFormula() string {
 }
 
 // ParseUnary 解析ast
-func ParseUnary(expr *ast.UnaryExpr) *Unary {
+func ParseUnary(expr *ast.UnaryExpr, af *ast.File) *Unary {
 	u := &Unary{}
 	u.Op = expr.Op
-	u.Content = ParseParameter(expr.X)
+	u.Content = ParseParameter(expr.X, af)
 	return u
 }
 

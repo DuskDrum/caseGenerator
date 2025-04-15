@@ -12,7 +12,7 @@ type Empty struct {
 	expr.ValueSpec
 }
 
-func ParseEmpty(_ *ast.EmptyStmt) *Empty {
+func ParseEmpty(_ *ast.EmptyStmt, _ *ast.File) *Empty {
 	empty := &Empty{}
 
 	return empty

@@ -12,14 +12,14 @@ type CommClause struct {
 }
 
 // ParseCommClause 解析ast
-func ParseCommClause(stmt *ast.CommClause) *CommClause {
+func ParseCommClause(stmt *ast.CommClause, af *ast.File) *CommClause {
 	cc := &CommClause{}
 	if stmt.Comm != nil {
-		cc.Comm = ParseStmt(stmt.Comm)
+		cc.Comm = ParseStmt(stmt.Comm, af)
 	}
 	bodyList := make([]Stmt, 0, 10)
 	for _, v := range stmt.Body {
-		ps := ParseStmt(v)
+		ps := ParseStmt(v, af)
 		bodyList = append(bodyList, ps)
 
 	}

@@ -23,8 +23,8 @@ func (s *Ellipsis) GetFormula() string {
 }
 
 // ParseEllipsis 解析ast
-func ParseEllipsis(expr *ast.Ellipsis) *Ellipsis {
+func ParseEllipsis(expr *ast.Ellipsis, af *ast.File) *Ellipsis {
 	e := &Ellipsis{}
-	e.Param = ParseParameter(expr.Elt)
+	e.Param = ParseParameter(expr.Elt, af)
 	return e
 }

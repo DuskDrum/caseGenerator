@@ -20,7 +20,7 @@ func TestBinaryCase(t *testing.T) {
 	}
 	// 类型断言，判断是否为 ast.BinaryExpr 类型
 	if binaryExpr, ok := expr.(*ast.BinaryExpr); ok {
-		binary := ParseBinary(binaryExpr)
+		binary := ParseBinary(binaryExpr, nil)
 		marshal, err := json.Marshal(binary)
 		if err != nil {
 			panic("Errors: " + err.Error())

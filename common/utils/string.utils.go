@@ -1,6 +1,9 @@
 package utils
 
-import "unicode"
+import (
+	"strings"
+	"unicode"
+)
 
 // IsLower 判读字母是否是小写开头
 func IsLower(s string) bool {
@@ -13,4 +16,12 @@ func IsLower(s string) bool {
 		return false
 	}
 	return false
+}
+
+func GetSuffixAfterDot(s string) string {
+	index := strings.LastIndex(s, ".")
+	if index != -1 && index+1 < len(s) {
+		return s[index+1:]
+	}
+	return ""
 }

@@ -14,10 +14,10 @@ type Go struct {
 }
 
 // ParseGo 解析ast
-func ParseGo(stmt *ast.GoStmt) *Go {
+func ParseGo(stmt *ast.GoStmt, af *ast.File) *Go {
 	g := &Go{}
 
-	call := expr.ParseCall(stmt.Call)
+	call := expr.ParseCall(stmt.Call, af)
 	if call != nil {
 		g.Call = lo.FromPtr(call)
 	}

@@ -33,20 +33,20 @@ func (s *Binary) GetFormula() string {
 }
 
 // ParseBinary 解析Binary
-func ParseBinary(expr *ast.BinaryExpr) *Binary {
+func ParseBinary(expr *ast.BinaryExpr, af *ast.File) *Binary {
 	ab := &Binary{}
-	ab.BinaryParam = lo.FromPtr(ParseBinaryParam(expr))
+	ab.BinaryParam = lo.FromPtr(ParseBinaryParam(expr, af))
 	return ab
 }
 
-func ParseBinaryParam(expr *ast.BinaryExpr) *BinaryParam {
+func ParseBinaryParam(expr *ast.BinaryExpr, af *ast.File) *BinaryParam {
 	bp := &BinaryParam{}
 	bp.Op = expr.Op
 	// 解析X、解析Y
 	// 调用这个方法会去 switch 所有 expr 类型
 	// 如果类型是BinaryParam--->就会来调用ParseBinaryParam方法，形成递归
-	xP := ParseParameter(expr.X)
-	yP := ParseParameter(expr.Y)
+	xP := ParseParameter(expr.X, af)
+	yP := ParseParameter(expr.Y, af)
 	bp.X = xP
 	bp.Y = yP
 	return bp

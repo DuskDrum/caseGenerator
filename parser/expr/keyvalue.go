@@ -22,9 +22,9 @@ func (s *KeyValue) GetFormula() string {
 }
 
 // ParseKeyValue 解析ast
-func ParseKeyValue(expr *ast.KeyValueExpr) *KeyValue {
+func ParseKeyValue(expr *ast.KeyValueExpr, af *ast.File) *KeyValue {
 	kv := &KeyValue{}
-	kv.Key = ParseParameter(expr.Key)
-	kv.Value = ParseParameter(expr.Value)
+	kv.Key = ParseParameter(expr.Key, af)
+	kv.Value = ParseParameter(expr.Value, af)
 	return kv
 }

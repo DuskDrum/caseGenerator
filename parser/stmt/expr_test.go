@@ -29,7 +29,7 @@ func TestExprCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.ExprStmt); ok {
 			fmt.Println("找到 ExprStmt")
-			expr := ParseExpr(stmt)
+			expr := ParseExpr(stmt, file)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", expr)
 		}

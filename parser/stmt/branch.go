@@ -16,10 +16,10 @@ type Branch struct {
 }
 
 // ParseBranch 解析ast
-func ParseBranch(stmt *ast.BranchStmt) *Branch {
+func ParseBranch(stmt *ast.BranchStmt, af *ast.File) *Branch {
 	branch := &Branch{}
 	if stmt.Label != nil {
-		label := expr.ParseIdent(stmt.Label)
+		label := expr.ParseIdent(stmt.Label, af)
 		if label != nil {
 			branch.Label = lo.FromPtr(label)
 		}

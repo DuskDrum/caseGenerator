@@ -27,8 +27,8 @@ func (s *Star) GetFormula() string {
 }
 
 // ParseStar 解析ast
-func ParseStar(expr *ast.StarExpr) *Star {
+func ParseStar(expr *ast.StarExpr, af *ast.File) *Star {
 	return &Star{
-		Child: lo.ToPtr(ParseParameter(expr)),
+		Child: lo.ToPtr(ParseParameter(expr, af)),
 	}
 }

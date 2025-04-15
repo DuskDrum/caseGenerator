@@ -16,16 +16,16 @@ type CaseClause struct {
 }
 
 // ParseCaseClause 解析ast
-func ParseCaseClause(stmt *ast.CaseClause) *CaseClause {
+func ParseCaseClause(stmt *ast.CaseClause, af *ast.File) *CaseClause {
 	cc := &CaseClause{}
 	cl := make([]_struct.Parameter, 0, 10)
 	for _, v := range stmt.List {
-		c := expr.ParseParameter(v)
+		c := expr.ParseParameter(v, af)
 		cl = append(cl, c)
 	}
 	bl := make([]Stmt, 0, 10)
 	for _, b := range stmt.Body {
-		ps := ParseStmt(b)
+		ps := ParseStmt(b, af)
 		bl = append(bl, ps)
 	}
 	cc.CaseList = cl

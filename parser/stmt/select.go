@@ -11,8 +11,8 @@ type Select struct {
 }
 
 // ParseSelect 解析ast
-func ParseSelect(stmt *ast.SelectStmt) *Select {
+func ParseSelect(stmt *ast.SelectStmt, af *ast.File) *Select {
 	s := &Select{}
-	s.Body = ParseBlock(stmt.Body)
+	s.Body = ParseBlock(stmt.Body, af)
 	return s
 }

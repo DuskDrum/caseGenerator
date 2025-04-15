@@ -16,16 +16,16 @@ type Send struct {
 }
 
 // ParseSend 解析ast
-func ParseSend(stmt *ast.SendStmt) *Send {
+func ParseSend(stmt *ast.SendStmt, af *ast.File) *Send {
 	send := &Send{}
 	if stmt.Chan != nil {
-		cp := expr.ParseParameter(stmt.Chan)
+		cp := expr.ParseParameter(stmt.Chan, af)
 		if cp != nil {
 			send.Chan = cp
 		}
 	}
 	if stmt.Value != nil {
-		vp := expr.ParseParameter(stmt.Value)
+		vp := expr.ParseParameter(stmt.Value, af)
 		if vp != nil {
 			send.Value = vp
 		}

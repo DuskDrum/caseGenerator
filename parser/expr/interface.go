@@ -21,12 +21,12 @@ func (s *Interface) GetFormula() string {
 }
 
 // ParseInterface 解析ast
-func ParseInterface(expr *ast.InterfaceType) *Interface {
+func ParseInterface(expr *ast.InterfaceType, af *ast.File) *Interface {
 	i := &Interface{}
 	if expr.Methods != nil {
 		fieldList := make([]Field, 0, 10)
 		for _, v := range expr.Methods.List {
-			field := ParseField(v)
+			field := ParseField(v, af)
 			if field != nil {
 				fieldList = append(fieldList, lo.FromPtr(field))
 			}

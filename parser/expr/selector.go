@@ -39,27 +39,27 @@ func (s *Selector) GetFormula() string {
 }
 
 // ParseSelector 解析ast
-func ParseSelector(expr *ast.SelectorExpr) *Selector {
+func ParseSelector(expr *ast.SelectorExpr, af *ast.File) *Selector {
 	selector := Selector{}
-	selectorExpr := GetRelationFromSelectorExpr(expr)
+	selectorExpr := GetRelationFromSelectorExpr(expr, af)
 	selector.SelectorParam = lo.FromPtr(selectorExpr)
 	return &selector
 }
 
-func GetRelationFromSelectorExpr(se *ast.SelectorExpr) *SelectorParam {
+func GetRelationFromSelectorExpr(se *ast.SelectorExpr, af *ast.File) *SelectorParam {
 	var sp = &SelectorParam{}
 	if si, ok := se.X.(*ast.Ident); ok {
 		sp.Child = nil
-		sp.Ident = ParseIdent(si)
+		sp.Ident = ParseIdent(si, af)
 
 		return sp
 	}
 	if sse, ok := se.X.(*ast.SelectorExpr); ok {
 		var childSp = &SelectorParam{}
-		childSp.Child = GetRelationFromSelectorExpr(sse)
-		childSp.Ident = ParseIdent(sse.Sel)
+		childSp.Child = GetRelationFromSelectorExpr(sse, af)
+		childSp.Ident = ParseIdent(sse.Sel, af)
 		sp.Child = childSp
-		sp.Ident = ParseIdent(se.Sel)
+		sp.Ident = ParseIdent(se.Sel, af)
 		return sp
 	}
 	return sp

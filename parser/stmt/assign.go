@@ -186,7 +186,7 @@ type AssignParam struct {
 }
 
 // ParseAssign 解析ast
-func ParseAssign(stmt *ast.AssignStmt) *Assign {
+func ParseAssign(stmt *ast.AssignStmt, af *ast.File) *Assign {
 	assign := &Assign{}
 	// 赋值的左右一定是数量一样的
 	rhs := stmt.Rhs
@@ -196,8 +196,8 @@ func ParseAssign(stmt *ast.AssignStmt) *Assign {
 	}
 	list := make([]AssignParam, 0, 10)
 	for i, l := range lhs {
-		lp := expr.ParseParameter(l)
-		rp := expr.ParseParameter(rhs[i])
+		lp := expr.ParseParameter(l, af)
+		rp := expr.ParseParameter(rhs[i], af)
 		ap := AssignParam{
 			Left:  lp,
 			Right: rp,

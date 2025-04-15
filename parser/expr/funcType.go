@@ -52,13 +52,13 @@ func (s *FuncType) GetFormula() string {
 }
 
 // ParseFuncType 解析ast
-func ParseFuncType(expr *ast.FuncType) *FuncType {
+func ParseFuncType(expr *ast.FuncType, af *ast.File) *FuncType {
 	ft := &FuncType{}
 
 	if expr.TypeParams != nil {
 		typeParamList := make([]Field, 0, 10)
 		for _, v := range expr.TypeParams.List {
-			field := ParseField(v)
+			field := ParseField(v, af)
 			if field != nil {
 				typeParamList = append(typeParamList, lo.FromPtr(field))
 			}
@@ -69,7 +69,7 @@ func ParseFuncType(expr *ast.FuncType) *FuncType {
 	if expr.Params != nil {
 		paramsList := make([]Field, 0, 10)
 		for _, v := range expr.Params.List {
-			field := ParseField(v)
+			field := ParseField(v, af)
 			if field != nil {
 				paramsList = append(paramsList, lo.FromPtr(field))
 			}
@@ -81,7 +81,7 @@ func ParseFuncType(expr *ast.FuncType) *FuncType {
 	if expr.Results != nil {
 		resultsList := make([]Field, 0, 10)
 		for _, v := range expr.Results.List {
-			field := ParseField(v)
+			field := ParseField(v, af)
 			if field != nil {
 				resultsList = append(resultsList, lo.FromPtr(field))
 			}

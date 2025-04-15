@@ -14,10 +14,10 @@ type Expr struct {
 }
 
 // ParseExpr 解析ast
-func ParseExpr(stmt *ast.ExprStmt) *Expr {
+func ParseExpr(stmt *ast.ExprStmt, af *ast.File) *Expr {
 	exprStmt := &Expr{}
 	if stmt.X != nil {
-		parameter := expr.ParseParameter(stmt.X)
+		parameter := expr.ParseParameter(stmt.X, af)
 		if parameter != nil {
 			exprStmt.Expr = parameter
 		}

@@ -11,11 +11,11 @@ type Block struct {
 }
 
 // ParseBlock 解析ast
-func ParseBlock(stmt *ast.BlockStmt) *Block {
+func ParseBlock(stmt *ast.BlockStmt, af *ast.File) *Block {
 	b := &Block{}
 	stmtList := make([]Stmt, 0, 10)
 	for _, v := range stmt.List {
-		p := ParseStmt(v)
+		p := ParseStmt(v, af)
 		stmtList = append(stmtList, p)
 	}
 	b.StmtList = stmtList

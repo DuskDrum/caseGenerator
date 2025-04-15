@@ -62,11 +62,11 @@ func (i *IncDec) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 }
 
 // ParseIncDec 解析ast
-func ParseIncDec(stmt *ast.IncDecStmt) *IncDec {
+func ParseIncDec(stmt *ast.IncDecStmt, af *ast.File) *IncDec {
 	incDec := &IncDec{}
 
 	if stmt.X != nil {
-		xp := expr.ParseParameter(stmt.X)
+		xp := expr.ParseParameter(stmt.X, af)
 		if xp != nil {
 			incDec.Content = xp
 		}

@@ -23,29 +23,29 @@ type If struct {
 }
 
 // ParseIf 解析ast
-func ParseIf(stmt *ast.IfStmt) *If {
+func ParseIf(stmt *ast.IfStmt, af *ast.File) *If {
 	i := &If{}
 	if stmt.Init != nil {
 		as, ok := stmt.Init.(*ast.AssignStmt)
 		if !ok {
 			panic("switch init type is not assign")
 		}
-		i.Init = ParseAssign(as)
+		i.Init = ParseAssign(as, af)
 	}
-	i.Block = ParseBlock(stmt.Body)
-	i.Condition = expr.ParseParameter(stmt.Cond)
+	i.Block = ParseBlock(stmt.Body, af)
+	i.Condition = expr.ParseParameter(stmt.Cond, af)
 	i.Position = stmt.Pos()
 
 	if stmt.Else != nil {
 		switch elseTyp := stmt.Else.(type) {
 		case *ast.IfStmt:
-			elseIfList, blockStmt := ParseElseIf(elseTyp)
+			elseIfList, blockStmt := ParseElseIf(elseTyp, af)
 			i.ElseIfCondition = elseIfList
 			i.ElseCondition = blockStmt
 
 		case *ast.BlockStmt:
 			// 解析else
-			elseBlock := ParseBlock(elseTyp)
+			elseBlock := ParseBlock(elseTyp, af)
 			i.ElseCondition = elseBlock
 		default:
 			panic("parse condition error, can't get type")
@@ -55,10 +55,10 @@ func ParseIf(stmt *ast.IfStmt) *If {
 	return i
 }
 
-func ParseElseIf(stmt *ast.IfStmt) ([]*If, *Block) {
+func ParseElseIf(stmt *ast.IfStmt, af *ast.File) ([]*If, *Block) {
 	ifList := make([]*If, 0, 10)
 	// 先解析本身，将其加到切片中
-	stmtIf := ParseIf(stmt)
+	stmtIf := ParseIf(stmt, af)
 
 	ifList = append(ifList, stmtIf)
 	// 递归去找else-if
@@ -68,7 +68,7 @@ func ParseElseIf(stmt *ast.IfStmt) ([]*If, *Block) {
 	blockType, ok := stmt.Else.(*ast.BlockStmt)
 	if ok {
 		// 说明不再是else if, 而是else
-		elseBlock := ParseBlock(blockType)
+		elseBlock := ParseBlock(blockType, af)
 		return ifList, elseBlock
 	}
 	elseStmt, ok := stmt.Else.(*ast.IfStmt)
@@ -76,7 +76,7 @@ func ParseElseIf(stmt *ast.IfStmt) ([]*If, *Block) {
 		panic("if else type is not *ast.IfStmt")
 	}
 	// 再递归的解析else
-	elseIfList, blockStmt := ParseElseIf(elseStmt)
+	elseIfList, blockStmt := ParseElseIf(elseStmt, af)
 	ifList = append(ifList, elseIfList...)
 	return ifList, blockStmt
 }

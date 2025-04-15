@@ -33,16 +33,16 @@ func (s *Switch) CalculateCondition(constantsMap, innerVariablesMap, outerVariab
 }
 
 // ParseSwitch 解析ast
-func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
+func ParseSwitch(stmt *ast.SwitchStmt, af *ast.File) *Switch {
 	s := &Switch{}
 	if stmt.Init != nil {
 		as, ok := stmt.Init.(*ast.AssignStmt)
 		if !ok {
 			panic("switch init type is not assign")
 		}
-		s.Init = ParseAssign(as)
+		s.Init = ParseAssign(as, af)
 	}
-	s.Tag = expr.ParseParameter(stmt.Tag)
+	s.Tag = expr.ParseParameter(stmt.Tag, af)
 	s.Position = stmt.Pos()
 
 	caseClauseList := make([]*CaseClause, 0, 10)
@@ -54,9 +54,9 @@ func ParseSwitch(stmt *ast.SwitchStmt) *Switch {
 			panic("switch clause type is not case")
 		}
 		if clause.List != nil {
-			caseClauseList = append(caseClauseList, ParseCaseClause(clause))
+			caseClauseList = append(caseClauseList, ParseCaseClause(clause, af))
 		} else {
-			defaultCaseList = append(defaultCaseList, ParseCaseClause(clause))
+			defaultCaseList = append(defaultCaseList, ParseCaseClause(clause, af))
 		}
 	}
 	// default 只能有一个，解析出多个就报错

@@ -49,13 +49,13 @@ func (s *CompositeLit) GetFormula() string {
 }
 
 // ParseCompositeLit 解析ast
-func ParseCompositeLit(expr *ast.CompositeLit) *CompositeLit {
+func ParseCompositeLit(expr *ast.CompositeLit, af *ast.File) *CompositeLit {
 	cl := &CompositeLit{}
-	parameterType := ParseParameter(expr.Type)
+	parameterType := ParseParameter(expr.Type, af)
 
 	contentList := make([]_struct.Parameter, 0, 10)
 	for _, elt := range expr.Elts {
-		content := ParseParameter(elt)
+		content := ParseParameter(elt, af)
 		if content != nil {
 			contentList = append(contentList, content)
 		}

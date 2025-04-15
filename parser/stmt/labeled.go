@@ -12,7 +12,7 @@ type Labeled struct {
 	Block Stmt       // 标签后跟的语句
 }
 
-func ParseLabeled(stmt *ast.LabeledStmt) *Labeled {
+func ParseLabeled(stmt *ast.LabeledStmt, _ *ast.File) *Labeled {
 	labeled := &Labeled{}
 
 	return labeled

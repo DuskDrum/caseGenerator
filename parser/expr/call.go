@@ -14,8 +14,8 @@ type Call struct {
 	Function _struct.Parameter
 	// 参数列表
 	Args []_struct.Parameter
-	// response列表
-	Results []Field
+	// 响应详情
+	ResponseList []Field
 }
 
 func (s *Call) GetType() enum.ParameterType {
@@ -36,17 +36,17 @@ func (s *Call) GetFormula() string {
 }
 
 // ParseCall 解析ast
-func ParseCall(expr *ast.CallExpr) *Call {
+func ParseCall(expr *ast.CallExpr, af *ast.File) *Call {
 	ca := &Call{}
-	ca.Function = ParseParameter(expr.Fun)
+	ca.Function = ParseParameter(expr.Fun, af)
 
 	callList := make([]_struct.Parameter, 0, 10)
 	for _, v := range expr.Args {
-		call := ParseParameter(v)
+		call := ParseParameter(v, af)
 		callList = append(callList, call)
 	}
 	ca.Args = callList
-	// 解析import
+	// 解析响应
 
 	return ca
 }

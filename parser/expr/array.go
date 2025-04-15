@@ -31,7 +31,7 @@ func (s *Array) GetFormula() string {
 }
 
 // ParseArray 解析ast
-func ParseArray(expr *ast.ArrayType) *Array {
+func ParseArray(expr *ast.ArrayType, af *ast.File) *Array {
 	arr := &Array{}
 	// 1. 判断是否是数组或者不定长数组
 	if expr.Len != nil {
@@ -50,7 +50,7 @@ func ParseArray(expr *ast.ArrayType) *Array {
 		}
 	}
 	// 2. 解析child
-	ap := ParseRecursionValue(expr.Elt)
+	ap := ParseRecursionValue(expr.Elt, af)
 	arr.RecursionParam = lo.FromPtr(ap)
 
 	return arr

@@ -24,9 +24,9 @@ func (s *Parent) GetFormula() string {
 }
 
 // ParseParent 解析ast
-func ParseParent(expr *ast.ParenExpr) *Parent {
+func ParseParent(expr *ast.ParenExpr, af *ast.File) *Parent {
 	p := &Parent{}
-	parameter := ParseParameter(expr.X)
+	parameter := ParseParameter(expr.X, af)
 	p.Content = parameter
 	return p
 }
