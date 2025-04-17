@@ -106,8 +106,8 @@ func ParseCallExprResponse(importName, funcName string, af *ast.File) []Field {
 	// 再找receiver的调用, 先找到receiver的类型，然后按照包名找到receiver的位置，最后找到方法
 
 	// 如果没有包类型，那么在本包内找对应的方法
-	af.Package
-	return fields
+	//af.Package
+	return nil
 }
 
 // ParseCallExprImportResponse 解析import方法的响应列表
