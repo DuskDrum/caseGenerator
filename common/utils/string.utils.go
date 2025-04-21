@@ -19,9 +19,10 @@ func IsLower(s string) bool {
 }
 
 func GetSuffixAfterDot(s string) string {
-	index := strings.LastIndex(s, ".")
+	s = strings.ReplaceAll(s, "\"", "")
+	index := strings.LastIndex(s, "/")
 	if index != -1 && index+1 < len(s) {
 		return s[index+1:]
 	}
-	return ""
+	return s
 }

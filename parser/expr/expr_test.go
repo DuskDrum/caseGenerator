@@ -14,49 +14,137 @@ import (
 // TestParseCallExprReceiverResponseCase1
 // receiver是直接对应其他包的方法
 func TestParseCallExprReceiverResponseCase1(t *testing.T) {
-	parseFile("test/test_receiver_function_call.go", "add")
+	path := "test/test_receiver_function_call.go"
+	funcName := "add"
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		// Process error
+		if err != nil {
+			return err
+		}
 
+		// Only process go files
+		if !info.IsDir() && filepath.Ext(path) != ".go" {
+			return nil
+		}
+
+		// Everything is fine here, extract if path is a file
+		if !info.IsDir() {
+			hasSuffix := strings.HasSuffix(path, "_test.go")
+			if hasSuffix {
+				return nil
+			}
+
+			// Parse file and create the AST
+			var fset = token.NewFileSet()
+			var f *ast.File
+			f, err = parser.ParseFile(fset, path, nil, parser.ParseComments)
+			if err != nil {
+				return nil
+			}
+
+			// 查找函数声明
+			ast.Inspect(f, func(n ast.Node) bool {
+				if funcDecl, ok := n.(*ast.FuncDecl); ok {
+					fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
+					if funcDecl.Name.Name == funcName {
+						fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
+						for _, stmt := range funcDecl.Body.List {
+							// 判断是callExpr
+							if t, eok := stmt.(*ast.ExprStmt); eok {
+								if c, cok := t.X.(*ast.CallExpr); cok {
+									// 找到Func
+									if s, sok := c.Fun.(*ast.SelectorExpr); sok {
+										// X 是 fmt， Sel 是 Print
+										response, err2 := ParseCallExprImportResponse(s.X.(*ast.Ident).Name, s.Sel.Name, f)
+										if err2 != nil {
+											fmt.Printf("Error: %s\n", err2)
+										} else {
+											fmt.Printf("Response: %v\n", response)
+										}
+									}
+								}
+							}
+
+						}
+					}
+				}
+				return true
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return
+	}
 }
 
 // TestParseCallExprReceiverResponseCase2
 // receiver是本包内定义的，new出来的变量(在本包中)
 func TestParseCallExprReceiverResponseCase2(t *testing.T) {
-	// 需要解析的代码字符串
-	src := `package expr
-	
-	
-	
-	
-	func add(a int, b int) int { return a + b }
-	`
+	path := "test/test_receiver_function_call.go"
+	funcName := "AddReceiver1"
+	relPackagePath := "/Users/wangyi/githubProject/caseGenerator/parser/expr/test"
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		// Process error
+		if err != nil {
+			return err
+		}
 
-	// 创建文件集
-	fset := token.NewFileSet()
+		// Only process go files
+		if !info.IsDir() && filepath.Ext(path) != ".go" {
+			return nil
+		}
 
-	// 解析源代码
-	file, err := parser.ParseFile(fset, "", src, parser.AllErrors)
+		// Everything is fine here, extract if path is a file
+		if !info.IsDir() {
+			hasSuffix := strings.HasSuffix(path, "_test.go")
+			if hasSuffix {
+				return nil
+			}
+
+			// Parse file and create the AST
+			var fset = token.NewFileSet()
+			var f *ast.File
+			f, err = parser.ParseFile(fset, path, nil, parser.ParseComments)
+			if err != nil {
+				return nil
+			}
+
+			// 查找函数声明
+			ast.Inspect(f, func(n ast.Node) bool {
+				if funcDecl, ok := n.(*ast.FuncDecl); ok {
+					fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
+					if funcDecl.Name.Name == funcName {
+						fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
+						for _, stmt := range funcDecl.Body.List {
+							// 判断是callExpr
+							if t, eok := stmt.(*ast.ReturnStmt); eok {
+								result := t.Results[0]
+								if c, cok := result.(*ast.CallExpr); cok {
+									// 找到Func
+									if s, sok := c.Fun.(*ast.SelectorExpr); sok {
+										// X 是 receiver1， Sel 是 add
+										response, err2 := ParseCallExprReceiverResponse(s.X.(*ast.Ident).Name, s.Sel.Name, relPackagePath, f)
+										if err2 != nil {
+											fmt.Printf("Error: %s\n", err2)
+										} else {
+											fmt.Printf("Response: %v\n", response)
+										}
+									}
+								}
+							}
+
+						}
+					}
+				}
+				return true
+			})
+		}
+		return nil
+	})
 	if err != nil {
-		fmt.Println("Error:", err)
 		return
 	}
-
-	// 查找函数声明
-	ast.Inspect(file, func(n ast.Node) bool {
-		if funcDecl, ok := n.(*ast.FuncDecl); ok {
-			fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
-
-			// 遍历参数列表
-			for _, param := range funcDecl.Type.Params.List {
-				// 获取每个参数的名称
-				for _, name := range param.Names {
-					fmt.Printf("Param name: %s\n", name.Name)
-				}
-				// 获取参数的类型
-				fmt.Printf("Param type: %v\n", param.Type)
-			}
-		}
-		return true
-	})
 }
 
 // TestParseCallExprReceiverResponseCase3
@@ -141,46 +229,5 @@ func TestParseCallExprReceiverResponseCase4(t *testing.T) {
 
 // 解析文件
 func parseFile(path, funcName string) {
-	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		// Process error
-		if err != nil {
-			return err
-		}
 
-		// Only process go files
-		if !info.IsDir() && filepath.Ext(path) != ".go" {
-			return nil
-		}
-
-		// Everything is fine here, extract if path is a file
-		if !info.IsDir() {
-			hasSuffix := strings.HasSuffix(path, "_test.go")
-			if hasSuffix {
-				return nil
-			}
-
-			// Parse file and create the AST
-			var fset = token.NewFileSet()
-			var f *ast.File
-			f, err = parser.ParseFile(fset, path, nil, parser.ParseComments)
-			if err != nil {
-				return nil
-			}
-
-			// 查找函数声明
-			ast.Inspect(f, func(n ast.Node) bool {
-				if funcDecl, ok := n.(*ast.FuncDecl); ok {
-					fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
-					if funcDecl.Name.Name == funcName {
-						fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
-					}
-				}
-				return true
-			})
-		}
-		return nil
-	})
-	if err != nil {
-		return
-	}
 }

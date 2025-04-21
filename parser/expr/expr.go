@@ -9,11 +9,9 @@ import (
 	"go/build"
 	"go/parser"
 	"go/token"
-	"log"
+	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/tools/go/packages"
 )
 
 // ParseParameter 同时处理几种可能存在值的类型，如BasicLit、FuncLit、CompositeLit、CallExpr
@@ -158,44 +156,117 @@ func ParseCallExprImportResponse(importName, funcName string, af *ast.File) ([]F
 }
 
 // ParseCallExprReceiverResponse 解析receiver方法的响应列表
-func ParseCallExprReceiverResponse(importName, funcName string, af *ast.File) ([]Field, error) {
-	if importName == "" {
+// receiveName: 调用方名称
+// funcName: 方法名
+// relativeFilePath: 文件对应的相对路径
+func ParseCallExprReceiverResponse(receiveName, funcName, relPackagePath string, af *ast.File) ([]Field, error) {
+	if receiveName == "" {
 		return nil, errors.New("import name is blank")
 	}
-	// 1. 反查出file的地址
-	fset := token.NewFileSet()
-	filePath := fset.Position(af.Pos()).Filename
-	// 2.加载包含内容的包配置
-	cfg := &packages.Config{
-		Mode: packages.NeedName | packages.NeedFiles | packages.NeedSyntax,
-		Dir:  filepath.Dir(filePath), // 设置搜索基准目录
-	}
-	pkgs, err := packages.Load(cfg, "file="+filePath) // 通过文件路径加载包
+	// 1. 使用os.ReadDir遍历相对package路径
+	entries, err := os.ReadDir(relPackagePath)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	for _, pkg := range pkgs {
-		for _, file := range pkg.GoFiles {
-			f, _ := parser.ParseFile(fset, file, nil, parser.ParseComments)
-			ast.Inspect(f, func(n ast.Node) bool {
-				if decl, ok := n.(*ast.GenDecl); ok && decl.Tok == token.VAR {
-					for _, spec := range decl.Specs {
-						if vspec, ok := spec.(*ast.ValueSpec); ok {
-							for _, name := range vspec.Names {
-								if name.Name == importName {
-									fmt.Printf("发现私有变量: %s (位置: %v)\n",
-										name.Name,
-										fset.Position(name.Pos()),
-									)
-								}
 
+	fields := make([]Field, 0, 10)
+	for _, entry := range entries {
+		fullPath := filepath.Join(relPackagePath, entry.Name())
+		if entry.IsDir() || filepath.Ext(entry.Name()) != ".go" {
+			continue
+		}
+		var fset = token.NewFileSet()
+		f, _ := parser.ParseFile(fset, fullPath, nil, parser.ParseComments)
+		ast.Inspect(f, func(n ast.Node) bool {
+			if decl, ok := n.(*ast.GenDecl); ok && decl.Tok == token.VAR {
+				for _, spec := range decl.Specs {
+					if vspec, ok := spec.(*ast.ValueSpec); ok {
+						for i, name := range vspec.Names {
+							if name.Name == receiveName {
+								// 一般是用new出来的局部变量，先处理new
+								typeValue := vspec.Values[i]
+								switch tv := typeValue.(type) {
+								case *ast.CallExpr:
+									if tvname, tvnameOk := tv.Fun.(*ast.Ident); tvnameOk {
+										if tvname.Name == "new" {
+											switch tvArg := tv.Args[0].(type) {
+											case *ast.Ident: // receiver是本包
+												receiverName := tvArg.Name // 在本包里找
+												for _, receiverEntry := range entries {
+													receiverFullPath := filepath.Join(relPackagePath, receiverEntry.Name())
+													if receiverEntry.IsDir() || filepath.Ext(receiverEntry.Name()) != ".go" {
+														continue
+													}
+													var receiverFset = token.NewFileSet()
+													receiverF, _ := parser.ParseFile(receiverFset, receiverFullPath, nil, parser.ParseComments)
+													ast.Inspect(receiverF, func(n ast.Node) bool {
+														// 检查是否为 *ast.BasicLit 节点
+														if funcDecl, ok := n.(*ast.FuncDecl); ok {
+															if funcDecl.Name.Name == funcName {
+																for _, v := range funcDecl.Recv.List {
+																	if identV, typeOk := v.Type.(*ast.Ident); typeOk && identV.Name == receiverName {
+																		funcType := ParseFuncType(funcDecl.Type, nil)
+																		fields = append(fields, funcType.Results...)
+																		return false
+																	}
+																}
+															}
+														}
+														return true
+													})
+												}
+											case *ast.SelectorExpr: // receiver是别的包里的
+												importPath := ""
+												for _, importSpec := range af.Imports {
+													if importSpec.Name == nil {
+														suffixAfterDot := utils.GetSuffixAfterDot(importSpec.Path.Value)
+														if receiveName == suffixAfterDot {
+															importPath = importSpec.Path.Value
+														}
+													} else {
+														if receiveName == importSpec.Name.Name {
+															importPath = importSpec.Path.Value
+														}
+													}
+												}
+												if importPath == "" {
+													panic("can not find import path")
+												}
+
+												path := strings.Trim(importPath, "\"")
+												importCtx := build.Default
+												pkg, _ := importCtx.Import(path, "", build.FindOnly)
+												fmt.Println(pkg.Dir) // 输出包源码目录
+
+												tfset := token.NewFileSet()
+												pkgs, _ := parser.ParseDir(tfset, pkg.Dir, nil, parser.ParseComments)
+												for _, pkgAst := range pkgs {
+													ast.Inspect(pkgAst, func(n ast.Node) bool {
+														// 检查是否为 *ast.BasicLit 节点
+														if funcDecl, ok := n.(*ast.FuncDecl); ok {
+															if funcDecl.Name.Name == funcName {
+																funcType := ParseFuncType(funcDecl.Type, nil)
+																fields = append(fields, funcType.Results...)
+																return false
+															}
+														}
+														return true
+													})
+												}
+											}
+										}
+
+									}
+								}
 							}
+
 						}
 					}
 				}
-				return true
-			})
-		}
+			}
+			return true
+		})
+
 	}
-	return nil, nil
+	return fields, nil
 }
