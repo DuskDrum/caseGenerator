@@ -159,7 +159,71 @@ func ParseCallExprImportResponse(importName, funcName string, af *ast.File) ([]F
 // receiveName: 调用方名称
 // funcName: 方法名
 // relativeFilePath: 文件对应的相对路径
-func ParseCallExprReceiverResponse(receiveName, funcName, relPackagePath string, af *ast.File) ([]Field, error) {
+//func ParseCallExprReceiverResponse1(receiveName, funcName, relPackagePath string, af *ast.File, fd *ast.FuncDecl) ([]Field, error) {
+//	// 1. 参数校验
+//	if receiveName == "" {
+//		return nil, errors.New("import name is blank")
+//	}
+//	// 2. 判断fd的receiver是否也是receiveName
+//	ParseInnerReceiverResponse(receiveName, funcName, relPackagePath, af, fd)
+//	// 3. 判断receiver是否是var定义的
+//
+//	return nil, nil
+//}
+
+func ParseInnerReceiverResponse(receiveName, funcName, relPackagePath string, af *ast.File, fd *ast.FuncDecl) ([]Field, error) {
+	// 1. 使用os.ReadDir遍历相对package路径
+	entries, err := os.ReadDir(relPackagePath)
+	if err != nil {
+		return nil, err
+	}
+	fields := make([]Field, 0, 10)
+	// 1. 如果是本receiver的方法，那么遍历本包
+	if fd.Recv != nil {
+		for _, v := range fd.Recv.List {
+			if v.Names[0].Name == receiveName {
+				receiverType := v.Type.(*ast.Ident).Name
+
+				for _, entry := range entries {
+					fullPath := filepath.Join(relPackagePath, entry.Name())
+					if entry.IsDir() || filepath.Ext(entry.Name()) != ".go" {
+						continue
+					}
+					var fset = token.NewFileSet()
+					f, _ := parser.ParseFile(fset, fullPath, nil, parser.ParseComments)
+					ast.Inspect(f, func(n ast.Node) bool {
+						if n == nil {
+							return true
+						}
+						// 检查是否为 *ast.BasicLit 节点
+						if funcDecl, ok := n.(*ast.FuncDecl); ok {
+							if funcDecl.Name.Name == funcName {
+								if funcDecl.Recv == nil {
+									return true
+								}
+								for _, v := range funcDecl.Recv.List {
+									if identV, typeOk := v.Type.(*ast.Ident); typeOk && identV.Name == receiverType {
+										funcType := ParseFuncType(funcDecl.Type, nil)
+										fields = append(fields, funcType.Results...)
+										return false
+									}
+								}
+							}
+						}
+						return true
+					})
+				}
+			}
+		}
+	}
+	return nil, nil
+}
+
+// ParseCallExprReceiverResponse 解析receiver方法的响应列表
+// receiveName: 调用方名称
+// funcName: 方法名
+// relativeFilePath: 文件对应的相对路径
+func ParseCallExprReceiverResponse(receiveName, funcName, relPackagePath string, af *ast.File, fd *ast.FuncDecl) ([]Field, error) {
 	if receiveName == "" {
 		return nil, errors.New("import name is blank")
 	}
@@ -168,8 +232,47 @@ func ParseCallExprReceiverResponse(receiveName, funcName, relPackagePath string,
 	if err != nil {
 		return nil, err
 	}
-
 	fields := make([]Field, 0, 10)
+
+	// 1. 如果是本receiver的方法，那么遍历本包
+	if fd.Recv != nil {
+		for _, v := range fd.Recv.List {
+			if v.Names[0].Name == receiveName {
+				receiverType := v.Type.(*ast.Ident).Name
+
+				for _, entry := range entries {
+					fullPath := filepath.Join(relPackagePath, entry.Name())
+					if entry.IsDir() || filepath.Ext(entry.Name()) != ".go" {
+						continue
+					}
+					var fset = token.NewFileSet()
+					f, _ := parser.ParseFile(fset, fullPath, nil, parser.ParseComments)
+					ast.Inspect(f, func(n ast.Node) bool {
+						if n == nil {
+							return true
+						}
+						// 检查是否为 *ast.BasicLit 节点
+						if funcDecl, ok := n.(*ast.FuncDecl); ok {
+							if funcDecl.Name.Name == funcName {
+								if funcDecl.Recv == nil {
+									return true
+								}
+								for _, v := range funcDecl.Recv.List {
+									if identV, typeOk := v.Type.(*ast.Ident); typeOk && identV.Name == receiverType {
+										funcType := ParseFuncType(funcDecl.Type, nil)
+										fields = append(fields, funcType.Results...)
+										return false
+									}
+								}
+							}
+						}
+						return true
+					})
+				}
+			}
+		}
+	}
+
 	for _, entry := range entries {
 		fullPath := filepath.Join(relPackagePath, entry.Name())
 		if entry.IsDir() || filepath.Ext(entry.Name()) != ".go" {
@@ -200,9 +303,15 @@ func ParseCallExprReceiverResponse(receiveName, funcName, relPackagePath string,
 													var receiverFset = token.NewFileSet()
 													receiverF, _ := parser.ParseFile(receiverFset, receiverFullPath, nil, parser.ParseComments)
 													ast.Inspect(receiverF, func(n ast.Node) bool {
+														if n == nil {
+															return true
+														}
 														// 检查是否为 *ast.BasicLit 节点
 														if funcDecl, ok := n.(*ast.FuncDecl); ok {
 															if funcDecl.Name.Name == funcName {
+																if funcDecl.Recv == nil {
+																	return true
+																}
 																for _, v := range funcDecl.Recv.List {
 																	if identV, typeOk := v.Type.(*ast.Ident); typeOk && identV.Name == receiverName {
 																		funcType := ParseFuncType(funcDecl.Type, nil)
@@ -217,14 +326,19 @@ func ParseCallExprReceiverResponse(receiveName, funcName, relPackagePath string,
 												}
 											case *ast.SelectorExpr: // receiver是别的包里的
 												importPath := ""
+												tvArgReceiver, tvArgReceiverOk := tvArg.X.(*ast.Ident)
+												if !tvArgReceiverOk {
+													return true
+												}
+												tvArgFuncName := tvArg.Sel.Name
 												for _, importSpec := range af.Imports {
 													if importSpec.Name == nil {
 														suffixAfterDot := utils.GetSuffixAfterDot(importSpec.Path.Value)
-														if receiveName == suffixAfterDot {
+														if tvArgReceiver.Name == suffixAfterDot {
 															importPath = importSpec.Path.Value
 														}
 													} else {
-														if receiveName == importSpec.Name.Name {
+														if tvArgReceiver.Name == importSpec.Name.Name {
 															importPath = importSpec.Path.Value
 														}
 													}
@@ -245,9 +359,16 @@ func ParseCallExprReceiverResponse(receiveName, funcName, relPackagePath string,
 														// 检查是否为 *ast.BasicLit 节点
 														if funcDecl, ok := n.(*ast.FuncDecl); ok {
 															if funcDecl.Name.Name == funcName {
-																funcType := ParseFuncType(funcDecl.Type, nil)
-																fields = append(fields, funcType.Results...)
-																return false
+																if funcDecl.Recv == nil {
+																	return true
+																}
+																for _, v := range funcDecl.Recv.List {
+																	if identV, typeOk := v.Type.(*ast.Ident); typeOk && identV.Name == tvArgFuncName {
+																		funcType := ParseFuncType(funcDecl.Type, nil)
+																		fields = append(fields, funcType.Results...)
+																		return false
+																	}
+																}
 															}
 														}
 														return true
