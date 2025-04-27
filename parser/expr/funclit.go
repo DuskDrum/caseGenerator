@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"go/ast"
 
 	"github.com/samber/lo"
@@ -26,9 +27,9 @@ func (s *FuncLit) GetFormula() string {
 }
 
 // ParseFuncLit 解析ast
-func ParseFuncLit(expr *ast.FuncLit, af *ast.File) *FuncLit {
+func ParseFuncLit(expr *ast.FuncLit, context bo.ExprContext) *FuncLit {
 	fl := &FuncLit{}
-	funcType := ParseFuncType(expr.Type, af)
+	funcType := ParseFuncType(expr.Type, context)
 	if funcType != nil {
 		fl.FuncType = lo.FromPtr(funcType)
 	}

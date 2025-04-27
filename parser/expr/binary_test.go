@@ -1,6 +1,7 @@
 package expr
 
 import (
+	"caseGenerator/parser/bo"
 	"encoding/json"
 	"fmt"
 	"go/ast"
@@ -20,7 +21,7 @@ func TestBinaryCase(t *testing.T) {
 	}
 	// 类型断言，判断是否为 ast.BinaryExpr 类型
 	if binaryExpr, ok := expr.(*ast.BinaryExpr); ok {
-		binary := ParseBinary(binaryExpr, nil)
+		binary := ParseBinary(binaryExpr, bo.ExprContext{})
 		marshal, err := json.Marshal(binary)
 		if err != nil {
 			panic("Errors: " + err.Error())

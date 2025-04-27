@@ -1,8 +1,8 @@
 package stmt
 
 import (
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
+	"caseGenerator/parser/expression/govaluate"
 	"go/ast"
 )
 
@@ -14,8 +14,8 @@ type TypeSwitch struct {
 	Body   *Block
 }
 
-func (t *TypeSwitch) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
-	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+func (t *TypeSwitch) FormulaExpress() ([]govaluate.KeyFormula, map[string]*expr.Call) {
+	keyFormulaList := make([]govaluate.KeyFormula, 0, 10)
 	callMap := make(map[string]*expr.Call, 10)
 	if t.Init != nil {
 		initF, initOuter := t.Init.FormulaExpress()
@@ -36,7 +36,7 @@ func (t *TypeSwitch) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 	return keyFormulaList, callMap
 }
 
-func (t *TypeSwitch) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []bo.KeyFormula) []ConditionResult {
+func (t *TypeSwitch) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []govaluate.KeyFormula) []ConditionResult {
 	return nil
 }
 

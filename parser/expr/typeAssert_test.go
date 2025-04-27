@@ -1,6 +1,7 @@
 package expr
 
 import (
+	"caseGenerator/parser/bo"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -34,7 +35,7 @@ func main() {
 		// 查找 *ast.TypeAssertExpr 节点
 		if typeAssert, ok := n.(*ast.TypeAssertExpr); ok {
 			fmt.Println("找到类型断言表达式:")
-			assert := ParseTypeAssert(typeAssert, file)
+			assert := ParseTypeAssert(typeAssert, bo.ExprContext{})
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", assert)
 		}

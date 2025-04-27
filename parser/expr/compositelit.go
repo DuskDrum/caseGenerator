@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -49,13 +50,13 @@ func (s *CompositeLit) GetFormula() string {
 }
 
 // ParseCompositeLit 解析ast
-func ParseCompositeLit(expr *ast.CompositeLit, af *ast.File) *CompositeLit {
+func ParseCompositeLit(expr *ast.CompositeLit, context bo.ExprContext) *CompositeLit {
 	cl := &CompositeLit{}
-	parameterType := ParseParameter(expr.Type, af)
+	parameterType := ParseParameter(expr.Type, context)
 
 	contentList := make([]_struct.Parameter, 0, 10)
 	for _, elt := range expr.Elts {
-		content := ParseParameter(elt, af)
+		content := ParseParameter(elt, context)
 		if content != nil {
 			contentList = append(contentList, content)
 		}

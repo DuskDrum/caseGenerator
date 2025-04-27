@@ -1,7 +1,6 @@
 package goValuate
 
 import (
-	"caseGenerator/parser/bo"
 	govaluate2 "caseGenerator/parser/expression/govaluate"
 	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 
@@ -10,7 +9,7 @@ import (
 )
 
 // MockBasicFloatExpression mocker float basic 的表达式
-func MockBasicFloatExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult2.MockResult {
+func MockBasicFloatExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []govaluate2.StatementAssignment) []mockresult2.MockResult {
 	// 如果类型是 float
 	var inList []float64
 	for _, v := range basicValueList {
@@ -79,7 +78,7 @@ func MockBasicFloatExpression(expression *govaluate2.ExpressDetail, basicValueLi
 }
 
 // ComposeFloat 组合float
-func ComposeFloat(params []string, current []float64, index int, min, max float64, expr string, calculateExprList []bo.StatementAssignment, variablesMap map[string]any) []float64 {
+func ComposeFloat(params []string, current []float64, index int, min, max float64, expr string, calculateExprList []govaluate2.StatementAssignment, variablesMap map[string]any) []float64 {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)

@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"go/ast"
 	"strings"
 
@@ -52,13 +53,13 @@ func (s *FuncType) GetFormula() string {
 }
 
 // ParseFuncType 解析ast
-func ParseFuncType(expr *ast.FuncType, af *ast.File) *FuncType {
+func ParseFuncType(expr *ast.FuncType, context bo.ExprContext) *FuncType {
 	ft := &FuncType{}
 
 	if expr.TypeParams != nil {
 		typeParamList := make([]Field, 0, 10)
 		for _, v := range expr.TypeParams.List {
-			field := ParseField(v, af)
+			field := ParseField(v, context)
 			if field != nil {
 				typeParamList = append(typeParamList, lo.FromPtr(field))
 			}
@@ -69,7 +70,7 @@ func ParseFuncType(expr *ast.FuncType, af *ast.File) *FuncType {
 	if expr.Params != nil {
 		paramsList := make([]Field, 0, 10)
 		for _, v := range expr.Params.List {
-			field := ParseField(v, af)
+			field := ParseField(v, context)
 			if field != nil {
 				paramsList = append(paramsList, lo.FromPtr(field))
 			}
@@ -81,7 +82,7 @@ func ParseFuncType(expr *ast.FuncType, af *ast.File) *FuncType {
 	if expr.Results != nil {
 		resultsList := make([]Field, 0, 10)
 		for _, v := range expr.Results.List {
-			field := ParseField(v, af)
+			field := ParseField(v, context)
 			if field != nil {
 				resultsList = append(resultsList, lo.FromPtr(field))
 			}

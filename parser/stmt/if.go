@@ -2,7 +2,6 @@ package stmt
 
 import (
 	"caseGenerator/common/utils"
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -81,7 +80,7 @@ func ParseElseIf(stmt *ast.IfStmt, af *ast.File) ([]*If, *Block) {
 	return ifList, blockStmt
 }
 
-func (i *If) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
+func (i *If) FormulaExpress() ([]govaluate.KeyFormula, map[string]*expr.Call) {
 	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mocker 的值
 	if i.Init != nil {
 		return i.Init.FormulaExpress()
@@ -89,7 +88,7 @@ func (i *If) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 	return nil, nil
 }
 
-func (i *If) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []bo.KeyFormula) []ConditionResult {
+func (i *If) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []govaluate.KeyFormula) []ConditionResult {
 	// 1. 先拿到 Condition的表达式
 	//conditionExpressionList := expression.Express(i.Condition)
 	// 2. 找表达式中的变量,去遍历找表达式中的变化记录
@@ -206,7 +205,7 @@ func (i *If) ParseIfBlockCondition(parentNode *ConditionNodeResult) []*Condition
 	abreastMatrixList := make([][]*ConditionNodeResult, 0, 10)
 
 	// 记录赋值键值对列表
-	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	keyFormulaList := make([]govaluate.KeyFormula, 0, 10)
 	formulaCallMap := make(map[string]*expr.Call, 10)
 
 	// nodeList 取最近的那个条件

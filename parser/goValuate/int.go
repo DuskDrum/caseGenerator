@@ -1,7 +1,6 @@
 package goValuate
 
 import (
-	"caseGenerator/parser/bo"
 	govaluate2 "caseGenerator/parser/expression/govaluate"
 	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 
@@ -10,7 +9,7 @@ import (
 )
 
 // MockBasicIntExpression mocker int basic 的表达式
-func MockBasicIntExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult2.MockResult {
+func MockBasicIntExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []govaluate2.StatementAssignment) []mockresult2.MockResult {
 	// 1. 找代码中参数的所有变化，比如说
 	// a,b,c := 1,2,3
 	// b = c *3
@@ -93,7 +92,7 @@ func MockBasicIntExpression(expression *govaluate2.ExpressDetail, basicValueList
 }
 
 // ComposeInt 组合int
-func ComposeInt(params []string, current []int, index, min, max int, inequalityExpr string, calculateExprList []bo.StatementAssignment, variablesMap map[string]any) []int {
+func ComposeInt(params []string, current []int, index, min, max int, inequalityExpr string, calculateExprList []govaluate2.StatementAssignment, variablesMap map[string]any) []int {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)

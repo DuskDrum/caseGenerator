@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -24,9 +25,9 @@ func (s *Parent) GetFormula() string {
 }
 
 // ParseParent 解析ast
-func ParseParent(expr *ast.ParenExpr, af *ast.File) *Parent {
+func ParseParent(expr *ast.ParenExpr, context bo.ExprContext) *Parent {
 	p := &Parent{}
-	parameter := ParseParameter(expr.X, af)
+	parameter := ParseParameter(expr.X, context)
 	p.Content = parameter
 	return p
 }

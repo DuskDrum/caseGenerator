@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 
@@ -49,23 +50,23 @@ func (s *Slice) GetFormula() string {
 }
 
 // ParseSlice 解析ast
-func ParseSlice(expr *ast.SliceExpr, af *ast.File) *Slice {
+func ParseSlice(expr *ast.SliceExpr, context bo.ExprContext) *Slice {
 	slice := &Slice{}
-	slice.Content = ParseParameter(expr.X, af)
+	slice.Content = ParseParameter(expr.X, context)
 	if expr.Low != nil {
-		low := ParseParameter(expr.Low, af)
+		low := ParseParameter(expr.Low, context)
 		if low != nil {
 			slice.Low = lo.ToPtr(low)
 		}
 	}
 	if expr.High != nil {
-		high := ParseParameter(expr.High, af)
+		high := ParseParameter(expr.High, context)
 		if high != nil {
 			slice.High = lo.ToPtr(high)
 		}
 	}
 	if expr.Max != nil {
-		maxExpr := ParseParameter(expr.Max, af)
+		maxExpr := ParseParameter(expr.Max, context)
 		if maxExpr != nil {
 			slice.Max = lo.ToPtr(maxExpr)
 		}

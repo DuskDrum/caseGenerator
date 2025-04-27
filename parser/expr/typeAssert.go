@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -24,9 +25,9 @@ func (s *TypeAssert) GetFormula() string {
 }
 
 // ParseTypeAssert 解析ast
-func ParseTypeAssert(expr *ast.TypeAssertExpr, af *ast.File) *TypeAssert {
+func ParseTypeAssert(expr *ast.TypeAssertExpr, context bo.ExprContext) *TypeAssert {
 	typeAssert := &TypeAssert{}
-	typeAssert.Content = ParseParameter(expr.X, af)
-	typeAssert.Type = ParseParameter(expr.Type, af)
+	typeAssert.Content = ParseParameter(expr.X, context)
+	typeAssert.Type = ParseParameter(expr.Type, context)
 	return typeAssert
 }

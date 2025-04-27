@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"go/ast"
 
 	"github.com/samber/lo"
@@ -21,12 +22,12 @@ func (s *Interface) GetFormula() string {
 }
 
 // ParseInterface 解析ast
-func ParseInterface(expr *ast.InterfaceType, af *ast.File) *Interface {
+func ParseInterface(expr *ast.InterfaceType, context bo.ExprContext) *Interface {
 	i := &Interface{}
 	if expr.Methods != nil {
 		fieldList := make([]Field, 0, 10)
 		for _, v := range expr.Methods.List {
-			field := ParseField(v, af)
+			field := ParseField(v, context)
 			if field != nil {
 				fieldList = append(fieldList, lo.FromPtr(field))
 			}

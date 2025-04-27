@@ -2,7 +2,6 @@ package stmt
 
 import (
 	"caseGenerator/common/utils"
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -20,7 +19,7 @@ type Switch struct {
 	Position       token.Pos     // 代码的行数，同一个文件里比对才有意义
 }
 
-func (s *Switch) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
+func (s *Switch) FormulaExpress() ([]govaluate.KeyFormula, map[string]*expr.Call) {
 	// switch 和 if 是分成两部分的， 1. init 部分组装 expression；2.整个公式来计算得到需要 mocker 的值
 	if s.Init != nil {
 		return s.Init.FormulaExpress()
@@ -28,7 +27,7 @@ func (s *Switch) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
 	return nil, nil
 }
 
-func (s *Switch) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []bo.KeyFormula) []ConditionResult {
+func (s *Switch) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []govaluate.KeyFormula) []ConditionResult {
 	return nil
 }
 
@@ -110,7 +109,7 @@ func parseDefaultTag(uncleNodeList []*ConditionNode, defaultClause *CaseClause) 
 		cn = conditionNode.Offer(cn)
 	}
 	// 2.记录赋值键值对列表
-	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	keyFormulaList := make([]govaluate.KeyFormula, 0, 10)
 	formulaCallMap := make(map[string]*expr.Call, 10)
 	// 3. 解析 default 中的每个条件
 	for _, bodyDetail := range defaultClause.BodyList {
@@ -165,7 +164,7 @@ func parseBodyList(bodyList []Stmt, tag _struct.Parameter, caseDetail _struct.Pa
 	}
 
 	// 2.记录赋值键值对列表
-	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	keyFormulaList := make([]govaluate.KeyFormula, 0, 10)
 	formulaCallMap := make(map[string]*expr.Call, 10)
 
 	for _, bodyDetail := range bodyList {

@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"go/ast"
 	"strings"
 
@@ -39,27 +40,27 @@ func (s *Selector) GetFormula() string {
 }
 
 // ParseSelector 解析ast
-func ParseSelector(expr *ast.SelectorExpr, af *ast.File) *Selector {
+func ParseSelector(expr *ast.SelectorExpr, context bo.ExprContext) *Selector {
 	selector := Selector{}
-	selectorExpr := GetRelationFromSelectorExpr(expr, af)
+	selectorExpr := GetRelationFromSelectorExpr(expr, context)
 	selector.SelectorParam = lo.FromPtr(selectorExpr)
 	return &selector
 }
 
-func GetRelationFromSelectorExpr(se *ast.SelectorExpr, af *ast.File) *SelectorParam {
+func GetRelationFromSelectorExpr(se *ast.SelectorExpr, context bo.ExprContext) *SelectorParam {
 	var sp = &SelectorParam{}
 	if si, ok := se.X.(*ast.Ident); ok {
 		sp.Child = nil
-		sp.Ident = ParseIdent(si, af)
+		sp.Ident = ParseIdent(si, context)
 
 		return sp
 	}
 	if sse, ok := se.X.(*ast.SelectorExpr); ok {
 		var childSp = &SelectorParam{}
-		childSp.Child = GetRelationFromSelectorExpr(sse, af)
-		childSp.Ident = ParseIdent(sse.Sel, af)
+		childSp.Child = GetRelationFromSelectorExpr(sse, context)
+		childSp.Ident = ParseIdent(sse.Sel, context)
 		sp.Child = childSp
-		sp.Ident = ParseIdent(se.Sel, af)
+		sp.Ident = ParseIdent(se.Sel, context)
 		return sp
 	}
 	return sp

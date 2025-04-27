@@ -1,8 +1,8 @@
 package stmt
 
 import (
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
+	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -14,7 +14,7 @@ type Return struct {
 }
 
 // todo 需要考虑return
-func (r *Return) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []bo.KeyFormula) []ConditionResult {
+func (r *Return) CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []govaluate.KeyFormula) []ConditionResult {
 	return nil
 }
 

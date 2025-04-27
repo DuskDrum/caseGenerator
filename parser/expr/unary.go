@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 	"go/token"
@@ -23,10 +24,10 @@ func (s *Unary) GetFormula() string {
 }
 
 // ParseUnary 解析ast
-func ParseUnary(expr *ast.UnaryExpr, af *ast.File) *Unary {
+func ParseUnary(expr *ast.UnaryExpr, context bo.ExprContext) *Unary {
 	u := &Unary{}
 	u.Op = expr.Op
-	u.Content = ParseParameter(expr.X, af)
+	u.Content = ParseParameter(expr.X, context)
 	return u
 }
 

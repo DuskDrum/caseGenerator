@@ -1,7 +1,6 @@
 package goValuate
 
 import (
-	"caseGenerator/parser/bo"
 	govaluate2 "caseGenerator/parser/expression/govaluate"
 	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 
@@ -9,7 +8,7 @@ import (
 )
 
 // MockBasicStringExpression mocker string basic 的表达式
-func MockBasicStringExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []bo.StatementAssignment) []mockresult2.MockResult {
+func MockBasicStringExpression(expression *govaluate2.ExpressDetail, basicValueList []any, variablesMap map[string]any, seList []govaluate2.StatementAssignment) []mockresult2.MockResult {
 	// 如果类型是 string
 	var strList []string
 	strList = append(strList, "")
@@ -78,7 +77,7 @@ func convertToAnyResultList(expression *govaluate2.ExpressDetail, result, params
 
 // ComposeString 组合string
 
-func ComposeString(params []string, values []string, current []string, index int, expr string, calculateExprList []bo.StatementAssignment, variablesMap map[string]any) []string {
+func ComposeString(params []string, values []string, current []string, index int, expr string, calculateExprList []govaluate2.StatementAssignment, variablesMap map[string]any) []string {
 	// 如果当前索引超出了参数范围，保存组合并返回
 	if index == len(params) {
 		//fmt.Printf("current is:%v \n", current)

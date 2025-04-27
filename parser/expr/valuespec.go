@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -31,12 +32,12 @@ func (s *ValueSpec) GetFormula() string {
 }
 
 // ParseValueSpec 解析ast
-func ParseValueSpec(expr *ast.ValueSpec, af *ast.File) *ValueSpec {
+func ParseValueSpec(expr *ast.ValueSpec, context bo.ExprContext) *ValueSpec {
 	vs := &ValueSpec{}
 	// 已 names 为准
 	// 如果 values宽度大于 1，那么 name和 values是一对一
 	if len(expr.Values) == 0 {
-		parameter := ParseParameter(expr.Values[0], af)
+		parameter := ParseParameter(expr.Values[0], context)
 		paramList := make([]ValueSpecParam, 0, 10)
 		for _, v := range expr.Names {
 			param := ValueSpecParam{
@@ -50,7 +51,7 @@ func ParseValueSpec(expr *ast.ValueSpec, af *ast.File) *ValueSpec {
 	} else {
 		paramList := make([]ValueSpecParam, 0, 10)
 		for i, v := range expr.Names {
-			parameter := ParseParameter(expr.Values[i], af)
+			parameter := ParseParameter(expr.Values[i], context)
 			param := ValueSpecParam{
 				ParamName: v.Name,
 				ParamType: parameter,

@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 	"strings"
@@ -38,11 +39,11 @@ func (s *Field) GetFormula() string {
 }
 
 // ParseField 解析ast
-func ParseField(expr *ast.Field, af *ast.File) *Field {
+func ParseField(expr *ast.Field, context bo.ExprContext) *Field {
 	identList := make([]Ident, 0, 10)
 	if expr.Names != nil {
 		for _, v := range expr.Names {
-			ident := ParseIdent(v, af)
+			ident := ParseIdent(v, context)
 			if ident != nil {
 				identList = append(identList, lo.FromPtr(ident))
 			}
@@ -51,10 +52,10 @@ func ParseField(expr *ast.Field, af *ast.File) *Field {
 
 	filed := &Field{
 		FiledNames: identList,
-		Type:       ParseParameter(expr.Type, af),
+		Type:       ParseParameter(expr.Type, context),
 	}
 	if expr.Tag != nil {
-		tag := ParseBasicLit(expr.Tag, af)
+		tag := ParseBasicLit(expr.Tag, context)
 
 		if tag != nil {
 			filed.Tag = tag

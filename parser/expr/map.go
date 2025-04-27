@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 
@@ -25,10 +26,10 @@ func (m *Map) GetFormula() string {
 }
 
 // ParseMap 解析ast
-func ParseMap(expr *ast.MapType, af *ast.File) *Map {
+func ParseMap(expr *ast.MapType, context bo.ExprContext) *Map {
 	m := &Map{}
-	m.KeyType = ParseParameter(expr.Key, af)
-	m.ValueType = lo.FromPtr(ParseRecursionValue(expr.Value, af))
+	m.KeyType = ParseParameter(expr.Key, context)
+	m.ValueType = lo.FromPtr(ParseRecursionValue(expr.Value, context))
 
 	return m
 }

@@ -3,7 +3,6 @@ package stmt
 import (
 	"caseGenerator/common/constants"
 	"caseGenerator/common/enum"
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	expression2 "caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -35,11 +34,11 @@ type Assign struct {
 	Position        token.Pos // 代码的行数，同一个文件里比对才有意义
 }
 
-func (a *Assign) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
-	formulasList := make([]bo.KeyFormula, 0, 10)
+func (a *Assign) FormulaExpress() ([]expression2.KeyFormula, map[string]*expr.Call) {
+	formulasList := make([]expression2.KeyFormula, 0, 10)
 	callMap := make(map[string]*expr.Call, 10)
 	for _, param := range a.AssignParamList {
-		se := bo.KeyFormula{
+		se := expression2.KeyFormula{
 			Key:  param.Left.GetFormula(),
 			Type: enum.STMT_TYPE_ASSIGN,
 		}

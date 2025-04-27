@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 
@@ -27,8 +28,8 @@ func (s *Star) GetFormula() string {
 }
 
 // ParseStar 解析ast
-func ParseStar(expr *ast.StarExpr, af *ast.File) *Star {
+func ParseStar(expr *ast.StarExpr, context bo.ExprContext) *Star {
 	return &Star{
-		Child: lo.ToPtr(ParseParameter(expr, af)),
+		Child: lo.ToPtr(ParseParameter(expr, context)),
 	}
 }

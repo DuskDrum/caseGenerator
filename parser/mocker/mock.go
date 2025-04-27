@@ -1,7 +1,6 @@
 package mocker
 
 import (
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expression/govaluate"
 	mockresult2 "caseGenerator/parser/expression/govaluate/mockresult"
 	"caseGenerator/parser/goValuate"
@@ -22,7 +21,7 @@ type IMock interface {
 //     如果是 nil， 可能是==或者!=。 nil是属于 Ident 里的
 //
 // 2. 如果两边都没有靶子，那么将其中一边设置为零值，再继续用第一步的流程(ident 不知道变量类型，所以没办法处理)
-func MockExpression(expression *govaluate.ExpressDetail, seList []bo.StatementAssignment) []mockresult2.MockResult {
+func MockExpression(expression *govaluate.ExpressDetail, seList []govaluate.StatementAssignment) []mockresult2.MockResult {
 	// 1. 如果有 basicLit，那么按照 govalue进行解析试算得到最终结果
 	if len(expression.BasicList) > 0 {
 		return goValuate.MockBasicExpression(expression, seList)
@@ -105,7 +104,7 @@ func MockKeyFormula(condition *stmt.ConditionNodeResult) []mockresult2.MockResul
 	// 2. 遍历判断条件开始执行公式
 	positionSnapshot := 0
 	for _, v := range nodeExpressesList {
-		formulaSnapshotList := make([]bo.KeyFormula, 0, 10)
+		formulaSnapshotList := make([]govaluate.KeyFormula, 0, 10)
 		for _, f := range formulaList {
 			// 根据行数确认 assignment 和 condition
 			if f.Position.Line < v.Position.Line && f.Position.Line > positionSnapshot {

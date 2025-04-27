@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -23,8 +24,8 @@ func (s *Ellipsis) GetFormula() string {
 }
 
 // ParseEllipsis 解析ast
-func ParseEllipsis(expr *ast.Ellipsis, af *ast.File) *Ellipsis {
+func ParseEllipsis(expr *ast.Ellipsis, context bo.ExprContext) *Ellipsis {
 	e := &Ellipsis{}
-	e.Param = ParseParameter(expr.Elt, af)
+	e.Param = ParseParameter(expr.Elt, context)
 	return e
 }

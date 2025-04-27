@@ -1,8 +1,7 @@
-package bo
+package govaluate
 
 import (
 	"caseGenerator/common/enum"
-	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
 	"go/token"
 )
@@ -13,7 +12,7 @@ type StatementAssignment struct {
 	InitParam _struct.ValueAble
 	Type      enum.StmtType
 	// 参数变动列表
-	govaluate.ExpressDetail
+	ExpressDetail
 }
 
 // KeyFormula 赋值键值对
@@ -22,7 +21,7 @@ type KeyFormula struct {
 	Formula string // 公式
 	Type    enum.StmtType
 	// 参数变动列表
-	govaluate.ExpressDetail
+	ExpressDetail
 	//
 	Position token.Position
 }

@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -25,10 +26,10 @@ func (s *Index) GetFormula() string {
 }
 
 // ParseIndex 解析ast
-func ParseIndex(expr *ast.IndexExpr, af *ast.File) *Index {
+func ParseIndex(expr *ast.IndexExpr, context bo.ExprContext) *Index {
 	i := &Index{}
-	i.Subject = ParseParameter(expr.X, af)
-	i.Index = ParseParameter(expr.Index, af)
+	i.Subject = ParseParameter(expr.X, context)
+	i.Index = ParseParameter(expr.Index, context)
 
 	return i
 }

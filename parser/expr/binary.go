@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 	"go/token"
@@ -33,20 +34,20 @@ func (s *Binary) GetFormula() string {
 }
 
 // ParseBinary 解析Binary
-func ParseBinary(expr *ast.BinaryExpr, af *ast.File) *Binary {
+func ParseBinary(expr *ast.BinaryExpr, context bo.ExprContext) *Binary {
 	ab := &Binary{}
-	ab.BinaryParam = lo.FromPtr(ParseBinaryParam(expr, af))
+	ab.BinaryParam = lo.FromPtr(ParseBinaryParam(expr, context))
 	return ab
 }
 
-func ParseBinaryParam(expr *ast.BinaryExpr, af *ast.File) *BinaryParam {
+func ParseBinaryParam(expr *ast.BinaryExpr, context bo.ExprContext) *BinaryParam {
 	bp := &BinaryParam{}
 	bp.Op = expr.Op
 	// 解析X、解析Y
 	// 调用这个方法会去 switch 所有 expr 类型
 	// 如果类型是BinaryParam--->就会来调用ParseBinaryParam方法，形成递归
-	xP := ParseParameter(expr.X, af)
-	yP := ParseParameter(expr.Y, af)
+	xP := ParseParameter(expr.X, context)
+	yP := ParseParameter(expr.Y, context)
 	bp.X = xP
 	bp.Y = yP
 	return bp

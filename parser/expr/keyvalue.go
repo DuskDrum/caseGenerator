@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -22,9 +23,9 @@ func (s *KeyValue) GetFormula() string {
 }
 
 // ParseKeyValue 解析ast
-func ParseKeyValue(expr *ast.KeyValueExpr, af *ast.File) *KeyValue {
+func ParseKeyValue(expr *ast.KeyValueExpr, context bo.ExprContext) *KeyValue {
 	kv := &KeyValue{}
-	kv.Key = ParseParameter(expr.Key, af)
-	kv.Value = ParseParameter(expr.Value, af)
+	kv.Key = ParseParameter(expr.Key, context)
+	kv.Value = ParseParameter(expr.Value, context)
 	return kv
 }

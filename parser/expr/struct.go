@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"go/ast"
 
 	"github.com/samber/lo"
@@ -29,13 +30,13 @@ func (s *Struct) GetFormula() string {
 }
 
 // ParseStruct 解析ast
-func ParseStruct(expr *ast.StructType, af *ast.File) *Struct {
+func ParseStruct(expr *ast.StructType, context bo.ExprContext) *Struct {
 	s := &Struct{}
 	fields := expr.Fields
 	fieldList := make([]Field, 0, 10)
 	if fields != nil {
 		for _, field := range fields.List {
-			pf := ParseField(field, af)
+			pf := ParseField(field, context)
 			if pf != nil {
 				fieldList = append(fieldList, lo.FromPtr(pf))
 			}

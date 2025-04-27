@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 )
@@ -30,9 +31,9 @@ func (s *Chan) GetFormula() string {
 }
 
 // ParseChan 解析ast
-func ParseChan(expr *ast.ChanType, af *ast.File) *Chan {
+func ParseChan(expr *ast.ChanType, context bo.ExprContext) *Chan {
 	ch := &Chan{}
 	ch.Dir = expr.Dir
-	ch.Param = ParseParameter(expr.Value, af)
+	ch.Param = ParseParameter(expr.Value, context)
 	return ch
 }

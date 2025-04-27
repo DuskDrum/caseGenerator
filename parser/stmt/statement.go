@@ -1,7 +1,6 @@
 package stmt
 
 import (
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	"go/ast"
@@ -20,7 +19,7 @@ type Stmt interface {
 // FormulasList --> 公式List(Key 对应那个变量，Formula 对应的公式)
 type ExpressionStmt interface {
 	// FormulaExpress  生成逻辑表达式, 入参常量Map， 出参 公式List，方法调用map
-	FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call)
+	FormulaExpress() ([]govaluate.KeyFormula, map[string]*expr.Call)
 }
 
 // Condition 条件类型: if、switch、typeSwitch、return
@@ -31,7 +30,7 @@ type ExpressionStmt interface {
 // todo 考虑fori
 type Condition interface {
 	// CalculateCondition 解析Condition
-	CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []bo.KeyFormula) []ConditionResult
+	CalculateCondition(constantsMap, innerVariablesMap, outerVariablesMap map[string]any, keyFormulaList []govaluate.KeyFormula) []ConditionResult
 }
 
 type ConditionResult struct {
@@ -168,10 +167,10 @@ func (cn *ConditionNode) Add(parent *ConditionNode) *ConditionNode {
 }
 
 type ConditionNodeResult struct {
-	ConditionNode  *ConditionNode        // 条件节点，有子条件，象征着一条条件链路
-	IsBreak        bool                  // 表示是否已经中断，true代表已经中断了，不需要继续处理条件， false代表这个condition还需要继续处理
-	KeyFormulaList []bo.KeyFormula       // 赋值键值对列表
-	FormulaCallMap map[string]*expr.Call // 赋值方法map
+	ConditionNode  *ConditionNode         // 条件节点，有子条件，象征着一条条件链路
+	IsBreak        bool                   // 表示是否已经中断，true代表已经中断了，不需要继续处理条件， false代表这个condition还需要继续处理
+	KeyFormulaList []govaluate.KeyFormula // 赋值键值对列表
+	FormulaCallMap map[string]*expr.Call  // 赋值方法map
 }
 
 // ParseCondition 两个响应值， 第一个是多条条件节点，第二个是是否中断
@@ -190,11 +189,11 @@ func ParseCondition(condition Stmt) []*ConditionNodeResult {
 }
 
 // ParseConditionKeyFormula 两个响应值， 第一个是多条KeyFormula，第二个是对应要处理的 callMap
-func ParseConditionKeyFormula(condition Stmt) ([]bo.KeyFormula, map[string]*expr.Call) {
+func ParseConditionKeyFormula(condition Stmt) ([]govaluate.KeyFormula, map[string]*expr.Call) {
 	// 1. 解析每个stmt的内容；得到最新的赋值公式
 	// 类型断言判断
 	if pes, ok := condition.(ExpressionStmt); ok {
 		return pes.FormulaExpress()
 	}
-	return []bo.KeyFormula{}, map[string]*expr.Call{}
+	return []govaluate.KeyFormula{}, map[string]*expr.Call{}
 }

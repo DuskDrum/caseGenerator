@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -33,7 +34,7 @@ func (s *BasicLit) GetFormula() string {
 }
 
 // ParseBasicLit 解析ast
-func ParseBasicLit(expr *ast.BasicLit, _ *ast.File) *BasicLit {
+func ParseBasicLit(expr *ast.BasicLit, _ bo.ExprContext) *BasicLit {
 	bl := &BasicLit{}
 	// 解析 value
 	bl.Kind = expr.Kind

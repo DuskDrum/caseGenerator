@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/struct"
 	"go/ast"
 	"strings"
@@ -36,13 +37,14 @@ func (s *Call) GetFormula() string {
 }
 
 // ParseCall 解析ast
-func ParseCall(expr *ast.CallExpr, af *ast.File) *Call {
+func ParseCall(expr *ast.CallExpr, context bo.ExprContext) *Call {
 	ca := &Call{}
-	ca.Function = ParseParameter(expr.Fun, af)
+	ca.Function = ParseParameter(expr.Fun, context)
+	// Fun
 
 	callList := make([]_struct.Parameter, 0, 10)
 	for _, v := range expr.Args {
-		call := ParseParameter(v, af)
+		call := ParseParameter(v, context)
 		callList = append(callList, call)
 	}
 	ca.Args = callList

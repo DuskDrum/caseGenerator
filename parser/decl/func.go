@@ -2,8 +2,8 @@ package decl
 
 import (
 	"caseGenerator/common/utils"
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
+	"caseGenerator/parser/expression/govaluate"
 	"caseGenerator/parser/stmt"
 	"go/ast"
 
@@ -51,7 +51,7 @@ func ParseBody(sb *ast.BlockStmt, af *ast.File) {
 	// 外部变量map，从请求参数里拿到
 	//outerVariablesMap := make(map[string]any, 10)
 	// 公式列表
-	keyFormulaList := make([]bo.KeyFormula, 0, 10)
+	keyFormulaList := make([]govaluate.KeyFormula, 0, 10)
 	callVariableMap := make(map[string]*expr.Call, 10)
 	nodeResultList := make([]*stmt.ConditionNodeResult, 0, 10)
 

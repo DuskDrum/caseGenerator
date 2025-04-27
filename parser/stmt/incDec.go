@@ -2,7 +2,6 @@ package stmt
 
 import (
 	"caseGenerator/common/enum"
-	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	expression2 "caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -20,9 +19,9 @@ type IncDec struct {
 	Token   token.Token       // 类型，是 token.INC、token.DEC
 }
 
-func (i *IncDec) FormulaExpress() ([]bo.KeyFormula, map[string]*expr.Call) {
-	stmtExpressionList := make([]bo.KeyFormula, 0, 10)
-	se := bo.KeyFormula{
+func (i *IncDec) FormulaExpress() ([]expression2.KeyFormula, map[string]*expr.Call) {
+	stmtExpressionList := make([]expression2.KeyFormula, 0, 10)
+	se := expression2.KeyFormula{
 		Key:  i.Content.GetFormula(),
 		Type: enum.STMT_TYPE_INCDEC,
 	}

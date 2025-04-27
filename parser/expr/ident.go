@@ -2,6 +2,7 @@ package expr
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"go/ast"
 )
 
@@ -20,7 +21,7 @@ func (i *Ident) GetFormula() string {
 }
 
 // ParseIdent 解析ast
-func ParseIdent(expr *ast.Ident, _ *ast.File) *Ident {
+func ParseIdent(expr *ast.Ident, _ bo.ExprContext) *Ident {
 	return &Ident{
 		IdentName: expr.Name,
 	}
