@@ -28,14 +28,14 @@ func (s *Selector) GetFormula() string {
 	current := s.SelectorParam
 	// 递归遍历每一层的 child，直到没有 child
 	for current.Ident != nil {
-		formula = current.Ident.GetFormula() + "." + formula
+		formula = formula + "." + current.Ident.GetFormula()
 		if current.Child == nil {
 			break
 		} else {
 			current = lo.FromPtr(current.Child)
 		}
 	}
-	formula, _ = strings.CutSuffix(formula, ".")
+	formula, _ = strings.CutPrefix(formula, ".")
 	return formula
 }
 
@@ -50,7 +50,10 @@ func ParseSelector(expr *ast.SelectorExpr, context bo.ExprContext) *Selector {
 func GetRelationFromSelectorExpr(se *ast.SelectorExpr, context bo.ExprContext) *SelectorParam {
 	var sp = &SelectorParam{}
 	if si, ok := se.X.(*ast.Ident); ok {
-		sp.Child = nil
+		var childSp = &SelectorParam{}
+		childSp.Child = nil
+		childSp.Ident = ParseIdent(se.Sel, context)
+		sp.Child = childSp
 		sp.Ident = ParseIdent(si, context)
 
 		return sp

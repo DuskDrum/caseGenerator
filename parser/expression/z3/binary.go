@@ -6,22 +6,22 @@ import (
 	"go/token"
 )
 
-func ExpressBinary(param *expr.Binary) *z3.AST {
+func ExpressBinary(param *expr.Binary) (*z3.AST, []*z3.AST) {
 	// 解析X
-	xExpression := ExpressParam(param.X)
+	xExpression, _ := ExpressParam(param.X)
 	// 解析Y
-	yExpression := ExpressParam(param.Y)
+	yExpression, _ := ExpressParam(param.Y)
 
 	// 解析Op
 	if param.Op == token.LOR {
-		return xExpression.Xor(yExpression)
+		return xExpression.Xor(yExpression), nil
 		// 如果类型是&&逻辑与，处理X和Y
 	} else if param.Op == token.LAND {
-		return xExpression.And(yExpression)
+		return xExpression.And(yExpression), nil
 	}
 
 	// 下面是除了逻辑与、逻辑或的其他运算符
-	return expressRelation(param, xExpression, yExpression)
+	return expressRelation(param, xExpression, yExpression), nil
 
 }
 

@@ -6,7 +6,7 @@ import (
 	_struct "caseGenerator/parser/struct"
 )
 
-func ExpressSelector(param *expr.Selector) *z3.AST {
+func ExpressSelector(param *expr.Selector) (*z3.AST, []*z3.AST) {
 	//key := strings.ReplaceAll(param.GetFormula(), ".", "_")
 	//selectorMap := map[string]*expr.Selector{"astSelector_" + key: param}
 	//elementList := []string{"astSelector_" + key}
@@ -17,7 +17,7 @@ func ExpressSelector(param *expr.Selector) *z3.AST {
 	//Expr:        strings.Join(elementList, " "),
 	//}
 	//return []*Z3Express{expression}
-	return nil
+	return nil, nil
 }
 
 func ExpressTargetSelector(param *expr.Selector, targetParam _struct.Parameter) []*Z3Express {

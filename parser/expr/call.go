@@ -40,7 +40,6 @@ func (s *Call) GetFormula() string {
 func ParseCall(expr *ast.CallExpr, context bo.ExprContext) *Call {
 	ca := &Call{}
 	ca.Function = ParseParameter(expr.Fun, context)
-	// Fun
 
 	callList := make([]_struct.Parameter, 0, 10)
 	for _, v := range expr.Args {
@@ -49,6 +48,24 @@ func ParseCall(expr *ast.CallExpr, context bo.ExprContext) *Call {
 	}
 	ca.Args = callList
 	// 解析响应
+	// Fun有可能是Ident，有可能是Selector，要判断结果是什么
+	switch callFunType := expr.Fun.(type) {
+	case *ast.Ident:
+		response, err := ParseCallExprResponse("", callFunType.Name, context)
+		if err != nil {
+			panic(err.Error())
+		}
+		ca.ResponseList = response
+	case *ast.SelectorExpr:
+		importName := callFunType.X.(*ast.Ident).Name
+		response, err := ParseCallExprResponse(importName, callFunType.Sel.Name, context)
+		if err != nil {
+			panic(err.Error())
+		}
+		ca.ResponseList = response
+	default:
+		panic("call fun type is illegal")
+	}
 
 	return ca
 }

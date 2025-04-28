@@ -181,38 +181,3 @@ func TestInnerReceiverCallCase(t *testing.T) {
 	}
 
 }
-
-// TestInnerReceiverPtrCallCase 测试内部receiver(指针类型)调用的call
-func TestInnerReceiverPtrCallCase(t *testing.T) {
-
-}
-
-// TestVariableReceiverCallCase 测试本包内定义的变量receiver(普通类型)调用的call
-func TestVariableReceiverCallCase(t *testing.T) {
-
-}
-
-// TestOuterVariableReceiverCallCase 测试外部包内定义的变量receiver(普通类型)调用的call
-func TestOuterVariableReceiverCallCase(t *testing.T) {
-
-}
-
-// TestVariableReceiverPtrCallCase 测试本包内定义的变量receiver(指针类型)调用的call
-func TestVariableReceiverPtrCallCase(t *testing.T) {
-
-}
-
-// TestOuterVariableReceiverPtrCallCase 测试外部包内定义的变量receiver(指针类型)调用的call
-func TestOuterVariableReceiverPtrCallCase(t *testing.T) {
-
-}
-
-// TestOuterPackageCallCase 测试外部包直接调用的call
-func TestOuterPackageCallCase(t *testing.T) {
-
-}
-
-// TestPackageCallCase 测试包内直接调用的call
-func TestPackageCallCase(t *testing.T) {
-
-}

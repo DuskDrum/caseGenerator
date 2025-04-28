@@ -6,7 +6,7 @@ import (
 )
 
 // ExpressParent mocker Parent
-func ExpressParent(param *expr.Parent) *z3.AST {
+func ExpressParent(param *expr.Parent) (*z3.AST, []*z3.AST) {
 	// 解析子公式
 	return ExpressParam(param.Content)
 }

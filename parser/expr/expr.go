@@ -105,7 +105,7 @@ func ParseCallExprResponse(importName, funcName string, context bo.ExprContext) 
 
 	// 再找import去解析对应的方法
 	result, err := ParsePackageCallResponse(importName, funcName, context)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	if len(result) > 0 {
@@ -184,7 +184,8 @@ func ParsePackageCallResponse(importName, funcName string, context bo.ExprContex
 		}
 	}
 	if importPath == "" {
-		panic("can not find import path")
+		// 这是receiver调用的场景
+		return nil, nil
 	}
 
 	path := strings.Trim(importPath, "\"")

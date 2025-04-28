@@ -7,17 +7,17 @@ import (
 )
 
 // ExpressUnary mocker Unary
-func ExpressUnary(param *expr.Unary) *z3.AST {
+func ExpressUnary(param *expr.Unary) (*z3.AST, []*z3.AST) {
 	// 解析公式
-	ast := ExpressParam(param.Content)
+	ast, _ := ExpressParam(param.Content)
 
 	if param.Op == token.NOT {
-		return ast.Not()
+		return ast.Not(), nil
 	} else if param.Op == token.SUB {
-		return ast.UnaryMinus()
+		return ast.UnaryMinus(), nil
 	} else if param.Op == token.XOR { // ^ unary代表了取反
-		return ast.BvNot()
+		return ast.BvNot(), nil
 	}
 
-	return nil
+	return nil, nil
 }

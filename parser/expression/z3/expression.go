@@ -12,12 +12,15 @@ type Z3Express struct {
 }
 
 func Express(param _struct.Parameter) *Z3Express {
-	ast := ExpressParam(param)
+	// 解析得到condition和变量列表
+	ast, _ := ExpressParam(param)
 	return &Z3Express{Z3Ast: ast}
 }
 
 // ExpressParam 将Binary、Unary解析为Expression，得到两个东西，一个是里面的Ident和func的引用，一个是最终得到的公式
-func ExpressParam(param _struct.Parameter) *z3.AST {
+// *z3.AST : 第一个参数返回condition
+// []z3.AST: 返回变量列表
+func ExpressParam(param _struct.Parameter) (*z3.AST, []*z3.AST) {
 	switch exprType := param.(type) {
 	case *expr.Binary:
 		return ExpressBinary(exprType)
