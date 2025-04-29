@@ -2,14 +2,15 @@ package z3
 
 import (
 	"caseGenerator/go-z3"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/token"
 )
 
 // ExpressUnary mocker Unary
-func ExpressUnary(param *expr.Unary) (*z3.AST, []*z3.AST) {
+func ExpressUnary(param *expr.Unary, context bo.ExpressionContext) (*z3.AST, []*z3.AST) {
 	// 解析公式
-	ast, _ := ExpressParam(param.Content)
+	ast, _ := ExpressParam(param.Content, context)
 
 	if param.Op == token.NOT {
 		return ast.Not(), nil

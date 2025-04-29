@@ -2,13 +2,14 @@ package z3
 
 import (
 	"caseGenerator/go-z3"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"fmt"
 	"strings"
 )
 
-func ExpressCall(param *expr.Call) (*z3.AST, []*z3.AST) {
+func ExpressCall(param *expr.Call, context bo.ExpressionContext) (*z3.AST, []*z3.AST) {
 	config := z3.NewConfig()
 	ctx := z3.NewContext(config)
 	defer func(ctx *z3.Context) {

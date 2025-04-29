@@ -2,15 +2,16 @@ package z3
 
 import (
 	"caseGenerator/go-z3"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/token"
 )
 
-func ExpressBinary(param *expr.Binary) (*z3.AST, []*z3.AST) {
+func ExpressBinary(param *expr.Binary, context bo.ExpressionContext) (*z3.AST, []*z3.AST) {
 	// 解析X
-	xExpression, _ := ExpressParam(param.X)
+	xExpression, _ := ExpressParam(param.X, context)
 	// 解析Y
-	yExpression, _ := ExpressParam(param.Y)
+	yExpression, _ := ExpressParam(param.Y, context)
 
 	// 解析Op
 	if param.Op == token.LOR {

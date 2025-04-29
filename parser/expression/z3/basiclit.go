@@ -2,10 +2,11 @@ package z3
 
 import (
 	"caseGenerator/go-z3"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 )
 
-func ExpressBasicLit(param *expr.BasicLit) (*z3.AST, []*z3.AST) {
+func ExpressBasicLit(param *expr.BasicLit, context bo.ExpressionContext) (*z3.AST, []*z3.AST) {
 	config := z3.NewConfig()
 	ctx := z3.NewContext(config)
 	defer ctx.Close()

@@ -2,11 +2,11 @@ package z3
 
 import (
 	"caseGenerator/go-z3"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
-	_struct "caseGenerator/parser/struct"
 )
 
-func ExpressIdent(param *expr.Ident) (*z3.AST, []*z3.AST) {
+func ExpressIdent(param *expr.Ident, context bo.ExpressionContext) (*z3.AST, []*z3.AST) {
 	astList := make([]*z3.AST, 0, 10)
 	config := z3.NewConfig()
 	ctx := z3.NewContext(config)
@@ -17,7 +17,7 @@ func ExpressIdent(param *expr.Ident) (*z3.AST, []*z3.AST) {
 		}
 	}(ctx)
 
-	symbolName := ""
+	symbolName := param.IdentName
 
 	// iType
 	switch param.IdentName {
@@ -34,17 +34,5 @@ func ExpressIdent(param *expr.Ident) (*z3.AST, []*z3.AST) {
 	default:
 		// 啥也不干
 	}
-	return nil, nil
-}
-
-func ExpressTargetIdent(param *expr.Ident, targetParam _struct.Parameter) []*Z3Express {
-	//elementList := []string{param.GetFormula()}
-	//identMap := map[string]*expr.Ident{param.IdentName: param}
-
-	expression := &Z3Express{
-		//ElementList: elementList,
-		//IdentMap:    identMap,
-		//Expr:        targetParam.GetFormula() + " = " + param.GetFormula(),
-	}
-	return []*Z3Express{expression}
+	return nil, astList
 }
