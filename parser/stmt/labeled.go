@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/ast"
 )
@@ -12,7 +13,7 @@ type Labeled struct {
 	Block Stmt       // 标签后跟的语句
 }
 
-func ParseLabeled(stmt *ast.LabeledStmt, _ *ast.File) *Labeled {
+func ParseLabeled(stmt *ast.LabeledStmt, _ bo.ExprContext) *Labeled {
 	labeled := &Labeled{}
 
 	return labeled

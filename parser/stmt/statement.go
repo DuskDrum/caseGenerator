@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	"go/ast"
@@ -47,51 +48,51 @@ type SelectorConditionResult struct {
 }
 
 // ParseStmt 完整的执行单元
-func ParseStmt(expr ast.Stmt, af *ast.File) Stmt {
+func ParseStmt(expr ast.Stmt, context bo.ExprContext) Stmt {
 	if expr == nil {
 		return nil
 	}
 	switch stmtType := expr.(type) {
 	case *ast.DeclStmt:
-		return ParseDecl(stmtType, af)
+		return ParseDecl(stmtType, context)
 	case *ast.EmptyStmt:
-		return ParseEmpty(stmtType, af)
+		return ParseEmpty(stmtType, context)
 	case *ast.LabeledStmt:
-		return ParseLabeled(stmtType, af)
+		return ParseLabeled(stmtType, context)
 	case *ast.ExprStmt:
-		return ParseExpr(stmtType, af)
+		return ParseExpr(stmtType, context)
 	case *ast.SendStmt:
-		return ParseSend(stmtType, af)
+		return ParseSend(stmtType, context)
 	case *ast.IncDecStmt:
-		return ParseIncDec(stmtType, af)
+		return ParseIncDec(stmtType, context)
 	case *ast.AssignStmt:
-		return ParseAssign(stmtType, af)
+		return ParseAssign(stmtType, context)
 	case *ast.GoStmt:
-		return ParseGo(stmtType, af)
+		return ParseGo(stmtType, context)
 	case *ast.DeferStmt:
-		return ParseDefer(stmtType, af)
+		return ParseDefer(stmtType, context)
 	case *ast.ReturnStmt:
-		return ParseReturn(stmtType, af)
+		return ParseReturn(stmtType, context)
 	case *ast.BranchStmt:
-		return ParseBranch(stmtType, af)
+		return ParseBranch(stmtType, context)
 	case *ast.BlockStmt:
-		return ParseBlock(stmtType, af)
+		return ParseBlock(stmtType, context)
 	case *ast.IfStmt:
-		return ParseIf(stmtType, af)
+		return ParseIf(stmtType, context)
 	case *ast.CaseClause:
-		return ParseCaseClause(stmtType, af)
+		return ParseCaseClause(stmtType, context)
 	case *ast.SwitchStmt:
-		return ParseSwitch(stmtType, af)
+		return ParseSwitch(stmtType, context)
 	case *ast.TypeSwitchStmt:
-		return ParseTypeSwitch(stmtType, af)
+		return ParseTypeSwitch(stmtType, context)
 	case *ast.CommClause:
-		return ParseCommClause(stmtType, af)
+		return ParseCommClause(stmtType, context)
 	case *ast.SelectStmt:
-		return ParseSelect(stmtType, af)
+		return ParseSelect(stmtType, context)
 	case *ast.ForStmt:
-		return ParseFor(stmtType, af)
+		return ParseFor(stmtType, context)
 	case *ast.RangeStmt:
-		return ParseRange(stmtType, af)
+		return ParseRange(stmtType, context)
 	default:
 		panic("未知类型...")
 	}

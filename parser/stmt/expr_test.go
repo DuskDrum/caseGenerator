@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -29,7 +30,12 @@ func TestExprCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.ExprStmt); ok {
 			fmt.Println("找到 ExprStmt")
-			expr := ParseExpr(stmt, file)
+			context := bo.ExprContext{
+				AstFile:      file,
+				AstFuncDecl:  nil,
+				RealPackPath: "",
+			}
+			expr := ParseExpr(stmt, context)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", expr)
 		}

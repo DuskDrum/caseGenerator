@@ -2,6 +2,7 @@ package stmt
 
 import (
 	"caseGenerator/common/utils"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -22,29 +23,29 @@ type If struct {
 }
 
 // ParseIf 解析ast
-func ParseIf(stmt *ast.IfStmt, af *ast.File) *If {
+func ParseIf(stmt *ast.IfStmt, context bo.ExprContext) *If {
 	i := &If{}
 	if stmt.Init != nil {
 		as, ok := stmt.Init.(*ast.AssignStmt)
 		if !ok {
 			panic("switch init type is not assign")
 		}
-		i.Init = ParseAssign(as, af)
+		i.Init = ParseAssign(as, context)
 	}
-	i.Block = ParseBlock(stmt.Body, af)
-	i.Condition = expr.ParseParameter(stmt.Cond, af)
+	i.Block = ParseBlock(stmt.Body, context)
+	i.Condition = expr.ParseParameter(stmt.Cond, context)
 	i.Position = stmt.Pos()
 
 	if stmt.Else != nil {
 		switch elseTyp := stmt.Else.(type) {
 		case *ast.IfStmt:
-			elseIfList, blockStmt := ParseElseIf(elseTyp, af)
+			elseIfList, blockStmt := ParseElseIf(elseTyp, context)
 			i.ElseIfCondition = elseIfList
 			i.ElseCondition = blockStmt
 
 		case *ast.BlockStmt:
 			// 解析else
-			elseBlock := ParseBlock(elseTyp, af)
+			elseBlock := ParseBlock(elseTyp, context)
 			i.ElseCondition = elseBlock
 		default:
 			panic("parse condition error, can't get type")

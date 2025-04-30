@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
@@ -16,16 +17,16 @@ type CaseClause struct {
 }
 
 // ParseCaseClause 解析ast
-func ParseCaseClause(stmt *ast.CaseClause, af *ast.File) *CaseClause {
+func ParseCaseClause(stmt *ast.CaseClause, context bo.ExprContext) *CaseClause {
 	cc := &CaseClause{}
 	cl := make([]_struct.Parameter, 0, 10)
 	for _, v := range stmt.List {
-		c := expr.ParseParameter(v, af)
+		c := expr.ParseParameter(v, context)
 		cl = append(cl, c)
 	}
 	bl := make([]Stmt, 0, 10)
 	for _, b := range stmt.Body {
-		ps := ParseStmt(b, af)
+		ps := ParseStmt(b, context)
 		bl = append(bl, ps)
 	}
 	cc.CaseList = cl

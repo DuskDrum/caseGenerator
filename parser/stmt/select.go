@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"go/ast"
 )
 
@@ -11,8 +12,8 @@ type Select struct {
 }
 
 // ParseSelect 解析ast
-func ParseSelect(stmt *ast.SelectStmt, af *ast.File) *Select {
+func ParseSelect(stmt *ast.SelectStmt, context bo.ExprContext) *Select {
 	s := &Select{}
-	s.Body = ParseBlock(stmt.Body, af)
+	s.Body = ParseBlock(stmt.Body, context)
 	return s
 }

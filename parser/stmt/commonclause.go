@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"go/ast"
 )
 
@@ -12,14 +13,14 @@ type CommClause struct {
 }
 
 // ParseCommClause 解析ast
-func ParseCommClause(stmt *ast.CommClause, af *ast.File) *CommClause {
+func ParseCommClause(stmt *ast.CommClause, context bo.ExprContext) *CommClause {
 	cc := &CommClause{}
 	if stmt.Comm != nil {
-		cc.Comm = ParseStmt(stmt.Comm, af)
+		cc.Comm = ParseStmt(stmt.Comm, context)
 	}
 	bodyList := make([]Stmt, 0, 10)
 	for _, v := range stmt.Body {
-		ps := ParseStmt(v, af)
+		ps := ParseStmt(v, context)
 		bodyList = append(bodyList, ps)
 
 	}

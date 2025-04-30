@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -38,7 +39,12 @@ func TestSwitchCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.SwitchStmt); ok {
 			fmt.Println("找到 SwitchStmt")
-			parseSwitch := ParseSwitch(stmt, file)
+			context := bo.ExprContext{
+				AstFile:      file,
+				AstFuncDecl:  nil,
+				RealPackPath: "",
+			}
+			parseSwitch := ParseSwitch(stmt, context)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", parseSwitch)
 			// 解析 condition
@@ -89,7 +95,12 @@ func TestDuplicateSwitchCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.SwitchStmt); ok {
 			fmt.Println("找到 SwitchStmt")
-			parseSwitch := ParseSwitch(stmt, file)
+			context := bo.ExprContext{
+				AstFile:      file,
+				AstFuncDecl:  nil,
+				RealPackPath: "",
+			}
+			parseSwitch := ParseSwitch(stmt, context)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", parseSwitch)
 			// 解析 condition
@@ -159,7 +170,12 @@ func TestParseIfProblemCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.SwitchStmt); ok {
 				fmt.Println("找到 SwitchStmt")
-				parseSwitch := ParseSwitch(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseSwitch := ParseSwitch(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseSwitch)
 				// 解析 condition
@@ -243,7 +259,12 @@ func TestParseIfExpressCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.SwitchStmt); ok {
 				fmt.Println("找到 SwitchStmt")
-				parseSwitch := ParseSwitch(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseSwitch := ParseSwitch(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseSwitch)
 				// 解析 condition
@@ -305,7 +326,12 @@ func TestSimpleExpressCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.SwitchStmt); ok {
 				fmt.Println("找到 SwitchStmt")
-				parseSwitch := ParseSwitch(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseSwitch := ParseSwitch(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseSwitch)
 				// 解析 condition

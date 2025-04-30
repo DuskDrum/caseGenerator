@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -19,11 +20,11 @@ func (r *Return) CalculateCondition(constantsMap, innerVariablesMap, outerVariab
 }
 
 // ParseReturn 解析ast
-func ParseReturn(stmt *ast.ReturnStmt, af *ast.File) *Return {
+func ParseReturn(stmt *ast.ReturnStmt, context bo.ExprContext) *Return {
 	r := &Return{}
 	resultList := make([]_struct.Parameter, 0, 10)
 	for _, v := range stmt.Results {
-		result := expr.ParseParameter(v, af)
+		result := expr.ParseParameter(v, context)
 		resultList = append(resultList, result)
 	}
 	r.ReturnList = resultList

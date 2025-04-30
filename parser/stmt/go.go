@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/ast"
 
@@ -14,10 +15,10 @@ type Go struct {
 }
 
 // ParseGo 解析ast
-func ParseGo(stmt *ast.GoStmt, af *ast.File) *Go {
+func ParseGo(stmt *ast.GoStmt, context bo.ExprContext) *Go {
 	g := &Go{}
 
-	call := expr.ParseCall(stmt.Call, af)
+	call := expr.ParseCall(stmt.Call, context)
 	if call != nil {
 		g.Call = lo.FromPtr(call)
 	}

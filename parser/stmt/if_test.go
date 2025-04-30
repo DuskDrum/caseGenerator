@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -42,7 +43,12 @@ func TestIfCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.IfStmt); ok {
 				fmt.Println("找到 IfStmt")
-				parseIf := ParseIf(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseIf := ParseIf(stmt, context)
 				// 被断言的对象
 				// 解析 condition
 				conditionResult := parseIf.ParseIfCondition()
@@ -120,7 +126,12 @@ func TestParseIfCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.IfStmt); ok {
 				fmt.Println("找到 IfStmt")
-				parseIf := ParseIf(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseIf := ParseIf(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseIf)
 			}
@@ -203,7 +214,12 @@ func TestParseBlockCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.IfStmt); ok {
 				fmt.Println("找到 IfStmt")
-				parseIf := ParseIf(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseIf := ParseIf(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseIf)
 				// 解析 condition
@@ -256,7 +272,12 @@ func TestSimpleElseParseBlockCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.IfStmt); ok {
 				fmt.Println("找到 IfStmt")
-				parseIf := ParseIf(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseIf := ParseIf(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseIf)
 				// 解析 condition
@@ -319,7 +340,12 @@ func TestParseSimpleBlockCase(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.IfStmt); ok {
 				fmt.Println("找到 IfStmt")
-				parseIf := ParseIf(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseIf := ParseIf(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseIf)
 				// 解析 condition
@@ -365,7 +391,12 @@ func TestParseZ3Case(t *testing.T) {
 		for _, b := range decl.Body.List {
 			if stmt, ok := b.(*ast.IfStmt); ok {
 				fmt.Println("找到 IfStmt")
-				parseIf := ParseIf(stmt, file)
+				context := bo.ExprContext{
+					AstFile:      file,
+					AstFuncDecl:  nil,
+					RealPackPath: "",
+				}
+				parseIf := ParseIf(stmt, context)
 				// 被断言的对象
 				fmt.Printf("接口对象: %v\n", parseIf)
 				// 解析 condition

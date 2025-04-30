@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
@@ -18,19 +19,19 @@ type Range struct {
 }
 
 // ParseRange 解析ast
-func ParseRange(stmt *ast.RangeStmt, af *ast.File) *Range {
+func ParseRange(stmt *ast.RangeStmt, context bo.ExprContext) *Range {
 	r := &Range{}
 	if stmt.Key != nil {
-		r.Key = expr.ParseParameter(stmt.Key, af)
+		r.Key = expr.ParseParameter(stmt.Key, context)
 	}
 	if stmt.Value != nil {
-		r.Value = expr.ParseParameter(stmt.Value, af)
+		r.Value = expr.ParseParameter(stmt.Value, context)
 	}
 	if stmt.X != nil {
-		r.Content = expr.ParseParameter(stmt.X, af)
+		r.Content = expr.ParseParameter(stmt.X, context)
 	}
 	r.Token = stmt.Tok
-	r.Body = ParseBlock(stmt.Body, af)
+	r.Body = ParseBlock(stmt.Body, context)
 
 	return r
 }

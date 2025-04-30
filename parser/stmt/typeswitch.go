@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	"go/ast"
@@ -41,7 +42,7 @@ func (t *TypeSwitch) CalculateCondition(constantsMap, innerVariablesMap, outerVa
 }
 
 // ParseTypeSwitch 解析ast
-func ParseTypeSwitch(stmt *ast.TypeSwitchStmt, af *ast.File) *TypeSwitch {
+func ParseTypeSwitch(stmt *ast.TypeSwitchStmt, context bo.ExprContext) *TypeSwitch {
 	ts := &TypeSwitch{}
 
 	if stmt.Init != nil {
@@ -49,12 +50,12 @@ func ParseTypeSwitch(stmt *ast.TypeSwitchStmt, af *ast.File) *TypeSwitch {
 		if !ok {
 			panic("switch init type is not assign")
 		}
-		ts.Init = ParseAssign(as, af)
+		ts.Init = ParseAssign(as, context)
 	}
 	if stmt.Assign != nil {
-		ts.Assign = ParseStmt(stmt.Assign, af)
+		ts.Assign = ParseStmt(stmt.Assign, context)
 	}
-	ts.Body = ParseBlock(stmt.Body, af)
+	ts.Body = ParseBlock(stmt.Body, context)
 
 	return ts
 }

@@ -2,6 +2,7 @@ package decl
 
 import (
 	"caseGenerator/common/utils"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	"caseGenerator/parser/stmt"
@@ -21,17 +22,22 @@ type Func struct {
 // ParseFunc 解析Func
 func ParseFunc(decl *ast.FuncDecl, af *ast.File) *Func {
 	fieldList := make([]expr.Field, 0, 10)
+	context := bo.ExprContext{
+		AstFile:      af,
+		AstFuncDecl:  decl,
+		RealPackPath: "",
+	}
 	if decl.Recv != nil {
 		for _, v := range decl.Recv.List {
-			pf := expr.ParseField(v, af)
+			pf := expr.ParseField(v, context)
 			if pf != nil {
 				fieldList = append(fieldList, lo.FromPtr(pf))
 			}
 		}
 	}
-	name := expr.ParseIdent(decl.Name, af)
-	funcType := expr.ParseFuncType(decl.Type, af)
-	body := stmt.ParseBlock(decl.Body)
+	name := expr.ParseIdent(decl.Name, context)
+	funcType := expr.ParseFuncType(decl.Type, context)
+	body := stmt.ParseBlock(decl.Body, context)
 
 	f := &Func{
 		Receiver: fieldList,
@@ -59,7 +65,12 @@ func ParseBody(sb *ast.BlockStmt, af *ast.File) {
 	for _, v := range sb.List {
 		// todo
 		// 1.1 解析每个stmt的内容
-		p := stmt.ParseStmt(v, af)
+		context := bo.ExprContext{
+			AstFile:      af,
+			AstFuncDecl:  nil,
+			RealPackPath: "",
+		}
+		p := stmt.ParseStmt(v, context)
 		// 1.2 执行每一个 stmt 的公式；得到最新的赋值公式
 		if pes, ok := p.(stmt.ExpressionStmt); ok {
 			kfList, callMap := pes.FormulaExpress()

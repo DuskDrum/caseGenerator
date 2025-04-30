@@ -2,6 +2,7 @@ package stmt
 
 import (
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	expression2 "caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -61,11 +62,11 @@ func (i *IncDec) FormulaExpress() ([]expression2.KeyFormula, map[string]*expr.Ca
 }
 
 // ParseIncDec 解析ast
-func ParseIncDec(stmt *ast.IncDecStmt, af *ast.File) *IncDec {
+func ParseIncDec(stmt *ast.IncDecStmt, context bo.ExprContext) *IncDec {
 	incDec := &IncDec{}
 
 	if stmt.X != nil {
-		xp := expr.ParseParameter(stmt.X, af)
+		xp := expr.ParseParameter(stmt.X, context)
 		if xp != nil {
 			incDec.Content = xp
 		}

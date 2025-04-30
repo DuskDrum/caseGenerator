@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -37,7 +38,12 @@ func TestTypeSwitchCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.TypeSwitchStmt); ok {
 			fmt.Println("找到 TypeSwitchStmt")
-			typeSwitch := ParseTypeSwitch(stmt, file)
+			context := bo.ExprContext{
+				AstFile:      file,
+				AstFuncDecl:  nil,
+				RealPackPath: "",
+			}
+			typeSwitch := ParseTypeSwitch(stmt, context)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", typeSwitch)
 		}
@@ -74,7 +80,12 @@ func TestTypeSwitchSimpleCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.TypeSwitchStmt); ok {
 			fmt.Println("找到 TypeSwitchStmt")
-			typeSwitch := ParseTypeSwitch(stmt, file)
+			context := bo.ExprContext{
+				AstFile:      file,
+				AstFuncDecl:  nil,
+				RealPackPath: "",
+			}
+			typeSwitch := ParseTypeSwitch(stmt, context)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", typeSwitch)
 		}

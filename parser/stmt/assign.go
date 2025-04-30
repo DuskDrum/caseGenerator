@@ -3,6 +3,7 @@ package stmt
 import (
 	"caseGenerator/common/constants"
 	"caseGenerator/common/enum"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	expression2 "caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -185,7 +186,7 @@ type AssignParam struct {
 }
 
 // ParseAssign 解析ast
-func ParseAssign(stmt *ast.AssignStmt, af *ast.File) *Assign {
+func ParseAssign(stmt *ast.AssignStmt, context bo.ExprContext) *Assign {
 	assign := &Assign{}
 	// 赋值的左右一定是数量一样的
 	rhs := stmt.Rhs
@@ -195,8 +196,8 @@ func ParseAssign(stmt *ast.AssignStmt, af *ast.File) *Assign {
 	}
 	list := make([]AssignParam, 0, 10)
 	for i, l := range lhs {
-		lp := expr.ParseParameter(l, af)
-		rp := expr.ParseParameter(rhs[i], af)
+		lp := expr.ParseParameter(l, context)
+		rp := expr.ParseParameter(rhs[i], context)
 		ap := AssignParam{
 			Left:  lp,
 			Right: rp,

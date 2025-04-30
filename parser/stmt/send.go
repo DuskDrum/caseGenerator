@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
@@ -16,16 +17,16 @@ type Send struct {
 }
 
 // ParseSend 解析ast
-func ParseSend(stmt *ast.SendStmt, af *ast.File) *Send {
+func ParseSend(stmt *ast.SendStmt, context bo.ExprContext) *Send {
 	send := &Send{}
 	if stmt.Chan != nil {
-		cp := expr.ParseParameter(stmt.Chan, af)
+		cp := expr.ParseParameter(stmt.Chan, context)
 		if cp != nil {
 			send.Chan = cp
 		}
 	}
 	if stmt.Value != nil {
-		vp := expr.ParseParameter(stmt.Value, af)
+		vp := expr.ParseParameter(stmt.Value, context)
 		if vp != nil {
 			send.Value = vp
 		}

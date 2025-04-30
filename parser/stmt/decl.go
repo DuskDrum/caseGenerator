@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/ast"
 
@@ -13,14 +14,14 @@ type Decl struct {
 	expr.ValueSpec
 }
 
-func ParseDecl(stmt *ast.DeclStmt, af *ast.File) *Decl {
+func ParseDecl(stmt *ast.DeclStmt, context bo.ExprContext) *Decl {
 	decl := &Decl{}
 	switch declType := stmt.Decl.(type) {
 	case *ast.GenDecl:
 		for _, s := range declType.Specs {
 			switch specType := s.(type) {
 			case *ast.ValueSpec:
-				spec := expr.ParseValueSpec(specType, af)
+				spec := expr.ParseValueSpec(specType, context)
 				if spec != nil {
 					decl.ValueSpec = lo.FromPtr(spec)
 				}

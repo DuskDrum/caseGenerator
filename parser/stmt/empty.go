@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/ast"
 )
@@ -12,7 +13,7 @@ type Empty struct {
 	expr.ValueSpec
 }
 
-func ParseEmpty(_ *ast.EmptyStmt, _ *ast.File) *Empty {
+func ParseEmpty(_ *ast.EmptyStmt, _ bo.ExprContext) *Empty {
 	empty := &Empty{}
 
 	return empty

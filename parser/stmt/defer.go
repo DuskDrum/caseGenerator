@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/ast"
 
@@ -14,9 +15,9 @@ type Defer struct {
 }
 
 // ParseDefer 解析ast
-func ParseDefer(stmt *ast.DeferStmt, af *ast.File) *Defer {
+func ParseDefer(stmt *ast.DeferStmt, context bo.ExprContext) *Defer {
 	d := &Defer{}
-	call := expr.ParseCall(stmt.Call, af)
+	call := expr.ParseCall(stmt.Call, context)
 	if call != nil {
 		d.Call = lo.FromPtr(call)
 	}

@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"go/ast"
 )
 
@@ -11,11 +12,11 @@ type Block struct {
 }
 
 // ParseBlock 解析ast
-func ParseBlock(stmt *ast.BlockStmt, af *ast.File) *Block {
+func ParseBlock(stmt *ast.BlockStmt, context bo.ExprContext) *Block {
 	b := &Block{}
 	stmtList := make([]Stmt, 0, 10)
 	for _, v := range stmt.List {
-		p := ParseStmt(v, af)
+		p := ParseStmt(v, context)
 		stmtList = append(stmtList, p)
 	}
 	b.StmtList = stmtList

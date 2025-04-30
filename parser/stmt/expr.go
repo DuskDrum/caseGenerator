@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
@@ -14,10 +15,10 @@ type Expr struct {
 }
 
 // ParseExpr 解析ast
-func ParseExpr(stmt *ast.ExprStmt, af *ast.File) *Expr {
+func ParseExpr(stmt *ast.ExprStmt, context bo.ExprContext) *Expr {
 	exprStmt := &Expr{}
 	if stmt.X != nil {
-		parameter := expr.ParseParameter(stmt.X, af)
+		parameter := expr.ParseParameter(stmt.X, context)
 		if parameter != nil {
 			exprStmt.Expr = parameter
 		}

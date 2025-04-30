@@ -2,6 +2,7 @@ package stmt
 
 import (
 	"caseGenerator/common/utils"
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"caseGenerator/parser/expression/govaluate"
 	_struct "caseGenerator/parser/struct"
@@ -32,16 +33,16 @@ func (s *Switch) CalculateCondition(constantsMap, innerVariablesMap, outerVariab
 }
 
 // ParseSwitch 解析ast
-func ParseSwitch(stmt *ast.SwitchStmt, af *ast.File) *Switch {
+func ParseSwitch(stmt *ast.SwitchStmt, context bo.ExprContext) *Switch {
 	s := &Switch{}
 	if stmt.Init != nil {
 		as, ok := stmt.Init.(*ast.AssignStmt)
 		if !ok {
 			panic("switch init type is not assign")
 		}
-		s.Init = ParseAssign(as, af)
+		s.Init = ParseAssign(as, context)
 	}
-	s.Tag = expr.ParseParameter(stmt.Tag, af)
+	s.Tag = expr.ParseParameter(stmt.Tag, context)
 	s.Position = stmt.Pos()
 
 	caseClauseList := make([]*CaseClause, 0, 10)
@@ -53,9 +54,9 @@ func ParseSwitch(stmt *ast.SwitchStmt, af *ast.File) *Switch {
 			panic("switch clause type is not case")
 		}
 		if clause.List != nil {
-			caseClauseList = append(caseClauseList, ParseCaseClause(clause, af))
+			caseClauseList = append(caseClauseList, ParseCaseClause(clause, context))
 		} else {
-			defaultCaseList = append(defaultCaseList, ParseCaseClause(clause, af))
+			defaultCaseList = append(defaultCaseList, ParseCaseClause(clause, context))
 		}
 	}
 	// default 只能有一个，解析出多个就报错

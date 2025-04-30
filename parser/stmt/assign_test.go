@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -33,7 +34,12 @@ func TestAssignCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.AssignStmt); ok {
 			fmt.Println("找到 AssignStmt")
-			assign := ParseAssign(stmt, file)
+			context := bo.ExprContext{
+				AstFile:      file,
+				AstFuncDecl:  nil,
+				RealPackPath: "",
+			}
+			assign := ParseAssign(stmt, context)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", assign)
 		}
@@ -65,7 +71,12 @@ func TestAssignCallCase(t *testing.T) {
 	ast.Inspect(file, func(n ast.Node) bool {
 		if stmt, ok := n.(*ast.AssignStmt); ok {
 			fmt.Println("找到 AssignStmt")
-			assign := ParseAssign(stmt, file)
+			context := bo.ExprContext{
+				AstFile:      file,
+				AstFuncDecl:  nil,
+				RealPackPath: "",
+			}
+			assign := ParseAssign(stmt, context)
 			// 被断言的对象
 			fmt.Printf("接口对象: %v\n", assign)
 		}

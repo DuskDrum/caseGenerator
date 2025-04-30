@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
@@ -16,19 +17,19 @@ type For struct {
 }
 
 // ParseFor 解析ast
-func ParseFor(stmt *ast.ForStmt, af *ast.File) *For {
+func ParseFor(stmt *ast.ForStmt, context bo.ExprContext) *For {
 	f := &For{}
 	if stmt.Init != nil {
-		f.Init = ParseStmt(stmt.Init, af)
+		f.Init = ParseStmt(stmt.Init, context)
 	}
 	if stmt.Post != nil {
-		f.Post = ParseStmt(stmt.Post, af)
+		f.Post = ParseStmt(stmt.Post, context)
 	}
 	if stmt.Cond != nil {
-		f.Cond = expr.ParseParameter(stmt.Cond, af)
+		f.Cond = expr.ParseParameter(stmt.Cond, context)
 	}
 	if stmt.Body != nil {
-		f.Body = ParseBlock(stmt.Body, af)
+		f.Body = ParseBlock(stmt.Body, context)
 	}
 	return f
 }

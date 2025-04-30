@@ -1,6 +1,7 @@
 package stmt
 
 import (
+	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"go/ast"
 	"go/token"
@@ -16,10 +17,10 @@ type Branch struct {
 }
 
 // ParseBranch 解析ast
-func ParseBranch(stmt *ast.BranchStmt, af *ast.File) *Branch {
+func ParseBranch(stmt *ast.BranchStmt, context bo.ExprContext) *Branch {
 	branch := &Branch{}
 	if stmt.Label != nil {
-		label := expr.ParseIdent(stmt.Label, af)
+		label := expr.ParseIdent(stmt.Label, context)
 		if label != nil {
 			branch.Label = lo.FromPtr(label)
 		}
