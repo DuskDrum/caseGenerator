@@ -20,5 +20,5 @@ func ExpressUnary(param *expr.Unary, context bo.ExpressionContext) (*z3.AST, []*
 		return ast.BvNot(), nil
 	}
 
-	return nil, nil
+	return ast, nil
 }

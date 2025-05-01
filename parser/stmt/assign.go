@@ -6,6 +6,7 @@ import (
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	expression2 "caseGenerator/parser/expression/govaluate"
+	"caseGenerator/parser/expression/z3"
 	_struct "caseGenerator/parser/struct"
 	"go/ast"
 	"go/token"
@@ -208,4 +209,142 @@ func ParseAssign(stmt *ast.AssignStmt, context bo.ExprContext) *Assign {
 	assign.Token = stmt.Tok
 	assign.Position = stmt.Pos()
 	return assign
+}
+
+func (a *Assign) Z3FormulaExpress(context bo.ExpressionContext) []z3.Z3Express {
+	resultExpresList := make([]z3.Z3Express, 0, 10)
+	// 1. 遍历处理Assignment
+	for i, param := range a.AssignParamList {
+		// 2. 判断等式左边
+		var variableName string
+		switch lfp := param.Left.(type) {
+		case *expr.Ident:
+			variableName = lfp.IdentName
+		case *expr.Selector:
+			variableName = z3.GetSelectorVariableName(lfp)
+		default:
+			panic("don't support this type")
+		}
+
+		// 2. 判断assign的类型， 不同类型的处理不一样
+		switch a.Token {
+		case token.DEFINE, token.ASSIGN:
+			expressParam, asList := z3.ExpressParam(param.Right, context)
+
+		case token.ADD_ASSIGN:
+			// a += b 相当于 a = a + b
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.PLUS.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.SUB_ASSIGN:
+			// a -= b 相当于 a = a - b
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.MINUS.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.MUL_ASSIGN:
+			// a *= b 相当于 a = a * b
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.MULTIPLY.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.QUO_ASSIGN:
+			// a /= b 相当于 a = a / b
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.DIVIDE.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.REM_ASSIGN:
+			// a %= b 相当于 a = a % b
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.MODULUS.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.AND_ASSIGN:
+			// a &= b 相当于 a = a & b
+			// 按位与运算 满足交换律
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.BITWISE_AND.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.OR_ASSIGN:
+			// a |= b 相当于 a = a | b
+			// 按位或运算 满足交换律
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.BITWISE_OR.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.XOR_ASSIGN:
+			// a ^= b 相当于 a = a ^ b
+			// 按位异或运算 满足交换律
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.BITWISE_XOR.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.SHL_ASSIGN:
+			// a <<= b 相当于 a = a << b
+			// 左移赋值运算符 左移相当于对数字进行乘以 2^b 的运算。
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.BITWISE_LSHIFT.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.SHR_ASSIGN:
+			// a >>= b 相当于 a = a >> b
+			// 右移赋值运算符 左移相当于对数字进行乘以 2^b 的运算。
+			elementList := make([]string, 0, 10)
+			elementList = append(elementList, param.Left.GetFormula())
+			elementList = append(elementList, govaluate.BITWISE_RSHIFT.String())
+			elementList = append(elementList, constants.CLAUSE)
+			elementList = append(elementList, expression.ElementList...)
+			elementList = append(elementList, constants.CLAUSE_CLOSE)
+			se.ElementList = elementList
+			se.Expr = strings.Join(se.ElementList, " ")
+		case token.AND_NOT_ASSIGN:
+			// a &^= b 相当于 a = a &^ b
+			// 按位清除赋值运算符 用于按位清除并赋值。简单来说，它会根据另一个操作数将变量中对应的位清零
+			// 不支持
+			panic("token type illegal")
+		default:
+			panic("token type illegal")
+		}
+		formulasList = append(formulasList, se)
+	}
+	return formulasList, callMap
 }

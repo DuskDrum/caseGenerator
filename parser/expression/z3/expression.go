@@ -5,6 +5,7 @@ import (
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	_struct "caseGenerator/parser/struct"
+	"strings"
 )
 
 // Z3Express 公式
@@ -42,36 +43,7 @@ func ExpressParam(param _struct.Parameter, context bo.ExpressionContext) (*z3.AS
 	}
 }
 
-//func ExpressTarget(param, targetParam _struct.Parameter) []*Z3Express {
-//	expressionList := make([]*Z3Express, 0, 10)
-//	eList := ExpressTargetParam(param, targetParam)
-//	expressionList = append(expressionList, eList...)
-//	return expressionList
-//}
+func GetSelectorVariableName(selector *expr.Selector) string {
+	return strings.ReplaceAll(selector.GetFormula(), ".", "_")
 
-// ExpressTargetParam 将Binary、Unary解析为Expression，得到两个东西，一个是里面的Ident和func的引用，一个是最终得到的公式
-//func ExpressTargetParam(param, targetParam _struct.Parameter) []*Z3Express {
-//	switch exprType := param.(type) {
-//	case *expr.Binary:
-//		return ExpressBinary(exprType)
-//	case *expr.Unary:
-//		return ExpressUnary(exprType)
-//	case *expr.Parent:
-//		return ExpressParent(exprType)
-//	case *expr.Ident:
-//		return ExpressTargetIdent(exprType, targetParam)
-//	case *expr.Selector:
-//		return ExpressTargetSelector(exprType, targetParam)
-//	case *expr.Call:
-//		return ExpressTargetCall(exprType, targetParam)
-//	case *expr.BasicLit:
-//		return ExpressTargetBasicLit(exprType, targetParam)
-//	default:
-//		//elementList := []string{param.GetFormula()}
-//		expression := &Z3Express{
-//			//ElementList: elementList,
-//			//Expr:        strings.Join(elementList, " "),
-//		}
-//		return []*Z3Express{expression}
-//	}
-//}
+}
