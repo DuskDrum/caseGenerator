@@ -22,3 +22,32 @@ func Ident() int {
 	}
 	return 1
 }
+
+func RequestIdent(ZeroInt string) int {
+	if ZeroInt == "" {
+		return 0
+	}
+	return 1
+}
+
+func GlobalIdent1() int {
+	localVariable := PackageGlobalBool
+	if localVariable {
+		return 0
+	}
+	return 1
+}
+
+func GlobalIdent2() int {
+	localVariable := PackageGlobalNumber
+
+	return localVariable
+}
+
+func GlobalIdent3() int {
+	localVariable := PackageGlobalString
+	if localVariable != "" {
+		return 1
+	}
+	return -1
+}

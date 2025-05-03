@@ -62,7 +62,7 @@ func TestCallZ3Case(t *testing.T) {
 							// 解析出了call
 							call := expr.ParseCall(callExpr, context)
 							// 执行z3处理器
-							expressCall, _ := ExpressCall(call)
+							expressCall, _ := ExpressCall(call, bo.ExpressionContext{})
 
 							fmt.Print(expressCall)
 

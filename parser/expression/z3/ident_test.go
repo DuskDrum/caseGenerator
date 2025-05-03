@@ -1,6 +1,7 @@
 package z3
 
 import (
+	"caseGenerator/common/enum"
 	"caseGenerator/parser/bo"
 	"caseGenerator/parser/expr"
 	"fmt"
@@ -62,7 +63,15 @@ func TestIdentZ3Case(t *testing.T) {
 							// 解析出了call
 							call := expr.ParseIdent(callExpr, context)
 							// 执行z3处理器
-							expressCall, _ := ExpressIdent(call)
+							eContext := bo.ExpressionContext{
+								VariableParamMap: make(map[string]enum.BasicParameterType, 10),
+								RequestParamMap:  make(map[string]enum.BasicParameterType, 10),
+								TemporaryVariable: bo.TemporaryVariable{
+									VariableName: "localVariable",
+								},
+								ExprContext: context,
+							}
+							expressCall, _ := ExpressIdent(call, eContext)
 
 							fmt.Print(expressCall)
 

@@ -3,6 +3,10 @@ package test
 type Receiver1 struct {
 }
 
+var PackageGlobalNumber = 10
+var PackageGlobalString = "hello"
+var PackageGlobalBool = true
+
 func (r Receiver1) add(a int, b int) int {
 	result, err := r.doAddInt(a, b)
 	if err != nil {
