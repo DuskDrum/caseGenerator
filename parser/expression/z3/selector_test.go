@@ -1,9 +1,6 @@
 package z3
 
 import (
-	"caseGenerator/common/enum"
-	"caseGenerator/parser/bo"
-	"caseGenerator/parser/expr"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -18,7 +15,8 @@ import (
 func TestSelectorZ3Case(t *testing.T) {
 	// 测试内部Receiver
 	path := "test/selector.go"
-	relPackagePath := "/Users/wangyi/githubProject/caseGenerator/parser/expression/z3/test"
+	_ = "/Users/wangyi/githubProject/caseGenerator/parser/expression/z3/test"
+	funcName := "Selector"
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		// Process error
 		if err != nil {
@@ -50,35 +48,44 @@ func TestSelectorZ3Case(t *testing.T) {
 				if funcDecl, ok := n.(*ast.FuncDecl); ok {
 					fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
 					fmt.Printf("Function name: %s\n", funcDecl.Name.Name)
-					// 查找函数声明
-					ast.Inspect(f, func(n ast.Node) bool {
-						// 检查是否为 *ast.CallExpr 节点
-						if callExpr, ok := n.(*ast.SelectorExpr); ok {
-							fmt.Println("找到函数调用表达式:")
-							context := bo.ExprContext{
-								AstFile:      f,
-								AstFuncDecl:  funcDecl,
-								RealPackPath: relPackagePath,
+					if funcDecl.Name.Name == funcName {
+						for _, b := range funcDecl.Body.List {
+							switch stmt := b.(type) {
+							case *ast.AssignStmt:
+								stmt.Pos()
 							}
-							// 解析出了call
-							call := expr.ParseSelector(callExpr, context)
-							// 执行z3处理器
-							eContext := bo.ExpressionContext{
-								VariableParamMap: make(map[string]enum.BasicParameterType, 10),
-								RequestParamMap:  make(map[string]enum.BasicParameterType, 10),
-								TemporaryVariable: bo.TemporaryVariable{
-									VariableName: "localVariable",
-								},
-								ExprContext: context,
-							}
-							expressCall, _ := GetSelectorVariableType(eContext, callExpr, relPackagePath)
 
-							fmt.Print(expressCall)
-
-							fmt.Print(call)
 						}
-						return true
-					})
+					}
+					//// 查找函数声明
+					//ast.Inspect(f, func(n ast.Node) bool {
+					//	// 检查是否为 *ast.CallExpr 节点
+					//	if callExpr, ok := n.(*ast.SelectorExpr); ok {
+					//		fmt.Println("找到函数调用表达式:")
+					//		context := bo.ExprContext{
+					//			AstFile:      f,
+					//			AstFuncDecl:  funcDecl,
+					//			RealPackPath: relPackagePath,
+					//		}
+					//		// 解析出了call
+					//		call := expr.ParseSelector(callExpr, context)
+					//		// 执行z3处理器
+					//		eContext := bo.ExpressionContext{
+					//			VariableParamMap: make(map[string]enum.BasicParameterType, 10),
+					//			RequestParamMap:  make(map[string]enum.BasicParameterType, 10),
+					//			TemporaryVariable: bo.TemporaryVariable{
+					//				VariableName: "localVariable",
+					//			},
+					//			ExprContext: context,
+					//		}
+					//		expressCall, _ := GetSelectorVariableType(eContext, callExpr, relPackagePath)
+					//
+					//		fmt.Print(expressCall)
+					//
+					//		fmt.Print(call)
+					//	}
+					//	return true
+					//})
 
 				}
 				return true
